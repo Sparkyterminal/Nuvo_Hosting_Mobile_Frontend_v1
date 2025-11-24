@@ -1,20 +1,26 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect } from 'react';
+import * as ExpoSplashScreen from 'expo-splash-screen';
+import RootNavigator from './src/navigation/RootNavigator';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+// keep the splash visible while we load
+ExpoSplashScreen.preventAutoHideAsync();
 
 export default function App() {
+  useEffect(() => {
+    const prepare = async () => {
+      // simulate resource loading or setup
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      // hide Expo splash once ready
+      await ExpoSplashScreen.hideAsync();
+    };
+
+    prepare();
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaProvider>
+      <RootNavigator />
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
