@@ -9,6 +9,7 @@ export const AppColors = {
   textGearDark: '#4F4F4F',
   textInverse: '#FFFFFF',
   textError: '#D32F2F',
+  textDark:'#000000'
 };
 
 export type ThemeColors = typeof AppColors;

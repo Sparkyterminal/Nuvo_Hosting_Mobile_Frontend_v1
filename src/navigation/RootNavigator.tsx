@@ -1,11 +1,11 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import SplashScreen from '../screens/SplashScreen';
-import OnboardingScreen from '../screens/OnboardingScreen';
-import LooginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
-import OtpVerificationScreen from '../screens/OtpVerificationScreen';
-import HomeScreen from '../screens/HomeScreen';
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import SplashScreen from "../screens/Auth/SplashScreen";
+import OnboardingScreen from "../screens/Auth/OnboardingScreen";
+import LooginScreen from "../screens/Auth/LoginScreen";
+import RegisterScreen from "../screens/Auth/RegisterScreen";
+import OtpVerificationScreen from "../screens/Auth/OtpVerificationScreen";
+import HomeTabsNavigator from "./HomeTabsNavigator";
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -22,30 +22,17 @@ const RootNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen
-          name="Splash"
-          component={SplashScreen}
-        />
-        <Stack.Screen
-          name="Onboarding"
-          component={OnboardingScreen}
-        />
-        <Stack.Screen
-          name="Login"
-          component={LooginScreen}
-        />
-        <Stack.Screen
-          name="Register"
-          component={RegisterScreen}
-        />
+        <Stack.Screen name="Splash" component={SplashScreen} />
+        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+        <Stack.Screen name="Login" component={LooginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen
           name="OtpVerification"
           component={OtpVerificationScreen}
         />
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-        />
+
+        {/* Home now shows the bottom tabs */}
+        <Stack.Screen name="Home" component={HomeTabsNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
   );
