@@ -7,12 +7,12 @@ import {
   Keyboard,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/RootNavigator';
-import { BaseContainer } from '../components/BaseContainer';
-import CustomText from '../components/CustomText';
-import AppButton from '../components/AppButton';
-import ScreenHeader from '../components/ScreenHeader';
-import { AppColors } from '../theme/colors';
+import { RootStackParamList } from '../../navigation/RootNavigator';
+import { BaseContainer } from '../../components/BaseContainer';
+import CustomText from '../../components/CustomText';
+import AppButton from '../../components/AppButton';
+import ScreenHeader from '../../components/ScreenHeader';
+import { AppColors } from '../../theme/colors';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 

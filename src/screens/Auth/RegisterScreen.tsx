@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/RootNavigator';
-import { BaseContainer } from '../components/BaseContainer';
-import CustomText from '../components/CustomText';
-import AppButton from '../components/AppButton';
-import { AppColors } from '../theme/colors';
+import { RootStackParamList } from '../../navigation/RootNavigator';
+import { BaseContainer } from '../../components/BaseContainer';
+import CustomText from '../../components/CustomText';
+import AppButton from '../../components/AppButton';
+import { AppColors } from '../../theme/colors';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
-import ScreenHeader from '../components/ScreenHeader';
+import ScreenHeader from '../../components/ScreenHeader';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
