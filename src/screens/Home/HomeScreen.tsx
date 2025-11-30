@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -7,16 +7,16 @@ import {
   ScrollView,
   TouchableOpacity,
   Pressable,
-} from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../navigation/RootNavigator";
-import { BaseContainer } from "../../components/BaseContainer";
-import CustomText from "../../components/CustomText";
-import { AppColors } from "../../theme/colors";
-import { Ionicons } from "@expo/vector-icons";
-import { moderateScale, scale, verticalScale } from "react-native-size-matters";
+} from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigation/RootNavigator';
+import { BaseContainer } from '../../components/BaseContainer';
+import CustomText from '../../components/CustomText';
+import { AppColors } from '../../theme/colors';
+import { Ionicons } from '@expo/vector-icons';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
-type Props = NativeStackScreenProps<RootStackParamList, "Home">;
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 type ThemeCard = {
   id: string;
@@ -28,32 +28,32 @@ type ThemeCard = {
 
 const THEMES: ThemeCard[] = [
   {
-    id: "1",
-    title: "South Indian wedding",
+    id: '1',
+    title: 'South Indian wedding',
     description:
-      "Book trained hosts, models, and support staff for any occasion.",
-    image: require("../../assets/images/home.jpg"),
-    color: "#1E6FB3",
+      'Book trained hosts, models, and support staff for any occasion.',
+    image: require('../../assets/images/home.jpg'),
+    color: '#1E6FB3',
   },
   {
-    id: "2",
-    title: "Corporate Event",
+    id: '2',
+    title: 'Corporate Event',
     description:
-      "Book trained hosts, models, and support staff for any occasion.",
-    image: require("../../assets/images/home.jpg"),
-    color: "#11A36D",
+      'Book trained hosts, models, and support staff for any occasion.',
+    image: require('../../assets/images/home.jpg'),
+    color: '#11A36D',
   },
   {
-    id: "3",
-    title: "Haladi",
+    id: '3',
+    title: 'Haladi',
     description:
-      "Book trained hosts, models, and support staff for any occasion.",
-    image: require("../../assets/images/home.jpg"),
-    color: "#D9921A",
+      'Book trained hosts, models, and support staff for any occasion.',
+    image: require('../../assets/images/home.jpg'),
+    color: '#D9921A',
   },
 ];
 
-const HomeScreen: React.FC<Props> = () => {
+const HomeScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <BaseContainer>
       <ScrollView
@@ -63,7 +63,7 @@ const HomeScreen: React.FC<Props> = () => {
         {/* Hero / Welcome Card */}
         <View style={styles.heroContainer}>
           <ImageBackground
-            source={require("../../assets/images/home.jpg")}
+            source={require('../../assets/images/home.jpg')}
             style={styles.heroImage}
             imageStyle={styles.heroImageStyle}
           >
@@ -72,11 +72,14 @@ const HomeScreen: React.FC<Props> = () => {
               <View style={styles.heroTopRow}>
                 <View style={styles.heroUserRow}>
                   <Image
-                    source={require("../../assets/images/Tony_Stark.jpg")}
+                    source={require('../../assets/images/Tony_Stark.jpg')}
                     style={styles.avatar}
                   />
                   <View style={styles.heroUserText}>
-                    <CustomText variant="caption" color={AppColors.textInverse}>
+                    <CustomText
+                      variant="caption"
+                      color={AppColors.textInverse}
+                    >
                       Welcome,
                     </CustomText>
                     <CustomText
@@ -150,7 +153,7 @@ const HomeScreen: React.FC<Props> = () => {
             Themes:
           </CustomText>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Themes')}>
             <CustomText
               variant="caption"
               weight="medium"
@@ -213,10 +216,10 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(16),
     borderBottomLeftRadius: scale(20),
     borderBottomRightRadius: scale(20),
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   heroImage: {
-    width: "100%",
+    width: '100%',
     minHeight: verticalScale(420),
   },
   heroImageStyle: {
@@ -225,18 +228,18 @@ const styles = StyleSheet.create({
   },
   heroOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.55)",
+    backgroundColor: 'rgba(0,0,0,0.55)',
     paddingHorizontal: scale(16),
     paddingVertical: verticalScale(16),
   },
   heroTopRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   heroUserRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   heroUserText: {
     marginLeft: scale(8),
@@ -249,7 +252,7 @@ const styles = StyleSheet.create({
     borderColor: AppColors.textInverse,
   },
   heroIconsRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   iconButton: {
     marginLeft: scale(12),
@@ -257,16 +260,16 @@ const styles = StyleSheet.create({
   heroTextBlock: {
     marginTop: verticalScale(16),
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   heroTitle: {
     marginBottom: verticalScale(8),
-    alignItems: "center",
+    alignItems: 'center',
   },
   heroDescription: {
     lineHeight: 20,
-    textAlign: "center",
+    textAlign: 'center',
   },
   heroQuote: {
     marginTop: verticalScale(8),
@@ -274,19 +277,19 @@ const styles = StyleSheet.create({
 
   /* Themes */
   sectionHeaderRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: scale(16),
     marginBottom: verticalScale(8),
   },
 
   themeCard: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginHorizontal: scale(16),
     marginBottom: verticalScale(12),
     borderRadius: moderateScale(12),
-    overflow: "hidden",
+    overflow: 'hidden',
     backgroundColor: AppColors.textInverse,
     elevation: 3,
     shadowColor: AppColors.textDark,
@@ -295,14 +298,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
   },
   themeImage: {
-    width: "40%",
+    width: '40%',
     height: verticalScale(90),
   },
   themeTextContainer: {
     flex: 1,
     paddingHorizontal: scale(10),
     paddingVertical: verticalScale(8),
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   themeTitle: {
     marginBottom: verticalScale(4),
