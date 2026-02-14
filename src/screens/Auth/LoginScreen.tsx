@@ -1,121 +1,148 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
   KeyboardAvoidingView,
   Platform,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../navigation/RootNavigator";
-import { BaseContainer } from "../../components/BaseContainer";
-import CustomText from "../../components/CustomText";
-import AppButton from "../../components/AppButton";
-import ScreenHeader from "../../components/ScreenHeader";
-import { AppColors } from "../../theme/colors";
-import { Ionicons } from "@expo/vector-icons";
-import { moderateScale, scale, verticalScale } from "react-native-size-matters";
-import AppInput from "../../components/AppInput";
+  Pressable,
+} from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigation/RootNavigator';
+import { BaseContainer } from '../../components/BaseContainer';
+import CustomText from '../../components/CustomText';
+import ScreenHeader from '../../components/ScreenHeader';
+import { AppColors } from '../../theme/colors';
 
-type Props = NativeStackScreenProps<RootStackParamList, "Login">;
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+import AppInput from '../../components/AppInput';
+import FooterButton from '../../components/FooterButton';
+import Checkbox from 'expo-checkbox';
+import AppBottomSheet from '../../components/AppBottomSheet';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 const LooginScreen: React.FC<Props> = ({ navigation }) => {
-  const [mobile, setMobile] = useState("");
-  const [password, setPassword] = useState("");
-  const [hidePassword, setHidePassword] = useState(true);
+  const [mobile, setMobile] = useState('');
+  // const [isChecked, setIsChecked] = useState(false);
+  const [sheetVisible, setSheetVisible] = useState(false);
+  const [sheetTitle, setSheetTitle] = useState('');
+  const [sheetContent, setSheetContent] = useState('');
+  const [privacyChecked, setPrivacyChecked] = useState(false);
+  const [termsChecked, setTermsChecked] = useState(false);
 
-  const isValid = mobile.trim().length > 0 && password.trim().length > 0;
+  const isValid = mobile.trim().length > 0 && privacyChecked && termsChecked;
+
+  console.log('isValid=== ', isValid);
+
+  const handlePrivacyPolicy = () => {
+    setSheetTitle('Privacy Policy');
+    setSheetContent(
+      'This is the Privacy Policy details. Here you can show long text or list related to privacy policy. You can also load this from API.',
+    );
+    setSheetVisible(true);
+  };
+
+  const handleTerms = () => {
+    setSheetTitle('Terms of Use');
+    setSheetContent(
+      'This is the Terms of Use content. You can show all terms and conditions here in a scrollable view.',
+    );
+    setSheetVisible(true);
+  };
 
   return (
     <BaseContainer>
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         {/* Header */}
         <ScreenHeader
           title="Login"
           showBackButton
           onBackPress={() => navigation.goBack()}
-          // showRightMenu
-          // onRightPress={() => {}}
         />
 
         {/* Content */}
         <View style={styles.content}>
           {/* Screen title */}
-          <CustomText
-            variant="title"
-            weight="bold"
-            style={styles.title}
-            color={AppColors.primary}
-          >
-            Login
-          </CustomText>
+          <View style={{ flex: 3 }}>
+            <CustomText
+              variant="title"
+              weight="bold"
+              style={styles.title}
+              color={AppColors.primary}
+            >
+              Your Email Id
+            </CustomText>
 
-          <CustomText
-            variant="body"
-            color={AppColors.textGearDark}
-            style={styles.subtitle}
-          >
-            Enter your mobile number and password
-          </CustomText>
+            <CustomText
+              variant="body"
+              color={AppColors.textGearDark}
+              style={styles.subtitle}
+            >
+              Enter your Email
+            </CustomText>
 
-          {/* Fields */}
-          <View style={styles.fieldsWrapper}>
-            {/* Mobile number */}
+            {/* Fields */}
+
             <AppInput
-              placeholder="Mobile Number"
+              placeholder="Enter Your Email"
               keyboardType="phone-pad"
               value={mobile}
               onChangeText={setMobile}
             />
-
-            {/* Password with eye icon */}
-            <View style={styles.passwordContainer}>
-              <TextInput
-                style={styles.passwordInput}
-                placeholder="Password"
-                placeholderTextColor={AppColors.textGrey}
-                secureTextEntry={hidePassword}
-                value={password}
-                onChangeText={setPassword}
-              />
-              <TouchableOpacity
-                style={styles.eyeButton}
-                onPress={() => setHidePassword((prev) => !prev)}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <Ionicons
-                  name={hidePassword ? "eye-outline" : "eye-off-outline"}
-                  size={20}
-                  color={AppColors.textGrey}
-                />
-              </TouchableOpacity>
-            </View>
-
-            {/* Forgot password */}
-            <TouchableOpacity
-              style={styles.forgotWrapper}
-              onPress={() => console.log("Forgot Password pressed")}
-            >
-              <CustomText
-                variant="caption"
-                weight="medium"
-                color={AppColors.primary}
-              >
-                Forgot Password ?
-              </CustomText>
-            </TouchableOpacity>
           </View>
 
-          {/* Login button */}
-          <AppButton
-            label="Login"
-            onPress={() => navigation.navigate("Onboarding")}
-            // disabled={!isValid}
-            containerStyle={styles.loginButton}
+          <View style={styles.checkboxContainer}>
+            <View style={styles.checkboxWrapper}>
+              <Checkbox
+                value={privacyChecked}
+                onValueChange={setPrivacyChecked}
+                color={privacyChecked ? AppColors.primary : undefined}
+              />
+
+              <CustomText style={styles.checkboxText}>
+                I have read and accept the{' '}
+                <CustomText
+                  style={styles.linkText}
+                  onPress={handlePrivacyPolicy}
+                >
+                  Privacy Policy
+                </CustomText>{' '}
+                and agree that my personal data will be processed by you
+              </CustomText>
+            </View>
+            <View style={styles.checkboxWrapper}>
+              <Checkbox
+                value={termsChecked}
+                onValueChange={setTermsChecked}
+                color={termsChecked ? AppColors.primary : undefined}
+              />
+
+              <CustomText style={styles.checkboxText}>
+                I have read and accept the{' '}
+                <CustomText
+                  style={styles.linkText}
+                  onPress={handleTerms}
+                >
+                  Terms of Use
+                </CustomText>
+              </CustomText>
+            </View>
+
+            {/* Login button */}
+            <FooterButton
+              label="Send OPT"
+              onPress={() => navigation.navigate('Onboarding')}
+              disabled={!isValid}
+            />
+          </View>
+          <AppBottomSheet
+            visible={sheetVisible}
+            title={sheetTitle}
+            content={sheetContent}
+            onClose={() => setSheetVisible(false)}
           />
         </View>
       </KeyboardAvoidingView>
@@ -133,27 +160,14 @@ const styles = StyleSheet.create({
     paddingTop: verticalScale(32),
   },
   title: {
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: verticalScale(4),
   },
   subtitle: {
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: verticalScale(24),
   },
-  fieldsWrapper: {
-    marginBottom: verticalScale(24),
-  },
-  passwordContainer: {
-    borderWidth: 1,
-    borderColor: AppColors.textGrey,
-    borderRadius: moderateScale(6),
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: scale(12),
-    height: verticalScale(38),
-    backgroundColor: "#FFFFFF",
-    marginTop: verticalScale(4),
-  },
+
   passwordInput: {
     flex: 1,
     fontSize: 16,
@@ -162,11 +176,30 @@ const styles = StyleSheet.create({
     marginLeft: scale(8),
   },
   forgotWrapper: {
-    alignSelf: "flex-end",
+    alignSelf: 'flex-end',
     marginTop: verticalScale(6),
   },
   loginButton: {
     marginTop: verticalScale(8),
+  },
+  checkboxWrapper: {
+    gap: scale(8),
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkboxContainer: {
+    flex: 1,
+    paddingHorizontal: scale(10),
+    gap: 10,
+  },
+
+  checkboxText: {
+    // marginLeft: scale(4),
+    fontSize: scale(10),
+    color: AppColors.textGearDark,
+  },
+  linkText: {
+    color: AppColors.primary,
   },
 });
 

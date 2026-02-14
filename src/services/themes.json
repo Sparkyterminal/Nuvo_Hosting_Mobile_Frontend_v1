@@ -1,0 +1,168 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "title": "South Indian Wedding",
+      "description": "Traditional south Indian style wedding themes",
+      "images": [
+        {
+          "id": 101,
+          "url": "https://images.unsplash.com/photo-1583939003579-730e3918a45a",
+          "description": "Traditional south Indian wedding mandap Traditional south Indian wedding mandap Traditional south Indian wedding mandap Traditional south Indian wedding mandap Traditional south Indian wedding mandap Traditional south Indian wedding mandap Traditional south Indian wedding mandap Traditional south Indian wedding mandap"
+        },
+        {
+          "id": 102,
+          "url": "https://images.unsplash.com/photo-1597157639073-69284dc0fdaf",
+          "description": "Bride and groom stage decoration"
+        },
+        {
+          "id": 103,
+          "url": "https://images.unsplash.com/photo-1606800052052-a08af7148866",
+          "description": "Beautiful wedding flower arrangements"
+        },
+        {
+          "id": 104,
+          "url": "https://images.unsplash.com/photo-1519741497674-611481863552",
+          "description": "Traditional Indian wedding lighting"
+        },
+        {
+          "id": 105,
+          "url": "https://images.unsplash.com/photo-1596450514659-4ff64fdde903",
+          "description": "Cultural wedding entrance decor"
+        }
+      ]
+    },
+
+    {
+      "id": 2,
+      "title": "Corporate Event",
+      "description": "Professional corporate event setups",
+      "images": [
+        {
+          "id": 201,
+          "url": "https://images.unsplash.com/photo-1505373877841-8d25f7d46678",
+          "description": "Corporate conference hall setup"
+        },
+        {
+          "id": 202,
+          "url": "https://images.unsplash.com/photo-1540575467063-178a50c2df87",
+          "description": "Professional stage lighting"
+        },
+        {
+          "id": 203,
+          "url": "https://images.unsplash.com/photo-1559223607-a43c990c692c",
+          "description": "Product launch event theme"
+        },
+        {
+          "id": 204,
+          "url": "https://images.unsplash.com/photo-1511578314322-379afb476865",
+          "description": "Modern corporate seating arrangement"
+        },
+        {
+          "id": 205,
+          "url": "https://images.unsplash.com/photo-1561489413-985b06da5bee",
+          "description": "Large LED presentation stage"
+        }
+      ]
+    },
+
+    {
+      "id": 3,
+      "title": "Birthday Party",
+      "description": "Fun and colorful birthday themes",
+      "images": [
+        {
+          "id": 301,
+          "url": "https://images.unsplash.com/photo-1464349153735-7db50ed83c84",
+          "description": "Colorful birthday balloon setup"
+        },
+        {
+          "id": 302,
+          "url": "https://images.unsplash.com/photo-1513151233558-d860c5398176",
+          "description": "Birthday cake table decoration"
+        },
+        {
+          "id": 303,
+          "url": "https://images.unsplash.com/photo-1530103862676-de8c9debad1d",
+          "description": "Kids birthday theme decor"
+        },
+        {
+          "id": 304,
+          "url": "https://images.unsplash.com/photo-1527529482837-4698179dc6ce",
+          "description": "Party hall decoration"
+        },
+        {
+          "id": 305,
+          "url": "https://images.unsplash.com/photo-1504198453319-5ce911bafcde",
+          "description": "Fun birthday celebration setup"
+        }
+      ]
+    },
+
+    {
+      "id": 4,
+      "title": "Beach Wedding",
+      "description": "Romantic beach and destination wedding themes",
+      "images": [
+        {
+          "id": 401,
+          "url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+          "description": "Beach wedding ceremony setup"
+        },
+        {
+          "id": 402,
+          "url": "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92",
+          "description": "Romantic beach aisle decoration"
+        },
+        {
+          "id": 403,
+          "url": "https://images.unsplash.com/photo-1529634597503-139d3726fed5",
+          "description": "Sunset beach wedding theme"
+        },
+        {
+          "id": 404,
+          "url": "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
+          "description": "Destination wedding reception"
+        },
+        {
+          "id": 405,
+          "url": "https://images.unsplash.com/photo-1510076857177-7470076d4098",
+          "description": "Elegant seaside decor"
+        }
+      ]
+    },
+
+    {
+      "id": 5,
+      "title": "Festival Celebration",
+      "description": "Colorful festival and cultural event themes",
+      "images": [
+        {
+          "id": 501,
+          "url": "https://images.unsplash.com/photo-1605296867304-46d5465a13f1",
+          "description": "Diwali lighting decoration"
+        },
+        {
+          "id": 502,
+          "url": "https://images.unsplash.com/photo-1576502200272-341a4b8b6f89",
+          "description": "Traditional Indian festival setup"
+        },
+        {
+          "id": 503,
+          "url": "https://images.unsplash.com/photo-1603228254119-e6a4d095dc59",
+          "description": "Cultural stage decoration"
+        },
+        {
+          "id": 504,
+          "url": "https://images.unsplash.com/photo-1606913084603-3e7702b01627",
+          "description": "Festival celebration lighting"
+        },
+        {
+          "id": 505,
+          "url": "https://images.unsplash.com/photo-1597157639073-69284dc0fdaf",
+          "description": "Grand festive event entrance"
+        }
+      ]
+    }
+  ]
+}

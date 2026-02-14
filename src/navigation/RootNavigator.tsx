@@ -34,6 +34,8 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const RootNavigator = () => {
+  const isLoggedIn = true;
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -41,43 +43,49 @@ const RootNavigator = () => {
           name="Splash"
           component={SplashScreen}
         />
-        <Stack.Screen
-          name="Onboarding"
-          component={OnboardingScreen}
-        />
-        <Stack.Screen
-          name="Login"
-          component={LooginScreen}
-        />
-        <Stack.Screen
-          name="Register"
-          component={RegisterScreen}
-        />
-        <Stack.Screen
-          name="OtpVerification"
-          component={OtpVerificationScreen}
-        />
+        {!isLoggedIn ? (
+          <>
+            <Stack.Screen
+              name="Onboarding"
+              component={OnboardingScreen}
+            />
+            <Stack.Screen
+              name="Login"
+              component={LooginScreen}
+            />
+            <Stack.Screen
+              name="Register"
+              component={RegisterScreen}
+            />
+            <Stack.Screen
+              name="OtpVerification"
+              component={OtpVerificationScreen}
+            />
+          </>
+        ) : (
+          <>
+            {/* Home now shows the bottom tabs */}
+            <Stack.Screen
+              name="Home"
+              component={HomeTabsNavigator}
+            />
 
-        {/* Home now shows the bottom tabs */}
-        <Stack.Screen
-          name="Home"
-          component={HomeTabsNavigator}
-        />
+            <Stack.Screen
+              name="Themes"
+              component={ThemesScreen}
+            />
 
-        <Stack.Screen
-          name="Themes"
-          component={ThemesScreen}
-        />
+            <Stack.Screen
+              name="ThemeDetails"
+              component={ThemeDetailsScreen}
+            />
 
-        <Stack.Screen
-          name="ThemeDetails"
-          component={ThemeDetailsScreen}
-        />
-
-        <Stack.Screen
-          name="BookEventFlow"
-          component={BookEventFlowScreen}
-        />
+            <Stack.Screen
+              name="BookEventFlow"
+              component={BookEventFlowScreen}
+            />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

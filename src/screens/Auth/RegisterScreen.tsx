@@ -15,8 +15,6 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [phnNumber, setPhnNumber] = useState('');
 
   return (
@@ -83,22 +81,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
             value={phnNumber}
             onChangeText={setPhnNumber}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor={AppColors.textGrey}
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Confirm Password"
-            placeholderTextColor={AppColors.textGrey}
-            secureTextEntry
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-          />
+          
         </View>
 
         {/* Button (will move up with keyboard, still scrollable) */}
