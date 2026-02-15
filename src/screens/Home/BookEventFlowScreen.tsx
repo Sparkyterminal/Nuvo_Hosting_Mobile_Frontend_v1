@@ -15,6 +15,8 @@ import CustomText from '../../components/CustomText';
 import { AppColors } from '../../theme/colors';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+import { Dropdown } from 'react-native-element-dropdown';
+import { LOCATION_DATA } from '../../constants/locationData';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
@@ -43,7 +45,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
       track: '#D9DEE6',
       success: '#16A34A',
     }),
-    []
+    [],
   );
 
   const [step, setStep] = useState(0);
@@ -57,6 +59,26 @@ export default function BookEventFlowScreen({ navigation }: Props) {
   const [startTime, setStartTime] = useState('11:00 AM');
   const [endDate, setEndDate] = useState('Thu, September 14 2026');
   const [endTime, setEndTime] = useState('11:00 AM');
+  const [selectedState, setSelectedState] = useState<string | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+
+  // Preaspering dropdown data
+
+  const stateOptions = LOCATION_DATA.map((item) => ({
+    label: item.state,
+    value: item.id,
+  }));
+
+  const cityOptions = useMemo(() => {
+    const found = LOCATION_DATA.find((item) => item.id === selectedState);
+
+    if (!found) return [];
+
+    return found.cities.map((city) => ({
+      label: city,
+      value: city,
+    }));
+  }, [selectedState]);
 
   // Step 2 uniforms
   const uniforms: UniformItem[] = [
@@ -86,7 +108,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
     },
   ];
   const [selectedUniformId, setSelectedUniformId] = useState<string | null>(
-    null
+    null,
   );
 
   // Step 3 packages
@@ -97,7 +119,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
     { id: 'p4', title: 'Bronze Package', icon: 'hexagon-slice-2' },
   ];
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(
-    null
+    null,
   );
 
   // Step 4 GST
@@ -188,6 +210,41 @@ export default function BookEventFlowScreen({ navigation }: Props) {
       >
         {step === 0 && (
           <View style={styles.card}>
+            {/* state dropDown  */}
+            <FieldLabel text="Select State" />
+
+            <Dropdown
+              style={styles.dropdown}
+              data={stateOptions}
+              labelField="label"
+              valueField="value"
+              placeholder="Select State"
+              value={selectedState}
+              search
+              searchPlaceholder="Search state..."
+              onChange={(item) => {
+                setSelectedState(item.value);
+                setSelectedCity(null);
+              }}
+            />
+
+            {/* city dropDown  */}
+            <FieldLabel text="Select City" />
+
+            <Dropdown
+              style={[styles.dropdown, { opacity: selectedState ? 1 : 0.5 }]}
+              data={cityOptions}
+              labelField="label"
+              valueField="value"
+              placeholder="Select City"
+              value={selectedCity}
+              search
+              searchPlaceholder="Search city..."
+              disable={!selectedState}
+              onChange={(item) => {
+                setSelectedCity(item.value);
+              }}
+            />
             <FieldLabel text="Enter the event or select a saved event." />
             <TextInput
               value={eventAbout}
@@ -605,8 +662,8 @@ export default function BookEventFlowScreen({ navigation }: Props) {
               {step === 4
                 ? payLabel
                 : step === 5
-                ? payLabel
-                : 'Proceed to Next Step'}
+                  ? payLabel
+                  : 'Proceed to Next Step'}
             </CustomText>
           </TouchableOpacity>
         )}
@@ -724,6 +781,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  dropdown: {
+    borderWidth: 1,
+    borderColor: '#E6E8EC',
+    backgroundColor: '#F9FAFB',
+    borderRadius: moderateScale(10),
+    paddingHorizontal: scale(12),
+    paddingVertical: verticalScale(12),
+    marginTop: verticalScale(4),
+  },
+
   headerRight: { width: scale(40), height: scale(40) },
   headerTitle: {
     position: 'absolute',
