@@ -8,7 +8,7 @@ import OtpVerificationScreen from '../screens/Auth/OtpVerificationScreen';
 import HomeTabsNavigator from './HomeTabsNavigator';
 import ThemesScreen from '../screens/Home/ThemesScreen';
 import ThemeDetailsScreen from '../screens/Home/ThemeDetailsScreen';
-import BookEventFlowScreen from '../screens/Home/BookEventFlowScreen';
+import BookEventFlowScreen from '../screens/Home/BookEventFlow/BookEventFlowScreen';
 
 type ThemeCard = {
   id: string;

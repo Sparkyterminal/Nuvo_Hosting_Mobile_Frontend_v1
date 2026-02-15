@@ -11,16 +11,22 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#2B5876",
-          "image": "./assets/images/novoLogo.png",
+          "image": "./assets/novoLogo.png",
           "resizeMode": "contain",
           "dark": {
             "backgroundColor": "#2B5876",
-            "image": "./assets/images/novoLogo.png",
+            "image": "./assets/novoLogo.png",
             "resizeMode": "contain"
           }
         }
       ],
       "@react-native-community/datetimepicker"
-    ]
+    ],
+    "android": {
+      "package": "com.rudreshac.novohosting"
+    },
+    "ios": {
+      "bundleIdentifier": "com.rudreshac.novohosting"
+    }
   }
 }

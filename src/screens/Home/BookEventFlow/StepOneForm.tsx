@@ -1,0 +1,195 @@
+import { View, TouchableOpacity, TextInput } from 'react-native';
+import { scale, verticalScale } from 'react-native-size-matters';
+import { Dropdown } from 'react-native-element-dropdown';
+import CustomText from '../../../components/CustomText';
+
+type Props = {
+  //   styles: any;
+  stateOptions: any[];
+  cityOptions: any[];
+  selectedState: string | null;
+  selectedCity: string | null;
+  setSelectedState: (val: string) => void;
+  setSelectedCity: (val: string) => void;
+  eventAbout: string;
+  setEventAbout: (val: string) => void;
+  venue: string;
+  setVenue: (val: string) => void;
+  staff: string;
+  setStaff: (val: string) => void;
+  days: string;
+  setDays: (val: string) => void;
+  startDate: Date;
+  endDate: Date;
+  formatDate: (d: Date) => string;
+  formatTime: (d: Date) => string;
+  showPicker: (
+    field: 'startDate' | 'startTime' | 'endDate' | 'endTime',
+    mode: 'date' | 'time',
+  ) => void;
+};
+
+export default function StepOneForm({
+  //   styles,
+  stateOptions,
+  cityOptions,
+  selectedState,
+  selectedCity,
+  setSelectedState,
+  setSelectedCity,
+  eventAbout,
+  setEventAbout,
+  venue,
+  setVenue,
+  staff,
+  setStaff,
+  days,
+  setDays,
+  startDate,
+  endDate,
+  formatDate,
+  formatTime,
+  showPicker,
+}: Props) {
+  return (
+    <View style={styles.card}>
+      {/* State Dropdown */}
+      <CustomText style={styles.label}>Select State</CustomText>
+      <Dropdown
+        style={styles.dropdown}
+        data={stateOptions}
+        labelField="label"
+        valueField="value"
+        value={selectedState}
+        onChange={(item) => {
+          setSelectedState(item.value);
+          setSelectedCity(null);
+        }}
+      />
+
+      {/* City Dropdown */}
+      <CustomText style={styles.label}>Select City</CustomText>
+      <Dropdown
+        style={[styles.dropdown, { opacity: selectedState ? 1 : 0.5 }]}
+        data={cityOptions}
+        labelField="label"
+        valueField="value"
+        value={selectedCity}
+        disable={!selectedState}
+        onChange={(item) => setSelectedCity(item.value)}
+      />
+
+      {/* Event */}
+      <CustomText style={styles.label}>
+        Enter the event or select a saved event.
+      </CustomText>
+      <TextInput
+        value={eventAbout}
+        onChangeText={setEventAbout}
+        style={styles.input}
+      />
+
+      {/* Venue */}
+      <CustomText style={styles.label}>
+        Enter the venue or select a saved address.
+      </CustomText>
+      <TextInput
+        value={venue}
+        onChangeText={setVenue}
+        style={styles.input}
+      />
+
+      {/* Staff & Days */}
+      <CustomText style={styles.label}>
+        How many staff and days do you need?
+      </CustomText>
+      <View style={{ flexDirection: 'row', gap: scale(10) }}>
+        <TextInput
+          value={staff}
+          onChangeText={setStaff}
+          keyboardType="number-pad"
+          style={[styles.input, { flex: 1 }]}
+        />
+        <TextInput
+          value={days}
+          onChangeText={setDays}
+          keyboardType="number-pad"
+          style={[styles.input, { flex: 1 }]}
+        />
+      </View>
+
+      {/* Date & Time */}
+      <CustomText style={styles.label}>Event Start and end date.</CustomText>
+
+      <View style={{ gap: verticalScale(10) }}>
+        <View style={{ flexDirection: 'row', gap: scale(10) }}>
+          <TouchableOpacity
+            style={[styles.input, { flex: 1 }]}
+            onPress={() => showPicker('startDate', 'date')}
+          >
+            <CustomText>{formatDate(startDate)}</CustomText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.input, { width: scale(110) }]}
+            onPress={() => showPicker('startTime', 'time')}
+          >
+            <CustomText>{formatTime(startDate)}</CustomText>
+          </TouchableOpacity>
+        </View>
+
+        <View style={{ flexDirection: 'row', gap: scale(10) }}>
+          <TouchableOpacity
+            style={[styles.input, { flex: 1 }]}
+            onPress={() => showPicker('endDate', 'date')}
+          >
+            <CustomText>{formatDate(endDate)}</CustomText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.input, { width: scale(110) }]}
+            onPress={() => showPicker('endTime', 'time')}
+          >
+            <CustomText>{formatTime(endDate)}</CustomText>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+import { StyleSheet } from 'react-native';
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#E6E8EC',
+  },
+  label: {
+    marginTop: 10,
+    marginBottom: 6,
+    color: '#111827',
+    fontWeight: '700',
+  },
+  dropdown: {
+    borderWidth: 1,
+    borderColor: '#E6E8EC',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#E6E8EC',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    color: '#111827',
+    fontWeight: '600',
+  },
+});
