@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,14 +9,15 @@ import {
   FlatList,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../navigation/RootNavigator';
-import { BaseContainer } from '../../components/BaseContainer';
-import CustomText from '../../components/CustomText';
-import { AppColors } from '../../theme/colors';
+import { RootStackParamList } from '../../../navigation/RootNavigator';
+import { BaseContainer } from '../../../components/BaseContainer';
+import CustomText from '../../../components/CustomText';
+import { AppColors } from '../../../theme/colors';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
-import { Dropdown } from 'react-native-element-dropdown';
-import { LOCATION_DATA } from '../../constants/locationData';
+import { LOCATION_DATA } from '../../../constants/locationData';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import StepOneForm from './StepOneForm';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
@@ -55,12 +56,90 @@ export default function BookEventFlowScreen({ navigation }: Props) {
   const [venue, setVenue] = useState('');
   const [staff, setStaff] = useState('2');
   const [days, setDays] = useState('1');
-  const [startDate, setStartDate] = useState('Thu, September 13 2026');
-  const [startTime, setStartTime] = useState('11:00 AM');
-  const [endDate, setEndDate] = useState('Thu, September 14 2026');
-  const [endTime, setEndTime] = useState('11:00 AM');
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
+  const [pickerMode, setPickerMode] = useState<'date' | 'time'>('date');
+  const [pickerVisible, setPickerVisible] = useState(false);
+  const [activeField, setActiveField] = useState<
+    'startDate' | 'startTime' | 'endDate' | 'endTime' | null
+  >(null);
+
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
+
+  // date and time picker
+  const showPicker = (
+    field: 'startDate' | 'startTime' | 'endDate' | 'endTime',
+    mode: 'date' | 'time',
+  ) => {
+    setActiveField(field);
+    setPickerMode(mode);
+    setPickerVisible(true);
+  };
+
+  const hidePicker = () => {
+    setPickerVisible(false);
+  };
+
+  // const handleConfirm = (date: Date) => {
+  //   if (activeField === 'startDate' || activeField === 'startTime') {
+  //     setStartDate(date);
+  //   } else if (activeField === 'endDate' || activeField === 'endTime') {
+  //     setEndDate(date);
+  //   }
+  //   hidePicker();
+  // };
+  const handleConfirm = (selected: Date) => {
+    if (!activeField) return;
+
+    if (activeField === 'startDate') {
+      const updated = new Date(startDate);
+      updated.setFullYear(
+        selected.getFullYear(),
+        selected.getMonth(),
+        selected.getDate(),
+      );
+      setStartDate(updated);
+    }
+
+    if (activeField === 'startTime') {
+      const updated = new Date(startDate);
+      updated.setHours(selected.getHours(), selected.getMinutes());
+      setStartDate(updated);
+    }
+
+    if (activeField === 'endDate') {
+      const updated = new Date(endDate);
+      updated.setFullYear(
+        selected.getFullYear(),
+        selected.getMonth(),
+        selected.getDate(),
+      );
+      setEndDate(updated);
+    }
+
+    if (activeField === 'endTime') {
+      const updated = new Date(endDate);
+      updated.setHours(selected.getHours(), selected.getMinutes());
+      setEndDate(updated);
+    }
+
+    hidePicker();
+  };
+
+  const formatDate = (date: Date) =>
+    date.toLocaleDateString('en-IN', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+  const formatTime = (date: Date) =>
+    date.toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
 
   // Preaspering dropdown data
 
@@ -86,25 +165,25 @@ export default function BookEventFlowScreen({ navigation }: Props) {
       id: 'u1',
       title: 'Traditional Uniform',
       price: '₹44,499',
-      image: require('../../assets/images/home.jpg'),
+      image: require('../../../assets/images/home.jpg'),
     },
     {
       id: 'u2',
       title: 'Western',
       price: '₹44,499',
-      image: require('../../assets/images/home.jpg'),
+      image: require('../../../assets/images/home.jpg'),
     },
     {
       id: 'u3',
       title: 'Western',
       price: '₹44,499',
-      image: require('../../assets/images/home.jpg'),
+      image: require('../../../assets/images/home.jpg'),
     },
     {
       id: 'u4',
       title: 'Traditional Uniform',
       price: '₹44,499',
-      image: require('../../assets/images/home.jpg'),
+      image: require('../../../assets/images/home.jpg'),
     },
   ];
   const [selectedUniformId, setSelectedUniformId] = useState<string | null>(
@@ -209,105 +288,27 @@ export default function BookEventFlowScreen({ navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         {step === 0 && (
-          <View style={styles.card}>
-            {/* state dropDown  */}
-            <FieldLabel text="Select State" />
-
-            <Dropdown
-              style={styles.dropdown}
-              data={stateOptions}
-              labelField="label"
-              valueField="value"
-              placeholder="Select State"
-              value={selectedState}
-              search
-              searchPlaceholder="Search state..."
-              onChange={(item) => {
-                setSelectedState(item.value);
-                setSelectedCity(null);
-              }}
-            />
-
-            {/* city dropDown  */}
-            <FieldLabel text="Select City" />
-
-            <Dropdown
-              style={[styles.dropdown, { opacity: selectedState ? 1 : 0.5 }]}
-              data={cityOptions}
-              labelField="label"
-              valueField="value"
-              placeholder="Select City"
-              value={selectedCity}
-              search
-              searchPlaceholder="Search city..."
-              disable={!selectedState}
-              onChange={(item) => {
-                setSelectedCity(item.value);
-              }}
-            />
-            <FieldLabel text="Enter the event or select a saved event." />
-            <TextInput
-              value={eventAbout}
-              onChangeText={setEventAbout}
-              placeholder="What is the Event about"
-              placeholderTextColor={AppColors.textGrey}
-              style={styles.input}
-            />
-
-            <FieldLabel text="Enter the venue or select a saved address." />
-            <TextInput
-              value={venue}
-              onChangeText={setVenue}
-              placeholder="Enter the event Venue"
-              placeholderTextColor={AppColors.textGrey}
-              style={styles.input}
-            />
-
-            <FieldLabel text="How many staff and days do you need?" />
-            <View style={{ flexDirection: 'row', gap: scale(10) }}>
-              <TextInput
-                value={staff}
-                onChangeText={setStaff}
-                keyboardType="number-pad"
-                style={[styles.input, { flex: 1 }]}
-              />
-              <TextInput
-                value={days}
-                onChangeText={setDays}
-                keyboardType="number-pad"
-                style={[styles.input, { flex: 1 }]}
-              />
-            </View>
-
-            <FieldLabel text="Event Start and end date." />
-            <View style={{ gap: verticalScale(10) }}>
-              <View style={{ flexDirection: 'row', gap: scale(10) }}>
-                <TextInput
-                  value={startDate}
-                  onChangeText={setStartDate}
-                  style={[styles.input, { flex: 1 }]}
-                />
-                <TextInput
-                  value={startTime}
-                  onChangeText={setStartTime}
-                  style={[styles.input, { width: scale(110) }]}
-                />
-              </View>
-
-              <View style={{ flexDirection: 'row', gap: scale(10) }}>
-                <TextInput
-                  value={endDate}
-                  onChangeText={setEndDate}
-                  style={[styles.input, { flex: 1 }]}
-                />
-                <TextInput
-                  value={endTime}
-                  onChangeText={setEndTime}
-                  style={[styles.input, { width: scale(110) }]}
-                />
-              </View>
-            </View>
-          </View>
+          <StepOneForm
+            stateOptions={stateOptions}
+            cityOptions={cityOptions}
+            selectedState={selectedState}
+            selectedCity={selectedCity}
+            setSelectedState={setSelectedState}
+            setSelectedCity={setSelectedCity}
+            eventAbout={eventAbout}
+            setEventAbout={setEventAbout}
+            venue={venue}
+            setVenue={setVenue}
+            staff={staff}
+            setStaff={setStaff}
+            days={days}
+            setDays={setDays}
+            startDate={startDate}
+            endDate={endDate}
+            formatDate={formatDate}
+            formatTime={formatTime}
+            showPicker={showPicker}
+          />
         )}
 
         {step === 1 && (
@@ -449,7 +450,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
               style={[styles.summaryEventCard, { borderColor: COLORS.border }]}
             >
               <Image
-                source={require('../../assets/images/home.jpg')}
+                source={require('../../../assets/images/home.jpg')}
                 style={styles.summaryImage}
               />
               <View style={{ flex: 1, marginLeft: scale(10) }}>
@@ -668,6 +669,12 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           </TouchableOpacity>
         )}
       </View>
+      <DateTimePickerModal
+        isVisible={pickerVisible}
+        mode={pickerMode}
+        onConfirm={handleConfirm}
+        onCancel={hidePicker}
+      />
     </BaseContainer>
   );
 }
@@ -780,16 +787,6 @@ const styles = StyleSheet.create({
     height: scale(40),
     alignItems: 'center',
     justifyContent: 'center',
-  },
-
-  dropdown: {
-    borderWidth: 1,
-    borderColor: '#E6E8EC',
-    backgroundColor: '#F9FAFB',
-    borderRadius: moderateScale(10),
-    paddingHorizontal: scale(12),
-    paddingVertical: verticalScale(12),
-    marginTop: verticalScale(4),
   },
 
   headerRight: { width: scale(40), height: scale(40) },
