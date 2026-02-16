@@ -20,6 +20,8 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import StepOneForm from './StepOneForm';
 import themesJson from '../../../services/themes.json';
 import SelectableCard from './SelectableCard';
+import Modal from 'react-native-modal';
+import FieldLabel from '../../../components/FieldLabel';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
@@ -82,6 +84,9 @@ export default function BookEventFlowScreen({ navigation }: Props) {
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedThemeId, setSelectedThemeId] = useState<number | null>(null);
+
+  const [isPackageInfoVisible, setIsPackageInfoVisible] = useState(false);
+  const [activePackage, setActivePackage] = useState<PackageItem | null>(null);
 
   // date and time picker
   const showPicker = (
@@ -417,6 +422,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                       size={22}
                       color={selected ? COLORS.primary : COLORS.muted}
                     />
+
                     <CustomText
                       style={{
                         flex: 1,
@@ -427,6 +433,20 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                     >
                       {p.title}
                     </CustomText>
+
+                    {/* 👇 Add Info Icon */}
+                    <TouchableOpacity
+                      onPress={() => {
+                        setActivePackage(p);
+                        setIsPackageInfoVisible(true);
+                      }}
+                    >
+                      <Ionicons
+                        name="information-circle-outline"
+                        size={22}
+                        color={COLORS.muted}
+                      />
+                    </TouchableOpacity>
                   </TouchableOpacity>
                 );
               })}
@@ -701,22 +721,68 @@ export default function BookEventFlowScreen({ navigation }: Props) {
         onConfirm={handleConfirm}
         onCancel={hidePicker}
       />
-    </BaseContainer>
-  );
-}
 
-function FieldLabel({ text }: { text: string }) {
-  return (
-    <CustomText
-      style={{
-        marginTop: verticalScale(10),
-        marginBottom: verticalScale(6),
-        color: '#111827',
-        fontWeight: '700',
-      }}
-    >
-      {text}
-    </CustomText>
+      <Modal
+        isVisible={isPackageInfoVisible}
+        onBackdropPress={() => setIsPackageInfoVisible(false)}
+        style={{ justifyContent: 'flex-end', margin: 0 }}
+      >
+        <View
+          style={{
+            backgroundColor: '#fff',
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            padding: scale(16),
+            minHeight: verticalScale(250),
+          }}
+        >
+          {/* Drag Handle */}
+          <View
+            style={{
+              width: 40,
+              height: 4,
+              backgroundColor: '#D1D5DB',
+              borderRadius: 2,
+              alignSelf: 'center',
+              marginBottom: 12,
+            }}
+          />
+
+          <CustomText
+            style={{
+              fontSize: 18,
+              fontWeight: '900',
+              marginBottom: 10,
+            }}
+          >
+            {activePackage?.title}
+          </CustomText>
+
+          <CustomText style={{ color: '#6B7280', lineHeight: 20 }}>
+            {activePackage?.title} includes:
+            {'\n\n'}• Professional Models{'\n'}• Theme Based Styling{'\n'}•
+            Dedicated Event Manager{'\n'}• Premium Uniform Support{'\n'}•
+            On-site Coordination{'\n\n'}
+            This package is designed for high-end events.
+          </CustomText>
+
+          <TouchableOpacity
+            onPress={() => setIsPackageInfoVisible(false)}
+            style={{
+              marginTop: 20,
+              backgroundColor: COLORS.primary,
+              paddingVertical: 14,
+              borderRadius: 12,
+              alignItems: 'center',
+            }}
+          >
+            <CustomText style={{ color: '#fff', fontWeight: '800' }}>
+              Close
+            </CustomText>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    </BaseContainer>
   );
 }
 
