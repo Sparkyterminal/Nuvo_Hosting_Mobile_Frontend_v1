@@ -18,6 +18,8 @@ import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import { LOCATION_DATA } from '../../../constants/locationData';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import StepOneForm from './StepOneForm';
+import themesJson from '../../../services/themes.json';
+import { Dimensions } from 'react-native';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
@@ -25,14 +27,26 @@ type UniformItem = { id: string; title: string; price: string; image: any };
 type PackageItem = { id: string; title: string; icon: any };
 
 const STEPS = [
-  'Book Event',
-  'Choose Uniforms',
-  'Choose Models Packages',
-  'GST Details',
-  'Order Summary',
-  'Payment',
-  'Success',
+  'Book Event', // 0
+  'Choose Theme', // 1
+  'Choose Uniforms', // 2
+  'Choose Models Packages', // 3
+  'GST Details', // 4
+  'Order Summary', // 5
+  'Payment', // 6
+  'Success', // 7
 ] as const;
+
+type ThemeItem = {
+  id: number;
+  title: string;
+  description: string;
+  images: {
+    id: number;
+    url: string;
+    description: string;
+  }[];
+};
 
 export default function BookEventFlowScreen({ navigation }: Props) {
   const COLORS = useMemo(
@@ -50,6 +64,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
   );
 
   const [step, setStep] = useState(0);
+  const themes: ThemeItem[] = themesJson.data;
 
   // Step 1 form state
   const [eventAbout, setEventAbout] = useState('');
@@ -66,6 +81,10 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [selectedThemeId, setSelectedThemeId] = useState<number | null>(null);
+
+  const screenWidth = Dimensions.get('window').width;
+  const cardWidth = (screenWidth - scale(14) * 2 - scale(12)) / 2;
 
   // date and time picker
   const showPicker = (
@@ -217,6 +236,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
   const title = STEPS[step];
 
   const onBack = () => {
+    console.log('pressed ');
     if (step > 0) setStep((s) => s - 1);
     else navigation.goBack();
   };
@@ -224,9 +244,13 @@ export default function BookEventFlowScreen({ navigation }: Props) {
   const onNext = () => {
     // Minimal validation (you can tighten later)
     if (step === 0 && (!eventAbout.trim() || !venue.trim())) return;
-    if (step === 1 && !selectedUniformId) return;
-    if (step === 2 && !selectedPackageId) return;
-    if (step === 5 && !payment) return;
+    // if (step === 1 && !selectedUniformId) return;
+    // if (step === 2 && !selectedPackageId) return;
+    // if (step === 5 && !payment) return;
+    if (step === 1 && !selectedThemeId) return;
+    if (step === 2 && !selectedUniformId) return;
+    if (step === 3 && !selectedPackageId) return;
+    if (step === 6 && !payment) return;
 
     if (step < STEPS.length - 1) setStep((s) => s + 1);
   };
@@ -313,6 +337,63 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
         {step === 1 && (
           <View style={styles.card}>
+            <FieldLabel text="Choose Theme" />
+
+            <FlatList
+              data={themes}
+              keyExtractor={(item) => item.id.toString()}
+              numColumns={2}
+              scrollEnabled={false}
+              columnWrapperStyle={{
+                justifyContent: 'space-between',
+                marginBottom: verticalScale(12),
+              }}
+              renderItem={({ item }) => {
+                const selected = item.id === selectedThemeId;
+
+                return (
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={() => setSelectedThemeId(item.id)}
+                    style={[
+                      styles.uniformCard,
+                      {
+                        width:
+                          (Dimensions.get('window').width -
+                            scale(14) * 2 -
+                            scale(12)) /
+                          2,
+                        borderColor: selected ? COLORS.primary : COLORS.border,
+                        backgroundColor: COLORS.card,
+                      },
+                    ]}
+                  >
+                    <Image
+                      source={{ uri: item.images[0]?.url }}
+                      style={styles.uniformImage}
+                    />
+                    <CustomText style={styles.uniformTitle}>
+                      {item.title}
+                    </CustomText>
+                    <View
+                      style={[
+                        styles.uniformViewBtn,
+                        { backgroundColor: COLORS.primary },
+                      ]}
+                    >
+                      <CustomText style={{ color: '#fff', fontWeight: '700' }}>
+                        View
+                      </CustomText>
+                    </View>
+                  </TouchableOpacity>
+                );
+              }}
+            />
+          </View>
+        )}
+
+        {step === 2 && (
+          <View style={styles.card}>
             <FieldLabel text="Choose Uniforms" />
             <FlatList
               data={uniforms}
@@ -366,7 +447,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           </View>
         )}
 
-        {step === 2 && (
+        {step === 3 && (
           <View style={styles.card}>
             <FieldLabel text="Choose models Packages" />
             <View
@@ -409,7 +490,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           </View>
         )}
 
-        {step === 3 && (
+        {step === 4 && (
           <View style={styles.card}>
             <FieldLabel text="GST Details for Corporate Events (optional)" />
             <TextInput
@@ -440,7 +521,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           </View>
         )}
 
-        {step === 4 && (
+        {step === 5 && (
           <View style={styles.card}>
             <CustomText style={[styles.summaryTitle, { color: COLORS.text }]}>
               Order Summary
@@ -514,7 +595,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           </View>
         )}
 
-        {step === 5 && (
+        {step === 6 && (
           <View style={styles.card}>
             <CustomText style={[styles.summaryTitle, { color: COLORS.text }]}>
               Payment Method
@@ -551,7 +632,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           </View>
         )}
 
-        {step === 6 && (
+        {step === 7 && (
           <View style={styles.card}>
             <View
               style={{
@@ -651,9 +732,10 @@ export default function BookEventFlowScreen({ navigation }: Props) {
               {
                 backgroundColor:
                   (step === 0 && (!eventAbout.trim() || !venue.trim())) ||
-                  (step === 1 && !selectedUniformId) ||
-                  (step === 2 && !selectedPackageId) ||
-                  (step === 5 && !payment)
+                  (step === 1 && !selectedThemeId) ||
+                  (step === 2 && !selectedUniformId) ||
+                  (step === 3 && !selectedPackageId) ||
+                  (step === 6 && !payment)
                     ? '#B9C3CC'
                     : COLORS.primary,
               },
@@ -787,6 +869,7 @@ const styles = StyleSheet.create({
     height: scale(40),
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 10,
   },
 
   headerRight: { width: scale(40), height: scale(40) },
@@ -798,6 +881,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     fontWeight: '800',
+    zIndex: 1,
   },
 
   progressWrap: {
@@ -842,12 +926,19 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
+  // uniformCard: {
+  //   flex: 1,
+  //   borderWidth: 1,
+  //   borderRadius: moderateScale(12),
+  //   padding: scale(10),
+  // },
   uniformCard: {
-    flex: 1,
+    width: (Dimensions.get('window').width - scale(14) * 2 - scale(12)) / 2,
     borderWidth: 1,
     borderRadius: moderateScale(12),
     padding: scale(10),
   },
+
   uniformImage: {
     width: '100%',
     height: verticalScale(90),
