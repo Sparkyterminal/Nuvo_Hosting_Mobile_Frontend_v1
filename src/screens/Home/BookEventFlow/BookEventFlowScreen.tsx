@@ -19,7 +19,7 @@ import { LOCATION_DATA } from '../../../constants/locationData';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import StepOneForm from './StepOneForm';
 import themesJson from '../../../services/themes.json';
-import { Dimensions } from 'react-native';
+import SelectableCard from './SelectableCard';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
@@ -83,9 +83,6 @@ export default function BookEventFlowScreen({ navigation }: Props) {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedThemeId, setSelectedThemeId] = useState<number | null>(null);
 
-  const screenWidth = Dimensions.get('window').width;
-  const cardWidth = (screenWidth - scale(14) * 2 - scale(12)) / 2;
-
   // date and time picker
   const showPicker = (
     field: 'startDate' | 'startTime' | 'endDate' | 'endTime',
@@ -100,14 +97,6 @@ export default function BookEventFlowScreen({ navigation }: Props) {
     setPickerVisible(false);
   };
 
-  // const handleConfirm = (date: Date) => {
-  //   if (activeField === 'startDate' || activeField === 'startTime') {
-  //     setStartDate(date);
-  //   } else if (activeField === 'endDate' || activeField === 'endTime') {
-  //     setEndDate(date);
-  //   }
-  //   hidePicker();
-  // };
   const handleConfirm = (selected: Date) => {
     if (!activeField) return;
 
@@ -212,10 +201,12 @@ export default function BookEventFlowScreen({ navigation }: Props) {
   // Step 3 packages
   const packages: PackageItem[] = [
     { id: 'p1', title: 'Diamond Package', icon: 'diamond-stone' },
-    { id: 'p2', title: 'Gold Package', icon: 'hexagon-slice-6' },
-    { id: 'p3', title: 'Silver Package', icon: 'hexagon-slice-4' },
-    { id: 'p4', title: 'Bronze Package', icon: 'hexagon-slice-2' },
+    { id: 'p2', title: 'Platinum Package', icon: 'crown' },
+    { id: 'p3', title: 'Gold Package', icon: 'hexagon-slice-6' },
+    { id: 'p4', title: 'Silver Package', icon: 'hexagon-slice-4' },
+    { id: 'p5', title: 'Bronze Package', icon: 'hexagon-slice-2' },
   ];
+
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(
     null,
   );
@@ -352,40 +343,15 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                 const selected = item.id === selectedThemeId;
 
                 return (
-                  <TouchableOpacity
-                    activeOpacity={0.9}
+                  <SelectableCard
+                    image={{ uri: item.images[0]?.url }}
+                    title={item.title}
+                    selected={selected}
                     onPress={() => setSelectedThemeId(item.id)}
-                    style={[
-                      styles.uniformCard,
-                      {
-                        width:
-                          (Dimensions.get('window').width -
-                            scale(14) * 2 -
-                            scale(12)) /
-                          2,
-                        borderColor: selected ? COLORS.primary : COLORS.border,
-                        backgroundColor: COLORS.card,
-                      },
-                    ]}
-                  >
-                    <Image
-                      source={{ uri: item.images[0]?.url }}
-                      style={styles.uniformImage}
-                    />
-                    <CustomText style={styles.uniformTitle}>
-                      {item.title}
-                    </CustomText>
-                    <View
-                      style={[
-                        styles.uniformViewBtn,
-                        { backgroundColor: COLORS.primary },
-                      ]}
-                    >
-                      <CustomText style={{ color: '#fff', fontWeight: '700' }}>
-                        View
-                      </CustomText>
-                    </View>
-                  </TouchableOpacity>
+                    primaryColor={COLORS.primary}
+                    borderColor={COLORS.border}
+                    backgroundColor={COLORS.card}
+                  />
                 );
               }}
             />
@@ -407,40 +373,18 @@ export default function BookEventFlowScreen({ navigation }: Props) {
               }}
               renderItem={({ item }) => {
                 const selected = item.id === selectedUniformId;
-                return (
-                  <TouchableOpacity
-                    activeOpacity={0.9}
-                    onPress={() => setSelectedUniformId(item.id)}
-                    style={[
-                      styles.uniformCard,
-                      {
-                        borderColor: selected ? COLORS.primary : COLORS.border,
-                        backgroundColor: COLORS.card,
-                      },
-                    ]}
-                  >
-                    <Image
-                      source={item.image}
-                      style={styles.uniformImage}
-                    />
-                    <CustomText style={styles.uniformTitle}>
-                      {item.title}
-                    </CustomText>
-                    <CustomText style={styles.uniformPrice}>
-                      {item.price}
-                    </CustomText>
 
-                    <View
-                      style={[
-                        styles.uniformViewBtn,
-                        { backgroundColor: COLORS.primary },
-                      ]}
-                    >
-                      <CustomText style={{ color: '#fff', fontWeight: '700' }}>
-                        View
-                      </CustomText>
-                    </View>
-                  </TouchableOpacity>
+                return (
+                  <SelectableCard
+                    image={item.image}
+                    title={item.title}
+                    price={item.price}
+                    selected={selected}
+                    onPress={() => setSelectedUniformId(item.id)}
+                    primaryColor={COLORS.primary}
+                    borderColor={COLORS.border}
+                    backgroundColor={COLORS.card}
+                  />
                 );
               }}
             />
@@ -924,36 +868,6 @@ const styles = StyleSheet.create({
     paddingVertical: verticalScale(10),
     color: '#111827',
     fontWeight: '600',
-  },
-
-  // uniformCard: {
-  //   flex: 1,
-  //   borderWidth: 1,
-  //   borderRadius: moderateScale(12),
-  //   padding: scale(10),
-  // },
-  uniformCard: {
-    width: (Dimensions.get('window').width - scale(14) * 2 - scale(12)) / 2,
-    borderWidth: 1,
-    borderRadius: moderateScale(12),
-    padding: scale(10),
-  },
-
-  uniformImage: {
-    width: '100%',
-    height: verticalScale(90),
-    borderRadius: moderateScale(10),
-    backgroundColor: '#EEE',
-    marginBottom: verticalScale(8),
-  },
-  uniformTitle: { fontWeight: '800', color: '#111827' },
-  uniformPrice: { marginTop: 2, color: '#6B7280', fontWeight: '700' },
-  uniformViewBtn: {
-    marginTop: verticalScale(10),
-    height: verticalScale(36),
-    borderRadius: moderateScale(10),
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 
   packageRow: {
