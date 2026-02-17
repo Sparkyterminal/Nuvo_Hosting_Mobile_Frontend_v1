@@ -8,13 +8,22 @@ import ScreenHeader from '../../components/ScreenHeader';
 import themesData from '../../services/themes.json';
 import { Image } from 'expo-image';
 import modalData from '../../services/modalData.json';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigation/RootNavigator';
+import { TouchableOpacity } from 'react-native';
+
+type NavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'ThemeDetails'
+>;
 
 const { width, height } = Dimensions.get('window');
 
 const ExploreScreen = () => {
-  const ThemeCard = ({ item }: any) => {
-    const [activeIndex, setActiveIndex] = useState(0);
+  const navigation = useNavigation<NavigationProp>();
 
+  const ThemeCard = ({ item }: any) => {
     return (
       <View style={styles.card}>
         <CustomText
@@ -23,6 +32,7 @@ const ExploreScreen = () => {
         >
           {item.title}
         </CustomText>
+
         <FlatList
           data={item.images}
           horizontal
@@ -31,13 +41,6 @@ const ExploreScreen = () => {
           snapToInterval={width - scale(24)}
           decelerationRate="fast"
           snapToAlignment="center"
-          contentContainerStyle={{ paddingHorizontal: 0 }}
-          onMomentumScrollEnd={(e) => {
-            const index = Math.round(
-              e.nativeEvent.contentOffset.x / (width - scale(24)),
-            );
-            setActiveIndex(index);
-          }}
           renderItem={({ item: img }) => (
             <View style={styles.imageContainer}>
               <Image
@@ -54,8 +57,28 @@ const ExploreScreen = () => {
           variant="caption"
           style={styles.description}
         >
-          {item.images[activeIndex]?.description}
+          {item.description}
         </CustomText>
+
+        <TouchableOpacity
+          style={[styles.viewBtn, { backgroundColor: item.color }]}
+          onPress={() =>
+            navigation.navigate('ThemeDetails', {
+              theme: {
+                ...item,
+                image: { uri: item.images[0].url }, // hero image
+              },
+            })
+          }
+        >
+          <CustomText
+            variant="caption"
+            weight="bold"
+            color="#fff"
+          >
+            View Details
+          </CustomText>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -361,6 +384,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: scale(14),
     marginTop: verticalScale(4),
+  },
+  viewBtn: {
+    marginTop: verticalScale(10),
+    paddingVertical: verticalScale(8),
+    borderRadius: moderateScale(8),
+    alignItems: 'center',
   },
 });
 
