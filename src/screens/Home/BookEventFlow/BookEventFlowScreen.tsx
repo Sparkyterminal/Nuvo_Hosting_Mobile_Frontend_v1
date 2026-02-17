@@ -24,6 +24,7 @@ import Modal from 'react-native-modal';
 import FieldLabel from '../../../components/FieldLabel';
 import modelsJson from '../../../services/models.json';
 import ModelCard from '../../../components/ModelCard';
+import { Dropdown } from 'react-native-element-dropdown';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
@@ -112,6 +113,12 @@ export default function BookEventFlowScreen({ navigation }: Props) {
   const models: ModelItem[] = modelsJson.data;
 
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
+
+  const [modelViewMode, setModelViewMode] = useState<'1' | '2'>('2');
+  const modelViewOptions = [
+    { label: '1 View', value: '1' },
+    { label: '2 View', value: '2' },
+  ];
 
   // date and time picker
   const showPicker = (
@@ -480,7 +487,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           </View>
         )}
 
-        {step === 4 && (
+        {/* {step === 4 && (
           <View style={styles.card}>
             <FieldLabel text="Select Model" />
 
@@ -508,6 +515,71 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                     textColor={COLORS.text}
                     mutedColor={COLORS.muted}
                   />
+                );
+              }}
+            />
+          </View>
+        )} */}
+
+        {step === 4 && (
+          <View style={styles.card}>
+            {/* Header Row */}
+            <View style={styles.modelHeaderRow}>
+              <FieldLabel text="Select Model" />
+
+              {/* Use your existing dropdown component */}
+              <View style={{ width: 110 }}>
+                <Dropdown
+                  data={modelViewOptions}
+                  labelField="label"
+                  valueField="value"
+                  value={modelViewMode}
+                  onChange={(item) => setModelViewMode(item.value)}
+                  placeholder="View"
+                  style={styles.dropdown}
+                />
+              </View>
+            </View>
+
+            <FlatList
+              key={modelViewMode} // 👈 IMPORTANT (forces re-render layout)
+              data={models}
+              keyExtractor={(item) => item.id}
+              numColumns={modelViewMode === '1' ? 1 : 2}
+              scrollEnabled={false}
+              columnWrapperStyle={
+                modelViewMode === '2'
+                  ? {
+                      justifyContent: 'space-between',
+                      marginBottom: verticalScale(12),
+                    }
+                  : undefined
+              }
+              contentContainerStyle={{
+                marginTop: verticalScale(10),
+              }}
+              renderItem={({ item }) => {
+                const selected = item.id === selectedModelId;
+
+                return (
+                  <View
+                    style={{
+                      width: modelViewMode === '1' ? '100%' : '48%',
+                      marginBottom: verticalScale(12),
+                    }}
+                  >
+                    <ModelCard
+                      image={item.image}
+                      name={item.name}
+                      height={item.height}
+                      selected={selected}
+                      onPress={() => setSelectedModelId(item.id)}
+                      primaryColor={COLORS.primary}
+                      borderColor={COLORS.border}
+                      textColor={COLORS.text}
+                      mutedColor={COLORS.muted}
+                    />
+                  </View>
                 );
               }}
             />
@@ -1068,5 +1140,19 @@ const styles = StyleSheet.create({
   modelImage: {
     width: '100%',
     height: verticalScale(140),
+  },
+  modelHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+  dropdown: {
+    height: verticalScale(40),
+    borderWidth: 1,
+    borderColor: '#E6E8EC',
+    borderRadius: moderateScale(8),
+    paddingHorizontal: scale(8),
+    backgroundColor: '#fff',
   },
 });

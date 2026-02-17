@@ -86,10 +86,16 @@ const ModelCard = ({
 export default ModelCard;
 
 const styles = StyleSheet.create({
+  // card: {
+  //   width: '48%',
+  //   backgroundColor: '#fff',
+  //   borderRadius: moderateScale(12),
+  //   borderWidth: 1,
+  //   overflow: 'hidden',
+  // },
   card: {
-    width: '48%',
     backgroundColor: '#fff',
-    borderRadius: moderateScale(12),
+    borderRadius: moderateScale(16),
     borderWidth: 1,
     overflow: 'hidden',
   },
