@@ -22,21 +22,35 @@ import themesJson from '../../../services/themes.json';
 import SelectableCard from './SelectableCard';
 import Modal from 'react-native-modal';
 import FieldLabel from '../../../components/FieldLabel';
+import modelsJson from '../../../services/models.json';
+import ModelCard from '../../../components/ModelCard';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
 type UniformItem = { id: string; title: string; price: string; image: any };
 type PackageItem = { id: string; title: string; icon: any };
 
+// const STEPS = [
+//   'Book Event', // 0
+//   'Choose Theme', // 1
+//   'Choose Uniforms', // 2
+//   'Choose Models Packages', // 3
+//   'GST Details', // 4
+//   'Order Summary', // 5
+//   'Payment', // 6
+//   'Success', // 7
+// ] as const;
+
 const STEPS = [
   'Book Event', // 0
   'Choose Theme', // 1
   'Choose Uniforms', // 2
   'Choose Models Packages', // 3
-  'GST Details', // 4
-  'Order Summary', // 5
-  'Payment', // 6
-  'Success', // 7
+  'Models', // 4 ✅ NEW
+  'GST Details', // 5
+  'Order Summary', // 6
+  'Payment', // 7
+  'Success', // 8
 ] as const;
 
 type ThemeItem = {
@@ -48,6 +62,13 @@ type ThemeItem = {
     url: string;
     description: string;
   }[];
+};
+
+type ModelItem = {
+  id: string;
+  name: string;
+  height: string;
+  image: string;
 };
 
 export default function BookEventFlowScreen({ navigation }: Props) {
@@ -87,6 +108,10 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
   const [isPackageInfoVisible, setIsPackageInfoVisible] = useState(false);
   const [activePackage, setActivePackage] = useState<PackageItem | null>(null);
+
+  const models: ModelItem[] = modelsJson.data;
+
+  const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
 
   // date and time picker
   const showPicker = (
@@ -246,6 +271,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
     if (step === 1 && !selectedThemeId) return;
     if (step === 2 && !selectedUniformId) return;
     if (step === 3 && !selectedPackageId) return;
+    if (step === 4 && !selectedModelId) return;
     if (step === 6 && !payment) return;
 
     if (step < STEPS.length - 1) setStep((s) => s + 1);
@@ -456,6 +482,40 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
         {step === 4 && (
           <View style={styles.card}>
+            <FieldLabel text="Select Model" />
+
+            <FlatList
+              data={models}
+              keyExtractor={(item) => item.id}
+              numColumns={2}
+              scrollEnabled={false}
+              columnWrapperStyle={{
+                justifyContent: 'space-between',
+                marginBottom: verticalScale(12),
+              }}
+              renderItem={({ item }) => {
+                const selected = item.id === selectedModelId;
+
+                return (
+                  <ModelCard
+                    image={item.image}
+                    name={item.name}
+                    height={item.height}
+                    selected={selected}
+                    onPress={() => setSelectedModelId(item.id)}
+                    primaryColor={COLORS.primary}
+                    borderColor={COLORS.border}
+                    textColor={COLORS.text}
+                    mutedColor={COLORS.muted}
+                  />
+                );
+              }}
+            />
+          </View>
+        )}
+
+        {step === 5 && (
+          <View style={styles.card}>
             <FieldLabel text="GST Details for Corporate Events (optional)" />
             <TextInput
               value={companyName}
@@ -485,7 +545,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           </View>
         )}
 
-        {step === 5 && (
+        {step === 6 && (
           <View style={styles.card}>
             <CustomText style={[styles.summaryTitle, { color: COLORS.text }]}>
               Order Summary
@@ -559,7 +619,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           </View>
         )}
 
-        {step === 6 && (
+        {step === 7 && (
           <View style={styles.card}>
             <CustomText style={[styles.summaryTitle, { color: COLORS.text }]}>
               Payment Method
@@ -596,7 +656,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           </View>
         )}
 
-        {step === 7 && (
+        {step === 8 && (
           <View style={styles.card}>
             <View
               style={{
@@ -995,5 +1055,18 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '900',
+  },
+
+  modelCard: {
+    width: '48%',
+    backgroundColor: '#fff',
+    borderRadius: moderateScale(12),
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+
+  modelImage: {
+    width: '100%',
+    height: verticalScale(140),
   },
 });
