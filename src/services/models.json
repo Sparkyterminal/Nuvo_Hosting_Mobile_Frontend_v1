@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "id": "m1",
+      "name": "Ananya Sharma",
+      "height": "5'8\"",
+      "image": "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e"
+    },
+    {
+      "id": "m2",
+      "name": "Riya Kapoor",
+      "height": "5'7\"",
+      "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330"
+    },
+    {
+      "id": "m3",
+      "name": "Aarav Mehta",
+      "height": "6'0\"",
+      "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e"
+    },
+    {
+      "id": "m4",
+      "name": "Kabir Singh",
+      "height": "5'11\"",
+      "image": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d"
+    }
+  ]
+}

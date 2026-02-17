@@ -87,6 +87,7 @@ export default function StepOneForm({
         value={eventAbout}
         onChangeText={setEventAbout}
         style={styles.input}
+        placeholder="Enter your event "
       />
 
       {/* Venue */}
@@ -97,6 +98,7 @@ export default function StepOneForm({
         value={venue}
         onChangeText={setVenue}
         style={styles.input}
+        placeholder="Enter your event Address"
       />
 
       {/* Staff & Days */}
