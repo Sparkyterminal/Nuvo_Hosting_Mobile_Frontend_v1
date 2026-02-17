@@ -13,8 +13,6 @@ const { width, height } = Dimensions.get('window');
 
 const ExploreScreen = () => {
   const ThemeCard = ({ item }: any) => {
-    const [activeIndex, setActiveIndex] = useState(0);
-
     return (
       <View style={styles.card}>
         <CustomText
@@ -32,12 +30,6 @@ const ExploreScreen = () => {
           decelerationRate="fast"
           snapToAlignment="center"
           contentContainerStyle={{ paddingHorizontal: 0 }}
-          onMomentumScrollEnd={(e) => {
-            const index = Math.round(
-              e.nativeEvent.contentOffset.x / (width - scale(24)),
-            );
-            setActiveIndex(index);
-          }}
           renderItem={({ item: img }) => (
             <View style={styles.imageContainer}>
               <Image
@@ -54,7 +46,7 @@ const ExploreScreen = () => {
           variant="caption"
           style={styles.description}
         >
-          {item.images[activeIndex]?.description}
+          {item.description}
         </CustomText>
       </View>
     );
