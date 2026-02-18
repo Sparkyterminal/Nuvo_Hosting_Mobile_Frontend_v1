@@ -9,12 +9,24 @@ import {
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import CustomText from '../../../components/CustomText';
 
+// type Props = {
+//   image: any;
+//   title: string;
+//   price?: string;
+//   selected: boolean;
+//   onPress: () => void;
+//   primaryColor: string;
+//   borderColor: string;
+//   backgroundColor: string;
+// };
+
 type Props = {
   image: any;
   title: string;
   price?: string;
   selected: boolean;
   onPress: () => void;
+  onViewPress?: () => void; // 👈 ADD THIS
   primaryColor: string;
   borderColor: string;
   backgroundColor: string;
@@ -32,6 +44,7 @@ export default function SelectableCard({
   primaryColor,
   borderColor,
   backgroundColor,
+  onViewPress,
 }: Props) {
   return (
     <TouchableOpacity
@@ -54,9 +67,13 @@ export default function SelectableCard({
 
       {price && <CustomText style={styles.price}>{price}</CustomText>}
 
-      <View style={[styles.button, { backgroundColor: primaryColor }]}>
+      <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={onViewPress}
+        style={[styles.button, { backgroundColor: primaryColor }]}
+      >
         <CustomText style={styles.buttonText}>View</CustomText>
-      </View>
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 }

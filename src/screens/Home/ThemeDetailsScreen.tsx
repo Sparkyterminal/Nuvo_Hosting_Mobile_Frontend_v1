@@ -16,12 +16,13 @@ import { scale, verticalScale } from 'react-native-size-matters';
 type Props = NativeStackScreenProps<RootStackParamList, 'ThemeDetails'>;
 
 const ThemeDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { theme } = route.params;
+  // const { theme } = route.params;
+  const { data } = route.params;
 
   return (
     <BaseContainer>
       <ImageBackground
-        source={theme.image}
+        source={data.image}
         style={styles.hero}
         imageStyle={styles.heroImg}
       >
@@ -40,7 +41,7 @@ const ThemeDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
 
           <View style={styles.bottomBlock}>
-            <View style={[styles.badge, { backgroundColor: theme.color }]}>
+            <View style={[styles.badge, { backgroundColor: data.color }]}>
               <CustomText
                 variant="caption"
                 weight="bold"
@@ -56,7 +57,7 @@ const ThemeDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               color={AppColors.textInverse}
               style={{ marginTop: 8 }}
             >
-              {theme.title}
+              {data.title}
             </CustomText>
 
             <CustomText
@@ -64,7 +65,7 @@ const ThemeDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               color={AppColors.textInverse}
               style={{ marginTop: 8, lineHeight: 20 }}
             >
-              {theme.description}
+              {data.description}
             </CustomText>
           </View>
         </View>
@@ -90,7 +91,7 @@ const ThemeDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
         </CustomText>
 
         <TouchableOpacity
-          style={[styles.primaryBtn, { backgroundColor: theme.color }]}
+          style={[styles.primaryBtn, { backgroundColor: data.color }]}
         >
           <CustomText
             variant="body"

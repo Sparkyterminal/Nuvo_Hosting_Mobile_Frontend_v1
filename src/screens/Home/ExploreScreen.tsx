@@ -64,9 +64,12 @@ const ExploreScreen = () => {
           style={[styles.viewBtn, { backgroundColor: item.color }]}
           onPress={() =>
             navigation.navigate('ThemeDetails', {
-              theme: {
-                ...item,
-                image: { uri: item.images[0].url }, // hero image
+              data: {
+                id: item.id,
+                title: item.title,
+                description: item.description,
+                image: { uri: item.images[0]?.url },
+                color: '#305B77',
               },
             })
           }
