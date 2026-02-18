@@ -10,14 +10,6 @@ import ThemesScreen from '../screens/Home/ThemesScreen';
 import ThemeDetailsScreen from '../screens/Home/ThemeDetailsScreen';
 import BookEventFlowScreen from '../screens/Home/BookEventFlow/BookEventFlowScreen';
 
-type ThemeCard = {
-  id: string;
-  title: string;
-  description: string;
-  image: any;
-  color: string;
-};
-
 export type RootStackParamList = {
   Splash: undefined;
   Onboarding: undefined;
@@ -27,7 +19,16 @@ export type RootStackParamList = {
   Home: undefined;
   Themes: undefined;
 
-  ThemeDetails: { theme: ThemeCard };
+  ThemeDetails: {
+    data: {
+      id: string | number;
+      title: string;
+      description?: string;
+      image: any;
+      color?: string;
+    };
+  };
+
   BookEventFlow: undefined;
 };
 

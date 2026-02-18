@@ -58,6 +58,7 @@ type ThemeItem = {
   id: number;
   title: string;
   description: string;
+
   images: {
     id: number;
     url: string;
@@ -386,6 +387,17 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                     title={item.title}
                     selected={selected}
                     onPress={() => setSelectedThemeId(item.id)}
+                    onViewPress={() =>
+                      navigation.navigate('ThemeDetails', {
+                        data: {
+                          id: item.id,
+                          title: item.title,
+                          description: item.description,
+                          image: { uri: item.images[0]?.url },
+                          color: '#305B77', // or your theme color
+                        },
+                      })
+                    }
                     primaryColor={COLORS.primary}
                     borderColor={COLORS.border}
                     backgroundColor={COLORS.card}
@@ -419,6 +431,17 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                     price={item.price}
                     selected={selected}
                     onPress={() => setSelectedUniformId(item.id)}
+                    onViewPress={() =>
+                      navigation.navigate('ThemeDetails', {
+                        data: {
+                          id: item.id,
+                          title: item.title,
+                          description: `${item.title} includes premium fabric and professional styling.`,
+                          image: item.image,
+                          color: '#8B5CF6', // optional different color for uniforms
+                        },
+                      })
+                    }
                     primaryColor={COLORS.primary}
                     borderColor={COLORS.border}
                     backgroundColor={COLORS.card}
