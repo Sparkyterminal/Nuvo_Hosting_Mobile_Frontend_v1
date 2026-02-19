@@ -2,8 +2,8 @@
   "data": [
     {
       "id": 1,
-      "title": "South Indian Wedding",
-      "description": "Traditional South Indian wedding themes featuring grand mandap decor, floral arrangements, temple-style lighting, and cultural entrance setups.",
+      "title": "Kalyana Vaibhogam",
+      "description": "Kalyana Vaibhogam theme featuring grand mandap decor, floral arrangements, temple-style lighting, and rich South Indian cultural entrance setups.",
       "color": "#E91E63",
       "images": [
         {
@@ -30,8 +30,8 @@
     },
     {
       "id": 2,
-      "title": "Corporate Event",
-      "description": "Professional corporate event setups including conferences, product launches, stage lighting, and modern seating arrangements.",
+      "title": "The Executive Soirée",
+      "description": "The Executive Soirée theme with professional conference setups, product launches, elegant stage lighting, and premium corporate ambiance.",
       "color": "#3F51B5",
       "images": [
         {
@@ -58,8 +58,8 @@
     },
     {
       "id": 3,
-      "title": "Birthday Party",
-      "description": "Fun and colorful birthday themes with balloon setups, cake tables, kids decor, and vibrant party hall decorations.",
+      "title": "Golden Glow Gala",
+      "description": "Golden Glow Gala Haldi theme with vibrant yellow decor, marigold florals, traditional seating, and festive lighting.",
       "color": "#FF9800",
       "images": [
         {
@@ -86,8 +86,8 @@
     },
     {
       "id": 4,
-      "title": "Beach Wedding",
-      "description": "Romantic beach and destination wedding themes with sunset ceremonies, seaside decor, and elegant reception setups.",
+      "title": "Regal Revelry",
+      "description": "Regal Revelry carnival theme with vibrant colors, festive lighting, entertainment zones, and grand decorative installations.",
       "color": "#00BCD4",
       "images": [
         {
@@ -114,8 +114,8 @@
     },
     {
       "id": 5,
-      "title": "Festival Celebration",
-      "description": "Colorful festival and cultural event themes featuring lighting decor, traditional setups, and grand festive entrances.",
+      "title": "Lumière Leisure",
+      "description": "Lumière Leisure entertainment theme with immersive lighting, stage design, lounge setups, and premium guest experiences.",
       "color": "#4CAF50",
       "images": [
         {
@@ -139,6 +139,13 @@
           "url": "https://images.unsplash.com/photo-1597157639073-69284dc0fdaf"
         }
       ]
+    },
+    {
+      "id": 6,
+      "title": "Customise - Create Your Own Experience",
+      "description": "Design your event your way. Choose decor style, lighting, seating, theme colors, entertainment, and special elements to create a fully personalized celebration.",
+      "color": "#9C27B0",
+      "images": []
     }
   ]
 }

@@ -193,7 +193,7 @@ const ExploreScreen = () => {
         removeClippedSubviews
         ListFooterComponent={
           <>
-            <CustomText style={styles.header}>Modal</CustomText>
+            <CustomText style={styles.header}>Our Crew</CustomText>
             <TinderModalViewer />
           </>
         }

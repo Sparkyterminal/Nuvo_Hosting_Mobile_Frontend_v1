@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -8,18 +8,18 @@ import {
   TouchableOpacity,
   Pressable,
   Dimensions,
-} from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../navigation/RootNavigator";
-import { BaseContainer } from "../../components/BaseContainer";
-import CustomText from "../../components/CustomText";
-import { AppColors } from "../../theme/colors";
-import { Ionicons } from "@expo/vector-icons";
-import { moderateScale, scale, verticalScale } from "react-native-size-matters";
+} from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigation/RootNavigator';
+import { BaseContainer } from '../../components/BaseContainer';
+import CustomText from '../../components/CustomText';
+import { AppColors } from '../../theme/colors';
+import { Ionicons } from '@expo/vector-icons';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
-type Props = NativeStackScreenProps<RootStackParamList, "Home">;
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
-const { height: SCREEN_HEIGHT } = Dimensions.get("window");
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
   return (
@@ -28,26 +28,29 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* HERO SECTION */}
+        {/* HERO SECTION 1 */}
         <View style={styles.heroContainer}>
           <ImageBackground
-            source={require("../../assets/images/home.jpg")} // add hero image
-            style={styles.heroImage}
-            imageStyle={styles.heroImageStyle}
+            source={require('../../assets/images/home.jpg')}
+            style={styles.fullImage}
           >
             <View style={styles.heroOverlay}>
-              {/* Top Row */}
+              {/* Your existing hero content */}
+
               <View style={styles.heroTopRow}>
                 <View style={styles.heroUserRow}>
                   <Image
-                    source={require("../../assets/images/Tony_Stark.jpg")}
+                    source={require('../../assets/images/Tony_Stark.jpg')}
                     style={styles.avatar}
                   />
                   <View style={styles.heroUserText}>
                     <CustomText color={AppColors.textInverse}>
                       Welcome,
                     </CustomText>
-                    <CustomText weight="bold" color={AppColors.textInverse}>
+                    <CustomText
+                      weight="bold"
+                      color={AppColors.textInverse}
+                    >
                       Stark
                     </CustomText>
                   </View>
@@ -61,38 +64,52 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                   />
                 </TouchableOpacity>
               </View>
-
-              {/* Center Text */}
-              <View style={styles.heroTextBlock}>
+              <View style={styles.heroTextContainer}>
                 <CustomText
+                  variant="title"
                   weight="bold"
                   color={AppColors.textInverse}
                   style={styles.heroTitle}
                 >
-                  Designed to Celebrate.
+                  Premium Event Hosts & Hostesses
+                </CustomText>
+                <CustomText
+                  color={AppColors.textInverse}
+                  style={styles.heroParagraph}
+                >
+                  Through a solid structure and effective logistics, NUVÓ agency
+                  offers hosts and hostesses that are available for events and
+                  functions across India and abroad.
                 </CustomText>
 
                 <CustomText
                   color={AppColors.textInverse}
-                  style={styles.heroDescription}
+                  style={styles.heroParagraph}
                 >
-                  Join 2.7K Event Makers shaping celebrations that stand the
-                  test of time. From cozy gatherings to majestic receptions Nuvo
-                  ensures every moment feels extraordinary.
+                  Our hosts and hostesses stand out because they are
+                  meticulously qualified and trained on the basis of key
+                  criteria: dynamism to energize any gathering, patience to
+                  handle diverse crowds gracefully, initiative to anticipate
+                  needs proactively, experience honed from real-world events,
+                  efficiency to ensure seamless operations, multilingualism for
+                  global audiences, protocol for formal occasions, etiquette to
+                  uphold standards, savoir-vivre for refined interactions, and
+                  most importantly, a radiant smile that lights up every
+                  moment—the true hallmarks of our exceptional staff.
                 </CustomText>
-
                 <CustomText
                   color={AppColors.textInverse}
-                  style={styles.heroQuote}
+                  style={styles.heroParagraph}
                 >
-                  - Nuvo Hosting
+                  With NUVÓ, you receive reliable professionals ready to elevate
+                  your occasions with poise and precision, whether in India or
+                  abroad.
                 </CustomText>
               </View>
             </View>
           </ImageBackground>
         </View>
 
-        {/* cofounder section  */}
         {/* COFOUNDER SECTION */}
         <View style={styles.cofounderContainer}>
           <CustomText
@@ -100,29 +117,45 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
             weight="bold"
             style={styles.cofounderHeading}
           >
-            Meet Our Cofounder
+            Founder Spotlight
           </CustomText>
 
-          <View style={styles.cofounderCard}>
-            <Image
-              source={require("../../assets/images/Tony_Stark.jpg")}
-              style={styles.cofounderImage}
-            />
+          <ImageBackground
+            source={require('../../assets/images/founder.jpeg')}
+            style={styles.cofounderBanner}
+            imageStyle={styles.cofounderBannerImage}
+            resizeMode="contain"
+          />
 
-            <View style={styles.cofounderContent}>
-              <CustomText weight="bold" style={styles.cofounderName}>
-                Tony Stark
-              </CustomText>
-
-              <CustomText style={styles.cofounderRole}>
-                Visionary & Creative Director
-              </CustomText>
-
-              <CustomText style={styles.cofounderDescription}>
-                Passionate about crafting unforgettable celebrations. Leading
-                Nuvo with innovation, elegance and a bold creative direction.
-              </CustomText>
-            </View>
+          <View style={styles.cofounderContent}>
+            <CustomText style={styles.cofounderDescription}>
+              Meet Anika (25) and Rini (29), the dedicated sisters who
+              established NUVÓ, Bengaluru’s premier hosting agency specializing
+              in elite manpower for luxury events. Anika, with her background in
+              content creation during her student years, developed a keen sense
+              for curating captivating experiences that resonate deeply. Her
+              expertise in visual storytelling now guides our hostesses in
+              delivering polished, memorable interactions that elevate every
+              occasion.
+            </CustomText>
+            <CustomText style={styles.cofounderDescription}>
+              Rini, at 29, refined her precision and composure in a demanding
+              corporate fraud analyst role, excelling in high-stakes
+              environments where attention to detail was paramount. This
+              foundation ensures our hosts execute with impeccable timing and
+              manage discerning VIP guests.
+            </CustomText>
+            <CustomText style={styles.cofounderDescription}>
+              Dissatisfied with luxury events undermined by inconsistent
+              staffing and a lack of cultural refinement, we founded NUVÓ to set
+              a new standard. We provide sophisticated hosts and hostesses for
+              B2B partners, including corporates and hotels for MICE events, and
+              B2C clients seeking bespoke luxury weddings, fashion launches,
+              brand activations, hospitality collaborations, and private HNI
+              gatherings. From Bengaluru’s dynamic landscape, we offer hands-on
+              excellence, blending tradition with contemporary elegance. Ready
+              to staff your next triumph? Let’s collaborate and create magic
+            </CustomText>
           </View>
         </View>
       </ScrollView>
@@ -132,48 +165,36 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   scrollContent: {
-    // paddingBottom: verticalScale(30),
     paddingBottom: verticalScale(40),
-
-    // backgroundColor: "#F5F7FA",
   },
 
   /* ---------------- HERO SECTION ---------------- */
 
-  heroContainer: {
-    borderBottomLeftRadius: scale(28),
-    borderBottomRightRadius: scale(28),
-    overflow: "hidden",
-  },
-
   heroImage: {
-    width: "100%",
+    width: '100%',
     height: SCREEN_HEIGHT * 0.8,
-    justifyContent: "space-between",
-  },
-
-  heroImageStyle: {
-    borderBottomLeftRadius: scale(28),
-    borderBottomRightRadius: scale(28),
+    justifyContent: 'space-between',
   },
 
   heroOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    paddingHorizontal: scale(18),
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    paddingHorizontal: scale(20),
     paddingTop: verticalScale(18),
-    paddingBottom: verticalScale(28),
+    paddingBottom: verticalScale(30),
+    gap: verticalScale(20),
+    // justifyContent: 'space-between',
   },
 
   heroTopRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 
   heroUserRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 
   heroUserText: {
@@ -185,7 +206,7 @@ const styles = StyleSheet.create({
     height: scale(42),
     borderRadius: scale(21),
     borderWidth: 1.5,
-    borderColor: "#fff",
+    borderColor: '#fff',
   },
 
   iconButton: {
@@ -194,18 +215,13 @@ const styles = StyleSheet.create({
 
   heroTextBlock: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: scale(12),
   },
 
-  heroTitle: {
-    textAlign: "center",
-    marginBottom: verticalScale(10),
-  },
-
   heroDescription: {
-    textAlign: "center",
+    textAlign: 'center',
     lineHeight: 20,
     opacity: 0.95,
   },
@@ -218,33 +234,31 @@ const styles = StyleSheet.create({
   /* ---------------- THEMES SECTION ---------------- */
 
   sectionHeaderRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: scale(18),
     marginBottom: verticalScale(10),
   },
 
   themeCard: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginHorizontal: scale(18),
     marginBottom: verticalScale(14),
     borderRadius: moderateScale(18),
-    overflow: "hidden",
-    backgroundColor: "#fff",
+    overflow: 'hidden',
+    backgroundColor: '#fff',
 
-    // Shadow (iOS)
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOpacity: 0.08,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
 
-    // Elevation (Android)
     elevation: 4,
   },
 
   themeImage: {
-    width: "40%",
+    width: '40%',
     height: verticalScale(110),
   },
 
@@ -252,7 +266,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: scale(14),
     paddingVertical: verticalScale(12),
-    justifyContent: "center",
+    justifyContent: 'center',
   },
 
   themeTitle: {
@@ -265,21 +279,21 @@ const styles = StyleSheet.create({
   /* ---------------- COFOUNDER SECTION ---------------- */
 
   cofounderContainer: {
-    paddingHorizontal: scale(20),
     marginTop: verticalScale(30),
+    paddingHorizontal: scale(20),
   },
 
   cofounderHeading: {
-    marginBottom: verticalScale(16),
+    marginBottom: verticalScale(18),
+    marginTop: verticalScale(10),
   },
 
   cofounderCard: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: moderateScale(22),
-    padding: scale(18),
-    alignItems: "center",
+    alignItems: 'center',
 
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOpacity: 0.08,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 5 },
@@ -289,12 +303,13 @@ const styles = StyleSheet.create({
   cofounderImage: {
     width: scale(100),
     height: scale(100),
-    borderRadius: scale(50),
-    marginBottom: verticalScale(14),
   },
 
   cofounderContent: {
-    alignItems: "center",
+    // alignItems: 'flex-start',
+    // maxWidth: 700,
+    alignItems: 'flex-start',
+    gap: verticalScale(14),
   },
 
   cofounderName: {
@@ -307,16 +322,62 @@ const styles = StyleSheet.create({
   },
 
   cofounderDescription: {
-    textAlign: "center",
+    textAlign: 'left',
     opacity: 0.85,
     marginBottom: verticalScale(14),
+    lineHeight: 22,
   },
 
   cofounderButton: {
-    backgroundColor: "#2E6DA4",
+    backgroundColor: '#2E6DA4',
     paddingVertical: verticalScale(8),
     paddingHorizontal: scale(20),
     borderRadius: scale(20),
+  },
+  fullImage: {
+    width: '100%',
+    height: SCREEN_HEIGHT,
+    justifyContent: 'center',
+  },
+
+  heroContainer: {
+    width: '100%',
+    margin: 0,
+    padding: 0,
+  },
+
+  cofounderBanner: {
+    width: '100%',
+    aspectRatio: 1.8,
+    borderRadius: moderateScale(20),
+    overflow: 'hidden',
+    marginBottom: verticalScale(18),
+  },
+
+  cofounderBannerImage: {},
+
+  bannerOverlay: {
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+
+  heroTextScroll: {
+    paddingTop: verticalScale(40),
+    paddingBottom: verticalScale(40),
+  },
+
+  heroTextContainer: {
+    maxWidth: '92%',
+  },
+
+  heroTitle: {
+    lineHeight: 32,
+    marginBottom: verticalScale(14),
+  },
+
+  heroParagraph: {
+    lineHeight: 22,
+    opacity: 0.92,
+    marginBottom: verticalScale(14),
   },
 });
 
