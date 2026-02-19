@@ -31,23 +31,54 @@ type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 type UniformItem = { id: string; title: string; price: string; image: any };
 type PackageItem = { id: string; title: string; icon: any };
 
-// const STEPS = [
-//   'Book Event', // 0
-//   'Choose Theme', // 1
-//   'Choose Uniforms', // 2
-//   'Choose Models Packages', // 3
-//   'GST Details', // 4
-//   'Order Summary', // 5
-//   'Payment', // 6
-//   'Success', // 7
-// ] as const;
+const PACKAGE_DETAILS: Record<string, { title: string; description: string }> =
+  {
+    p1: {
+      title: 'Diamond Edition',
+      description:
+        'Diamond personnel are curated on a bespoke basis and priced exclusively upon consultation.',
+    },
+
+    p2: {
+      title: 'Platinum Edition',
+      description: `Profile:
+• Exceptionally groomed
+• Fluent English, etiquette & protocol trained
+• Luxury weddings / HNI / international brand exposure
+• Calm, confident, high-presence individuals`,
+    },
+
+    p3: {
+      title: 'Gold Edition',
+      description: `Profile:
+• Strong grooming & communication
+• Experienced in premium weddings & curated events
+• Graceful, polished presence`,
+    },
+
+    p4: {
+      title: 'Silver Edition',
+      description: `Profile:
+• Well-trained & presentable
+• Functional multi-lingual
+• Professional hospitality behaviour`,
+    },
+
+    p5: {
+      title: 'Bronze Edition',
+      description: `Profile:
+• Basic grooming & training
+• Task-oriented roles
+• Reliable manpower`,
+    },
+  };
 
 const STEPS = [
   'Book Event', // 0
-  'Choose Theme', // 1
-  'Choose Uniforms', // 2
-  'Choose Models Packages', // 3
-  'Models', // 4 ✅ NEW
+  'Select Your Mood', // 1
+  'Curate Your Look', // 2
+  'Curate Your Crew', // 3
+  'Models',
   'GST Details', // 5
   'Order Summary', // 6
   'Payment', // 7
@@ -238,11 +269,11 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
   // Step 3 packages
   const packages: PackageItem[] = [
-    { id: 'p1', title: 'Diamond Package', icon: 'diamond-stone' },
-    { id: 'p2', title: 'Platinum Package', icon: 'crown' },
-    { id: 'p3', title: 'Gold Package', icon: 'hexagon-slice-6' },
-    { id: 'p4', title: 'Silver Package', icon: 'hexagon-slice-4' },
-    { id: 'p5', title: 'Bronze Package', icon: 'hexagon-slice-2' },
+    { id: 'p1', title: 'Diamond Edition', icon: 'diamond-stone' },
+    { id: 'p2', title: 'Platinum Edition', icon: 'crown' },
+    { id: 'p3', title: 'Gold Edition', icon: 'hexagon-slice-6' },
+    { id: 'p4', title: 'Silver Edition', icon: 'hexagon-slice-4' },
+    { id: 'p5', title: 'Bronze Edition', icon: 'hexagon-slice-2' },
   ];
 
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(
@@ -293,6 +324,8 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
   const progressPct = ((step + 1) / STEPS.length) * 100;
 
+  const details = activePackage ? PACKAGE_DETAILS[activePackage.id] : null;
+
   return (
     <BaseContainer>
       {/* Header + Progress (fixed top) */}
@@ -317,7 +350,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           {title}
         </CustomText>
 
-        <View style={styles.headerRight} />
+        {/* <View style={styles.headerRight} /> */}
 
         <View style={styles.progressWrap}>
           <View
@@ -330,8 +363,9 @@ export default function BookEventFlowScreen({ navigation }: Props) {
               ]}
             />
           </View>
+
           <CustomText style={[styles.progressText, { color: COLORS.muted }]}>
-            Step {step + 1} of {STEPS.length}
+            {step + 1} / {STEPS.length}
           </CustomText>
         </View>
       </View>
@@ -367,7 +401,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
         {step === 1 && (
           <View style={styles.card}>
-            <FieldLabel text="Choose Theme" />
+            <FieldLabel text="Select Your Mood" />
 
             <FlatList
               data={themes}
@@ -410,7 +444,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
         {step === 2 && (
           <View style={styles.card}>
-            <FieldLabel text="Choose Uniforms" />
+            <FieldLabel text="Curate Your Look" />
             <FlatList
               data={uniforms}
               keyExtractor={(i) => i.id}
@@ -454,7 +488,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
         {step === 3 && (
           <View style={styles.card}>
-            <FieldLabel text="Choose models Packages" />
+            <FieldLabel text="Curate your crew" />
             <View
               style={{ gap: verticalScale(10), marginTop: verticalScale(8) }}
             >
@@ -910,21 +944,17 @@ export default function BookEventFlowScreen({ navigation }: Props) {
               marginBottom: 10,
             }}
           >
-            {activePackage?.title}
+            {details?.title}
           </CustomText>
 
-          <CustomText style={{ color: '#6B7280', lineHeight: 20 }}>
-            {activePackage?.title} includes:
-            {'\n\n'}• Professional Models{'\n'}• Theme Based Styling{'\n'}•
-            Dedicated Event Manager{'\n'}• Premium Uniform Support{'\n'}•
-            On-site Coordination{'\n\n'}
-            This package is designed for high-end events.
+          <CustomText style={{ color: '#6B7280', lineHeight: 22 }}>
+            {details?.description}
           </CustomText>
 
           <TouchableOpacity
             onPress={() => setIsPackageInfoVisible(false)}
             style={{
-              marginTop: 20,
+              marginTop: 'auto', // ⭐ IMPORTANT
               backgroundColor: COLORS.primary,
               paddingVertical: 14,
               borderRadius: 12,
@@ -1052,21 +1082,25 @@ const styles = StyleSheet.create({
   progressWrap: {
     marginTop: verticalScale(6),
     paddingHorizontal: scale(6),
+    flexDirection: 'row',
+    alignItems: 'center', // ⭐ important
+    gap: scale(10), // spacing between bar and text
   },
+
   progressTrack: {
     height: verticalScale(4),
     borderRadius: 999,
     overflow: 'hidden',
+    flex: 1, // ⭐ makes bar take available space
   },
+
   progressFill: {
     height: verticalScale(4),
     borderRadius: 999,
   },
   progressText: {
-    marginTop: verticalScale(6),
     fontSize: 12,
     fontWeight: '600',
-    textAlign: 'center',
   },
 
   body: {
