@@ -95,7 +95,12 @@ const ExploreScreen = () => {
           contentFit="cover"
         />
 
-        <CustomText style={styles.modalName}>{item.name}</CustomText>
+        <CustomText
+          weight="bold"
+          style={styles.modalName}
+        >
+          {item.name}
+        </CustomText>
       </View>
     );
   };
@@ -132,31 +137,16 @@ const ExploreScreen = () => {
           {/* Dark Gradient Overlay */}
           <View style={styles.overlay} />
 
-          {/* Right Side Buttons */}
-          {/* <View style={styles.rightActions}>
-            <View style={styles.actionButton}>
-              <CustomText>🤍</CustomText>
-            </View>
-
-            <View style={styles.actionButton}>
-              <CustomText>💬</CustomText>
-            </View>
-
-            <View style={styles.actionButton}>
-              <CustomText>✖</CustomText>
-            </View>
-          </View> */}
-
           {/* Bottom Info */}
           <View style={styles.bottomInfo}>
-            <View style={styles.onlineRow}>
-              {/* <View style={styles.onlineDot} /> */}
-              {/* <CustomText style={styles.onlineText}>Online</CustomText> */}
-            </View>
+            <View style={styles.onlineRow}></View>
 
-            <CustomText style={styles.nameText}>{item.name}, 25 ✔</CustomText>
-
-            {/* <CustomText style={styles.locationText}>📍 USA Florida</CustomText> */}
+            <CustomText
+              weight="extraBold"
+              style={styles.nameText}
+            >
+              {item.name}, 25 ✔
+            </CustomText>
           </View>
 
           {/* Invisible Tap Areas */}
@@ -193,24 +183,16 @@ const ExploreScreen = () => {
         removeClippedSubviews
         ListFooterComponent={
           <>
-            <CustomText style={styles.header}>Our Crew</CustomText>
+            <CustomText
+              weight="bold"
+              style={styles.header}
+            >
+              Our Crew
+            </CustomText>
             <TinderModalViewer />
           </>
         }
       />
-
-      {/* <CustomText style={styles.header}>Modal</CustomText>
-      <FlatList
-        data={modalData.modalData}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <ModalCard item={item} />}
-        snapToInterval={width}
-        decelerationRate="fast"
-        snapToAlignment="center"
-      /> */}
     </BaseContainer>
   );
 };
@@ -222,7 +204,6 @@ const styles = StyleSheet.create({
   header: {
     marginTop: scale(20),
     fontSize: scale(18),
-    fontWeight: 'bold',
     textAlign: 'center',
   },
 
@@ -272,7 +253,6 @@ const styles = StyleSheet.create({
   modalName: {
     marginTop: verticalScale(10),
     fontSize: scale(16),
-    fontWeight: 'bold',
     textAlign: 'center',
   },
 
@@ -380,7 +360,6 @@ const styles = StyleSheet.create({
   nameText: {
     color: '#fff',
     fontSize: scale(20),
-    fontWeight: 'bold',
   },
 
   locationText: {

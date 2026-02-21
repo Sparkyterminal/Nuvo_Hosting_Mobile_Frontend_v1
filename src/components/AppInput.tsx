@@ -10,6 +10,7 @@ import {
 import { AppColors } from '../theme/colors';
 import CustomText from './CustomText';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+import { Fonts } from '../theme/fonts';
 
 interface AppInputProps extends TextInputProps {
   label?: string;
@@ -54,6 +55,7 @@ const AppInput: React.FC<AppInputProps> = ({
       <TextInput
         style={[
           styles.input,
+          { fontFamily: Fonts.regular },
           isFocused && styles.inputFocused,
           !!error && styles.inputError,
           style,
@@ -85,13 +87,14 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(4),
   },
   input: {
-    borderWidth: 1,
+    borderWidth: scale(1),
     borderColor: AppColors.textGrey,
     borderRadius: moderateScale(6),
     paddingHorizontal: scale(12),
     height: verticalScale(38),
-    fontSize: 16,
+    fontSize: scale(16),
     backgroundColor: AppColors.textInverse,
+    fontFamily: Fonts.regular,
   },
   inputFocused: {
     borderColor: AppColors.primary,

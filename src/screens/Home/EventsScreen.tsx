@@ -40,7 +40,7 @@ const EventsScreen: React.FC<Props> = ({ navigation }) => {
       ring: '#F2E7C8',
       line: '#CFCFCF',
     }),
-    []
+    [],
   );
 
   const demoEvent: EventItem = {
@@ -77,7 +77,10 @@ const EventsScreen: React.FC<Props> = ({ navigation }) => {
       >
         {/* Section 1 */}
         <View style={styles.section}>
-          <CustomText style={[styles.h1, { color: COLORS.primary }]}>
+          <CustomText
+            weight="extraBold"
+            style={[styles.h1, { color: COLORS.primary }]}
+          >
             Your Event Starts Here
           </CustomText>
           <CustomText style={[styles.sub, { color: COLORS.textMuted }]}>
@@ -128,7 +131,12 @@ function PrimaryButton({
       onPress={onPress}
       style={[styles.primaryBtn, { backgroundColor: background }]}
     >
-      <CustomText style={styles.primaryBtnText}>{label}</CustomText>
+      <CustomText
+        weight="bold"
+        style={styles.primaryBtnText}
+      >
+        {label}
+      </CustomText>
     </TouchableOpacity>
   );
 }
@@ -159,12 +167,14 @@ function EventCard({
           <View style={styles.titleRow}>
             <View style={{ flex: 1 }}>
               <CustomText
+                weight="bold"
                 style={[styles.cardTitle, { color: colors.textPrimary }]}
               >
                 {item.titleLine1}
               </CustomText>
               {!!item.titleLine2 && (
                 <CustomText
+                  weight="bold"
                   style={[styles.cardTitle, { color: colors.textPrimary }]}
                 >
                   {item.titleLine2}
@@ -174,6 +184,7 @@ function EventCard({
 
             <View style={[styles.chip, { backgroundColor: colors.chipBg }]}>
               <CustomText
+                weight="medium"
                 style={[styles.chipText, { color: colors.textPrimary }]}
               >
                 {item.status}
@@ -181,11 +192,17 @@ function EventCard({
             </View>
           </View>
 
-          <CustomText style={[styles.price, { color: colors.textPrimary }]}>
+          <CustomText
+            weight="extraBold"
+            style={[styles.price, { color: colors.textPrimary }]}
+          >
             {item.priceText}
           </CustomText>
 
-          <CustomText style={[styles.orderId, { color: colors.textMuted }]}>
+          <CustomText
+            weight="medium"
+            style={[styles.orderId, { color: colors.textMuted }]}
+          >
             Order id:{item.orderId}
           </CustomText>
         </View>
@@ -206,7 +223,12 @@ function EventCard({
         onPress={onPressTrack}
         style={[styles.trackBtn, { backgroundColor: colors.primary }]}
       >
-        <CustomText style={styles.trackBtnText}>Track Status</CustomText>
+        <CustomText
+          weight="extraBold"
+          style={styles.trackBtnText}
+        >
+          Track Status
+        </CustomText>
       </TouchableOpacity>
     </View>
   );
@@ -277,7 +299,6 @@ const styles = StyleSheet.create({
   h1: {
     fontSize: 28,
     lineHeight: 34,
-    fontWeight: Platform.select({ ios: '700', android: '700', default: '700' }),
     textAlign: 'center',
     marginTop: 10,
   },
@@ -302,7 +323,6 @@ const styles = StyleSheet.create({
   primaryBtnText: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontWeight: '700',
   },
 
   card: {
@@ -337,7 +357,6 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     lineHeight: 22,
-    fontWeight: '700',
   },
   chip: {
     minWidth: 72,
@@ -349,17 +368,14 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontSize: 14,
-    fontWeight: '600',
   },
   price: {
     marginTop: 6,
     fontSize: 18,
-    fontWeight: '800',
   },
   orderId: {
     marginTop: 6,
     fontSize: 14,
-    fontWeight: '500',
   },
 
   progressWrap: {
@@ -407,7 +423,6 @@ const styles = StyleSheet.create({
   trackBtnText: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontWeight: '800',
   },
 });
 

@@ -25,6 +25,7 @@ import FieldLabel from '../../../components/FieldLabel';
 import modelsJson from '../../../services/models.json';
 import ModelCard from '../../../components/ModelCard';
 import { Dropdown } from 'react-native-element-dropdown';
+import { Fonts } from '../../../theme/fonts';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
@@ -346,7 +347,10 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           />
         </TouchableOpacity>
 
-        <CustomText style={[styles.headerTitle, { color: COLORS.primary }]}>
+        <CustomText
+          weight="extraBold"
+          style={[styles.headerTitle, { color: COLORS.primary }]}
+        >
           {title}
         </CustomText>
 
@@ -364,7 +368,10 @@ export default function BookEventFlowScreen({ navigation }: Props) {
             />
           </View>
 
-          <CustomText style={[styles.progressText, { color: COLORS.muted }]}>
+          <CustomText
+            weight="medium"
+            style={[styles.progressText, { color: COLORS.muted }]}
+          >
             {step + 1} / {STEPS.length}
           </CustomText>
         </View>
@@ -514,10 +521,10 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                     />
 
                     <CustomText
+                      weight="bold"
                       style={{
                         flex: 1,
                         marginLeft: scale(10),
-                        fontWeight: '700',
                         color: COLORS.text,
                       }}
                     >
@@ -676,7 +683,10 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
         {step === 6 && (
           <View style={styles.card}>
-            <CustomText style={[styles.summaryTitle, { color: COLORS.text }]}>
+            <CustomText
+              weight="extraBold"
+              style={[styles.summaryTitle, { color: COLORS.text }]}
+            >
               Order Summary
             </CustomText>
 
@@ -695,14 +705,17 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                     alignItems: 'center',
                   }}
                 >
-                  <CustomText style={{ fontWeight: '800', color: COLORS.text }}>
+                  <CustomText
+                    weight="extraBold"
+                    style={{ color: COLORS.text }}
+                  >
                     South Indian Style Wedding
                   </CustomText>
                   <View style={styles.badge}>
                     <CustomText
+                      weight="bold"
                       style={{
                         fontSize: 12,
-                        fontWeight: '700',
                         color: COLORS.text,
                       }}
                     >
@@ -803,10 +816,10 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                 />
               </View>
               <CustomText
+                weight="extraBold"
                 style={{
                   marginTop: 10,
                   fontSize: 18,
-                  fontWeight: '800',
                   color: COLORS.text,
                 }}
               >
@@ -845,10 +858,10 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                 Total Pay
               </CustomText>
               <CustomText
+                weight="extraBold"
                 style={{
                   textAlign: 'center',
                   fontSize: 18,
-                  fontWeight: '900',
                   color: COLORS.primary,
                 }}
               >
@@ -874,7 +887,12 @@ export default function BookEventFlowScreen({ navigation }: Props) {
             activeOpacity={0.9}
             style={[styles.cta, { backgroundColor: COLORS.primary }]}
           >
-            <CustomText style={styles.ctaText}>Go to Home</CustomText>
+            <CustomText
+              weight="extraBold"
+              style={styles.ctaText}
+            >
+              Go to Home
+            </CustomText>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
@@ -894,7 +912,10 @@ export default function BookEventFlowScreen({ navigation }: Props) {
               },
             ]}
           >
-            <CustomText style={styles.ctaText}>
+            <CustomText
+              weight="extraBold"
+              style={styles.ctaText}
+            >
               {step === 4
                 ? payLabel
                 : step === 5
@@ -938,9 +959,9 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           />
 
           <CustomText
+            weight="extraBold"
             style={{
               fontSize: 18,
-              fontWeight: '900',
               marginBottom: 10,
             }}
           >
@@ -954,14 +975,17 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           <TouchableOpacity
             onPress={() => setIsPackageInfoVisible(false)}
             style={{
-              marginTop: 'auto', // ⭐ IMPORTANT
+              marginTop: 'auto',
               backgroundColor: COLORS.primary,
               paddingVertical: 14,
               borderRadius: 12,
               alignItems: 'center',
             }}
           >
-            <CustomText style={{ color: '#fff', fontWeight: '800' }}>
+            <CustomText
+              weight="bold"
+              style={{ color: '#fff' }}
+            >
               Close
             </CustomText>
           </TouchableOpacity>
@@ -981,12 +1005,14 @@ function RowKV({ k, v, bold }: { k: string; v: string; bold?: boolean }) {
       }}
     >
       <CustomText
-        style={{ color: '#6B7280', fontWeight: bold ? '800' : '600' }}
+        weight={bold ? 'extraBold' : 'medium'}
+        style={{ color: '#6B7280' }}
       >
         {k}
       </CustomText>
       <CustomText
-        style={{ color: '#111827', fontWeight: bold ? '900' : '700' }}
+        weight={bold ? 'extraBold' : 'bold'}
+        style={{ color: '#111827' }}
       >
         {v}
       </CustomText>
@@ -1043,7 +1069,8 @@ function RadioRow({
           )}
         </View>
         <CustomText
-          style={{ marginLeft: scale(10), fontWeight: '700', color: '#111827' }}
+          weight="bold"
+          style={{ marginLeft: scale(10), color: '#111827' }}
         >
           {label}
         </CustomText>
@@ -1075,7 +1102,6 @@ const styles = StyleSheet.create({
     right: 0,
     textAlign: 'center',
     fontSize: 16,
-    fontWeight: '800',
     zIndex: 1,
   },
 
@@ -1083,15 +1109,15 @@ const styles = StyleSheet.create({
     marginTop: verticalScale(6),
     paddingHorizontal: scale(6),
     flexDirection: 'row',
-    alignItems: 'center', // ⭐ important
-    gap: scale(10), // spacing between bar and text
+    alignItems: 'center',
+    gap: scale(10),
   },
 
   progressTrack: {
     height: verticalScale(4),
     borderRadius: 999,
     overflow: 'hidden',
-    flex: 1, // ⭐ makes bar take available space
+    flex: 1,
   },
 
   progressFill: {
@@ -1100,7 +1126,6 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 12,
-    fontWeight: '600',
   },
 
   body: {
@@ -1122,7 +1147,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: scale(12),
     paddingVertical: verticalScale(10),
     color: '#111827',
-    fontWeight: '600',
+    fontFamily: Fonts.medium,
   },
 
   packageRow: {
@@ -1134,7 +1159,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
 
-  summaryTitle: { fontSize: 14, fontWeight: '900' },
+  summaryTitle: { fontSize: 14 },
   summaryEventCard: {
     marginTop: verticalScale(10),
     borderWidth: 1,
@@ -1183,7 +1208,6 @@ const styles = StyleSheet.create({
   ctaText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '900',
   },
 
   modelCard: {
