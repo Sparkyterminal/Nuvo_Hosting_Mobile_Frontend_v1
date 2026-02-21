@@ -9,6 +9,7 @@ import { AppColors } from '../../theme/colors';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import ScreenHeader from '../../components/ScreenHeader';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Fonts } from '../../theme/fonts';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
@@ -81,7 +82,6 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
             value={phnNumber}
             onChangeText={setPhnNumber}
           />
-          
         </View>
 
         {/* Button (will move up with keyboard, still scrollable) */}
@@ -122,6 +122,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: verticalScale(12),
     backgroundColor: '#FFFFFF',
+    fontFamily: Fonts.regular,
   },
   sendOtpButton: {
     marginTop: verticalScale(8),

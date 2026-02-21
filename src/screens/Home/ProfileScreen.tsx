@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -6,28 +6,28 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-} from "react-native";
-import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { BaseContainer } from "../../components/BaseContainer";
-import CustomText from "../../components/CustomText";
-import { HomeTabParamList } from "../../navigation/HomeTabsNavigator";
-import { AppColors } from "../../theme/colors";
-import { Ionicons, Feather } from "@expo/vector-icons";
-import { moderateScale, scale, verticalScale } from "react-native-size-matters";
+} from 'react-native';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { BaseContainer } from '../../components/BaseContainer';
+import CustomText from '../../components/CustomText';
+import { HomeTabParamList } from '../../navigation/HomeTabsNavigator';
+import { AppColors } from '../../theme/colors';
+import { Ionicons, Feather } from '@expo/vector-icons';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
-type Props = BottomTabScreenProps<HomeTabParamList, "Profile">;
+type Props = BottomTabScreenProps<HomeTabParamList, 'Profile'>;
 
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const user = {
-    name: "Stark",
-    location: "CPT",
-    email: "stark@gmail.com",
-    userId: "9999",
-    zipCode: "562108",
+    name: 'Stark',
+    location: 'CPT',
+    email: 'stark@gmail.com',
+    userId: '9999',
+    zipCode: '562108',
   };
 
   const handleEditField = (field: string) => {
-    console.log("Edit field:", field);
+    console.log('Edit field:', field);
   };
 
   return (
@@ -39,7 +39,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         {/* Cover */}
         <View style={styles.coverWrapper}>
           <ImageBackground
-            source={require("../../assets/images/Tony_Stark.jpg")}
+            source={require('../../assets/images/Tony_Stark.jpg')}
             style={styles.coverImage}
             imageStyle={styles.coverImageStyle}
           >
@@ -61,7 +61,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           {/* avatar */}
           <View style={styles.avatarWrapper}>
             <Image
-              source={require("../../assets/images/Tony_Stark.jpg")}
+              source={require('../../assets/images/Tony_Stark.jpg')}
               style={styles.avatar}
             />
           </View>
@@ -71,7 +71,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.nameBlock}>
           <CustomText
             variant="subtitle"
-            weight="bold"
+            weight="extraBold"
             color={AppColors.primary}
           >
             {user.name.toUpperCase()}
@@ -90,27 +90,27 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           <ProfileFieldRow
             label="Name"
             value={user.name}
-            onEdit={() => handleEditField("name")}
+            onEdit={() => handleEditField('name')}
           />
           <ProfileFieldRow
             label="Email"
             value={user.email}
-            onEdit={() => handleEditField("email")}
+            onEdit={() => handleEditField('email')}
           />
           <ProfileFieldRow
             label="Password"
             value="********"
-            onEdit={() => handleEditField("password")}
+            onEdit={() => handleEditField('password')}
           />
           <ProfileFieldRow
             label="User ID"
             value={user.userId}
-            onEdit={() => handleEditField("userId")}
+            onEdit={() => handleEditField('userId')}
           />
           <ProfileFieldRow
             label="Zip Code"
             value={user.zipCode}
-            onEdit={() => handleEditField("zipCode")}
+            onEdit={() => handleEditField('zipCode')}
             isLast
           />
         </View>
@@ -144,7 +144,10 @@ const ProfileFieldRow: React.FC<ProfileFieldRowProps> = ({
         >
           {label}
         </CustomText>
-        <CustomText variant="body" color={AppColors.textGearDark}>
+        <CustomText
+          variant="body"
+          color={AppColors.textGearDark}
+        >
           {value}
         </CustomText>
       </View>
@@ -153,7 +156,11 @@ const ProfileFieldRow: React.FC<ProfileFieldRowProps> = ({
         onPress={onEdit}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
-        <Ionicons name="pencil-outline" size={20} color={AppColors.primary} />
+        <Ionicons
+          name="pencil-outline"
+          size={20}
+          color={AppColors.primary}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -173,43 +180,43 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   coverImageStyle: {
-    resizeMode: "cover",
+    resizeMode: 'cover',
   },
   coverOverlay: {
     flex: 1,
-    backgroundColor: "rgba(23, 88, 119, 0.55)",
+    backgroundColor: 'rgba(23, 88, 119, 0.55)',
     paddingHorizontal: scale(16),
     paddingTop: verticalScale(16),
     paddingBottom: verticalScale(16),
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
   },
   coverTopRow: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
   coverTitle: {
     letterSpacing: 1.2,
   },
 
   avatarWrapper: {
-    position: "absolute",
+    position: 'absolute',
     bottom: -verticalScale(40),
-    alignSelf: "center",
+    alignSelf: 'center',
     width: scale(90),
     height: scale(90),
     borderRadius: scale(45),
     borderWidth: 3,
     borderColor: AppColors.textInverse,
-    overflow: "hidden",
+    overflow: 'hidden',
     backgroundColor: AppColors.textInverse,
   },
   avatar: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
 
   nameBlock: {
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: verticalScale(16),
   },
 
@@ -226,8 +233,8 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   fieldRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: verticalScale(12),
   },
   fieldRowBorder: {

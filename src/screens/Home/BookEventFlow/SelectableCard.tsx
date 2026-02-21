@@ -1,24 +1,7 @@
 import React from 'react';
-import {
-  TouchableOpacity,
-  View,
-  Image,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import { TouchableOpacity, Image, StyleSheet, Dimensions } from 'react-native';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import CustomText from '../../../components/CustomText';
-
-// type Props = {
-//   image: any;
-//   title: string;
-//   price?: string;
-//   selected: boolean;
-//   onPress: () => void;
-//   primaryColor: string;
-//   borderColor: string;
-//   backgroundColor: string;
-// };
 
 type Props = {
   image: any;
@@ -26,7 +9,7 @@ type Props = {
   price?: string;
   selected: boolean;
   onPress: () => void;
-  onViewPress?: () => void; // 👈 ADD THIS
+  onViewPress?: () => void;
   primaryColor: string;
   borderColor: string;
   backgroundColor: string;
@@ -63,16 +46,33 @@ export default function SelectableCard({
         style={styles.image}
       />
 
-      <CustomText style={styles.title}>{title}</CustomText>
+      <CustomText
+        weight="extraBold"
+        style={styles.title}
+      >
+        {title}
+      </CustomText>
 
-      {price && <CustomText style={styles.price}>{price}</CustomText>}
+      {price && (
+        <CustomText
+          weight="bold"
+          style={styles.price}
+        >
+          {price}
+        </CustomText>
+      )}
 
       <TouchableOpacity
         activeOpacity={0.9}
         onPress={onViewPress}
         style={[styles.button, { backgroundColor: primaryColor }]}
       >
-        <CustomText style={styles.buttonText}>View</CustomText>
+        <CustomText
+          weight="bold"
+          style={styles.buttonText}
+        >
+          View
+        </CustomText>
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -93,13 +93,11 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(8),
   },
   title: {
-    fontWeight: '800',
     color: '#111827',
   },
   price: {
     marginTop: 2,
     color: '#6B7280',
-    fontWeight: '700',
   },
   button: {
     marginTop: verticalScale(10),
@@ -110,6 +108,5 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontWeight: '700',
   },
 });

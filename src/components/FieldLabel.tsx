@@ -10,7 +10,14 @@ type Props = {
 };
 
 const FieldLabel = ({ text }: Props) => {
-  return <CustomText style={styles.label}>{text}</CustomText>;
+  return (
+    <CustomText
+      weight="bold"
+      style={styles.label}
+    >
+      {text}
+    </CustomText>
+  );
 };
 
 export default FieldLabel;
@@ -20,6 +27,5 @@ const styles = StyleSheet.create({
     marginTop: verticalScale(10),
     marginBottom: verticalScale(6),
     color: '#111827',
-    fontWeight: '700',
   },
 });

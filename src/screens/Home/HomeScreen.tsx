@@ -67,7 +67,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
               <View style={styles.heroTextContainer}>
                 <CustomText
                   variant="title"
-                  weight="bold"
+                  weight="extraBold"
                   color={AppColors.textInverse}
                   style={styles.heroTitle}
                 >
@@ -114,7 +114,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.cofounderContainer}>
           <CustomText
             variant="subtitle"
-            weight="bold"
+            weight="extraBold"
             style={styles.cofounderHeading}
           >
             Founder Spotlight
@@ -306,8 +306,6 @@ const styles = StyleSheet.create({
   },
 
   cofounderContent: {
-    // alignItems: 'flex-start',
-    // maxWidth: 700,
     alignItems: 'flex-start',
     gap: verticalScale(14),
   },

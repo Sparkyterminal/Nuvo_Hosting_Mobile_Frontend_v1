@@ -102,7 +102,10 @@ const LooginScreen: React.FC<Props> = ({ navigation }) => {
                 color={privacyChecked ? AppColors.primary : undefined}
               />
 
-              <CustomText style={styles.checkboxText}>
+              <CustomText
+                variant="caption"
+                style={styles.checkboxText}
+              >
                 I have read and accept the{' '}
                 <CustomText
                   style={styles.linkText}
@@ -120,7 +123,10 @@ const LooginScreen: React.FC<Props> = ({ navigation }) => {
                 color={termsChecked ? AppColors.primary : undefined}
               />
 
-              <CustomText style={styles.checkboxText}>
+              <CustomText
+                variant="caption"
+                style={styles.checkboxText}
+              >
                 I have read and accept the{' '}
                 <CustomText
                   style={styles.linkText}
@@ -170,7 +176,7 @@ const styles = StyleSheet.create({
 
   passwordInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: scale(16),
   },
   eyeButton: {
     marginLeft: scale(8),
@@ -190,12 +196,10 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     flex: 1,
     paddingHorizontal: scale(10),
-    gap: 10,
+    gap: scale(10),
   },
 
   checkboxText: {
-    // marginLeft: scale(4),
-    fontSize: scale(10),
     color: AppColors.textGearDark,
   },
   linkText: {

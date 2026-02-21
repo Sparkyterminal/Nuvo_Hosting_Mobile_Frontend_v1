@@ -1,5 +1,5 @@
 import { View, TouchableOpacity, TextInput } from 'react-native';
-import { scale, verticalScale } from 'react-native-size-matters';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import { Dropdown } from 'react-native-element-dropdown';
 import CustomText from '../../../components/CustomText';
 
@@ -54,7 +54,12 @@ export default function StepOneForm({
   return (
     <View style={styles.card}>
       {/* State Dropdown */}
-      <CustomText style={styles.label}>Select State</CustomText>
+      <CustomText
+        weight="bold"
+        style={styles.label}
+      >
+        Select State
+      </CustomText>
       <Dropdown
         style={styles.dropdown}
         data={stateOptions}
@@ -161,37 +166,37 @@ export default function StepOneForm({
 }
 
 import { StyleSheet } from 'react-native';
+import { Fonts } from '../../../theme/fonts';
 
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
+    borderRadius: scale(12),
+    padding: scale(12),
+    borderWidth: scale(1),
     borderColor: '#E6E8EC',
   },
   label: {
-    marginTop: 10,
-    marginBottom: 6,
+    marginTop: verticalScale(10),
+    marginBottom: verticalScale(6),
     color: '#111827',
-    fontWeight: '700',
   },
   dropdown: {
     borderWidth: 1,
     borderColor: '#E6E8EC',
     backgroundColor: '#F9FAFB',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    borderRadius: scale(10),
+    paddingHorizontal: moderateScale(12),
+    paddingVertical: verticalScale(12),
   },
   input: {
-    borderWidth: 1,
+    borderWidth: scale(1),
     borderColor: '#E6E8EC',
     backgroundColor: '#F9FAFB',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    borderRadius: scale(10),
+    paddingHorizontal: moderateScale(12),
+    paddingVertical: verticalScale(10),
     color: '#111827',
-    fontWeight: '600',
+    fontFamily: Fonts.medium,
   },
 });

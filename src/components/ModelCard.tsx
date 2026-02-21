@@ -45,8 +45,8 @@ const ModelCard = ({
 
       <View style={styles.content}>
         <CustomText
+          weight="extraBold"
           style={{
-            fontWeight: '800',
             color: textColor,
           }}
           numberOfLines={1}
@@ -69,10 +69,10 @@ const ModelCard = ({
       {selected && (
         <View style={[styles.badge, { backgroundColor: primaryColor }]}>
           <CustomText
+            weight="extraBold"
             style={{
               color: '#fff',
               fontSize: 10,
-              fontWeight: '800',
             }}
           >
             Selected
@@ -86,13 +86,6 @@ const ModelCard = ({
 export default ModelCard;
 
 const styles = StyleSheet.create({
-  // card: {
-  //   width: '48%',
-  //   backgroundColor: '#fff',
-  //   borderRadius: moderateScale(12),
-  //   borderWidth: 1,
-  //   overflow: 'hidden',
-  // },
   card: {
     backgroundColor: '#fff',
     borderRadius: moderateScale(16),

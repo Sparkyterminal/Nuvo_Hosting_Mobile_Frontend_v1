@@ -1,10 +1,11 @@
 import React from 'react';
 import { Text as RNText, TextProps, StyleSheet } from 'react-native';
 import { useThemeColors } from '../hooks/useThemeColors';
+import { Fonts } from '../theme/fonts';
 
 interface CustomTextProps extends TextProps {
   variant?: 'title' | 'subtitle' | 'body' | 'caption';
-  weight?: 'regular' | 'medium' | 'bold';
+  weight?: 'thin' | 'light' | 'regular' | 'medium' | 'bold' | 'extraBold';
   color?: string;
   children: React.ReactNode;
 }
@@ -24,7 +25,7 @@ const CustomText: React.FC<CustomTextProps> = ({
       style={[
         styles.base,
         variantStyles[variant],
-        weightStyles[weight],
+        { fontFamily: Fonts[weight] },
         { color: color || colors.textPrimary },
         style,
       ]}
@@ -35,7 +36,7 @@ const CustomText: React.FC<CustomTextProps> = ({
   );
 };
 
-// 🔠 Font variants
+// Font variants
 const variantStyles = StyleSheet.create({
   title: { fontSize: 24, lineHeight: 30 },
   subtitle: { fontSize: 18, lineHeight: 24 },
@@ -43,14 +44,7 @@ const variantStyles = StyleSheet.create({
   caption: { fontSize: 12, lineHeight: 16 },
 });
 
-// 🏋️‍♂️ Font weights
-const weightStyles = StyleSheet.create({
-  regular: { fontWeight: '400' },
-  medium: { fontWeight: '500' },
-  bold: { fontWeight: '700' },
-});
-
-// 🔤 Base styling
+//  Base styling
 const styles = StyleSheet.create({
   base: {
     includeFontPadding: false,
