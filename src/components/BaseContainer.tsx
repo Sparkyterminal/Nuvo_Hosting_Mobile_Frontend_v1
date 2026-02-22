@@ -17,7 +17,6 @@ export const BaseContainer: React.FC<{ children: React.ReactNode }> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: AppColors.secondary,
     backgroundColor: AppColors.background,
   },
 });

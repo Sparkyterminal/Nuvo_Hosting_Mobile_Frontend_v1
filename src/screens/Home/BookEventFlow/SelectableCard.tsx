@@ -82,7 +82,7 @@ export default function SelectableCard({
 const styles = StyleSheet.create({
   card: {
     width: cardWidth,
-    borderWidth: 1,
+    borderWidth: moderateScale(1),
     borderRadius: moderateScale(12),
     padding: scale(10),
   },
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     color: AppColors.textPrimary,
   },
   price: {
-    marginTop: 2,
+    marginTop: verticalScale(2),
     color: AppColors.textSecondary,
   },
   button: {

@@ -82,7 +82,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: scale(16),
     paddingTop: verticalScale(4),
-    // backgroundColor: AppColors.background,
 
     backgroundColor: AppColors.background,
     borderBottomWidth: StyleSheet.hairlineWidth,
@@ -90,13 +89,12 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     flex: 1,
-    // textAlign: 'center',
 
     paddingHorizontal: moderateScale(18),
   },
   iconPlaceholder: {
-    width: 24,
-    height: 24,
+    width: moderateScale(24),
+    height: moderateScale(24),
   },
 });
 

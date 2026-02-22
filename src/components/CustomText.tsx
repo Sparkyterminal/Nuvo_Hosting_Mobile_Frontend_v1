@@ -2,6 +2,7 @@ import React from 'react';
 import { Text as RNText, TextProps, StyleSheet } from 'react-native';
 import { useThemeColors } from '../hooks/useThemeColors';
 import { Fonts } from '../theme/fonts';
+import { moderateScale } from 'react-native-size-matters';
 
 interface CustomTextProps extends TextProps {
   variant?: 'title' | 'subtitle' | 'body' | 'caption';
@@ -38,10 +39,23 @@ const CustomText: React.FC<CustomTextProps> = ({
 
 // Font variants
 const variantStyles = StyleSheet.create({
-  title: { fontSize: 24, lineHeight: 30 },
-  subtitle: { fontSize: 18, lineHeight: 24 },
-  body: { fontSize: 16, lineHeight: 22 },
-  caption: { fontSize: 12, lineHeight: 16 },
+  title: {
+    fontSize: moderateScale(24),
+    lineHeight: moderateScale(30),
+  },
+
+  subtitle: {
+    fontSize: moderateScale(18),
+    lineHeight: moderateScale(24),
+  },
+  body: {
+    fontSize: moderateScale(16),
+    lineHeight: moderateScale(22),
+  },
+  caption: {
+    fontSize: moderateScale(12),
+    lineHeight: moderateScale(16),
+  },
 });
 
 //  Base styling

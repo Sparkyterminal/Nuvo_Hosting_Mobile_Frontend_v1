@@ -13,6 +13,7 @@ import CustomText from '../../components/CustomText';
 import { HomeTabParamList } from '../../navigation/HomeTabsNavigator';
 import ScreenHeader from '../../components/ScreenHeader';
 import { AppColors } from '../../theme/colors';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
 type Props = NativeStackScreenProps<HomeTabParamList, 'Events'>;
 
@@ -278,30 +279,30 @@ function ProgressTracker({
 
 const styles = StyleSheet.create({
   content: {
-    paddingHorizontal: 18,
-    paddingTop: 14,
-    paddingBottom: 12,
+    paddingHorizontal: scale(18),
+    paddingTop: verticalScale(14),
+    paddingBottom: verticalScale(12),
   },
   section: {
-    paddingTop: 6,
+    paddingTop: verticalScale(6),
   },
   h1: {
-    fontSize: 28,
-    lineHeight: 34,
+    fontSize: moderateScale(28),
+    lineHeight: verticalScale(34),
     textAlign: 'center',
-    marginTop: 10,
+    marginTop: verticalScale(10),
   },
   sub: {
-    fontSize: 16,
-    lineHeight: 22,
+    fontSize: moderateScale(16),
+    lineHeight: verticalScale(22),
     textAlign: 'center',
-    marginTop: 6,
+    marginTop: verticalScale(6),
   },
 
   primaryBtn: {
-    marginTop: 16,
-    height: 56,
-    borderRadius: 8,
+    marginTop: verticalScale(16),
+    height: verticalScale(56),
+    borderRadius: moderateScale(8),
     alignItems: 'center',
     justifyContent: 'center',
     shadowOpacity: 0.12,
@@ -311,14 +312,14 @@ const styles = StyleSheet.create({
   },
   primaryBtnText: {
     color: AppColors.textInverse,
-    fontSize: 18,
+    fontSize: moderateScale(18),
   },
 
   card: {
-    marginTop: 14,
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 12,
+    marginTop: verticalScale(14),
+    borderWidth: moderateScale(1),
+    borderRadius: moderateScale(10),
+    padding: scale(12),
     shadowOpacity: 0.08,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
@@ -329,56 +330,56 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   cardImage: {
-    width: 74,
-    height: 74,
-    borderRadius: 8,
+    width: scale(74),
+    height: verticalScale(74),
+    borderRadius: moderateScale(8),
     backgroundColor: AppColors.surface,
   },
   cardInfo: {
     flex: 1,
-    paddingLeft: 12,
+    paddingLeft: scale(12),
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 10,
+    gap: scale(10),
   },
   cardTitle: {
-    fontSize: 18,
-    lineHeight: 22,
+    fontSize: moderateScale(18),
+    lineHeight: verticalScale(22),
   },
   chip: {
-    minWidth: 72,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
+    minWidth: moderateScale(72),
+    paddingHorizontal: moderateScale(12),
+    paddingVertical: verticalScale(8),
+    borderRadius: moderateScale(8),
     alignItems: 'center',
     justifyContent: 'center',
   },
   chipText: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
   },
   price: {
-    marginTop: 6,
-    fontSize: 18,
+    marginTop: verticalScale(6),
+    fontSize: moderateScale(18),
   },
   orderId: {
-    marginTop: 6,
-    fontSize: 14,
+    marginTop: verticalScale(6),
+    fontSize: moderateScale(14),
   },
 
   progressWrap: {
-    marginTop: 12,
-    paddingHorizontal: 6,
-    paddingVertical: 10,
+    marginTop: verticalScale(12),
+    paddingHorizontal: moderateScale(6),
+    paddingVertical:verticalScale(10),
     position: 'relative',
   },
   progressLine: {
     position: 'absolute',
-    left: 18,
-    right: 18,
-    top: 24,
-    borderTopWidth: 2,
+    left:scale(18),
+    right: scale(18),
+    top: scale(24),
+    borderTopWidth: moderateScale(2),
     borderStyle: 'dashed',
   },
   progressRow: {
@@ -386,32 +387,32 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   dotSlot: {
-    width: 44,
+    width: scale(44),
     alignItems: 'center',
   },
   dotOuter: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: scale(34),
+    height: verticalScale(34),
+    borderRadius: moderateScale(17),
     alignItems: 'center',
     justifyContent: 'center',
   },
   dotInner: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: scale(22),
+    height: verticalScale(22),
+    borderRadius: moderateScale(11),
   },
 
   trackBtn: {
-    marginTop: 6,
-    height: 56,
-    borderRadius: 8,
+    marginTop: verticalScale(6),
+    height: verticalScale(56),
+    borderRadius:moderateScale(8) ,
     alignItems: 'center',
     justifyContent: 'center',
   },
   trackBtnText: {
     color: AppColors.textInverse,
-    fontSize: 18,
+    fontSize: moderateScale(18),
   },
 });
 

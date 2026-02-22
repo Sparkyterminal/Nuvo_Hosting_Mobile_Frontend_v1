@@ -351,12 +351,12 @@ const styles = StyleSheet.create({
   },
 
   onlineDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: scale(10),
+    height: verticalScale(10),
+    borderRadius: moderateScale(5),
     backgroundColor: AppColors.success,
 
-    marginRight: 6,
+    marginRight: scale(6),
   },
 
   onlineText: {
@@ -383,8 +383,3 @@ const styles = StyleSheet.create({
 });
 
 export default ExploreScreen;
-
-// 👉 Add autoplay to carousel
-// 👉 Full screen image preview
-// 👉 Lazy loading for images
-// 👉 Performance optimization

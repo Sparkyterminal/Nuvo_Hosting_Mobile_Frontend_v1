@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import CustomText from './CustomText';
 import { AppColors } from '../theme/colors';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
 type ButtonVariant = 'primary' | 'outline' | 'ghost';
 
@@ -68,10 +69,10 @@ const AppButton: React.FC<AppButtonProps> = ({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderWidth: 1,
+    borderRadius: moderateScale(8),
+    paddingVertical: verticalScale(12),
+    paddingHorizontal: scale(16),
+    borderWidth: moderateScale(1),
     alignItems: 'center',
     justifyContent: 'center',
   },

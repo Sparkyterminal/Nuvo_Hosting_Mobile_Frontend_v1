@@ -1069,11 +1069,11 @@ const styles = StyleSheet.create({
     paddingTop: verticalScale(10),
     paddingBottom: verticalScale(10),
     paddingHorizontal: scale(12),
-    borderBottomWidth: 1,
+    borderBottomWidth: moderateScale(1),
   },
   headerLeft: {
-    width: scale(40),
-    height: scale(40),
+    width: moderateScale(40),
+    height: moderateScale(40),
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,
@@ -1086,7 +1086,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: moderateScale(16),
     zIndex: 1,
   },
 
@@ -1100,17 +1100,17 @@ const styles = StyleSheet.create({
 
   progressTrack: {
     height: verticalScale(4),
-    borderRadius: 999,
+    borderRadius: moderateScale(999),
     overflow: 'hidden',
     flex: 1,
   },
 
   progressFill: {
     height: verticalScale(4),
-    borderRadius: 999,
+    borderRadius: moderateScale(999),
   },
   progressText: {
-    fontSize: 12,
+    fontSize: moderateScale(12),
   },
 
   body: {
@@ -1122,10 +1122,10 @@ const styles = StyleSheet.create({
     borderColor: AppColors.border,
     borderRadius: moderateScale(12),
     padding: scale(12),
-    borderWidth: 1,
+    borderWidth: moderateScale(1),
   },
   input: {
-    borderWidth: 1,
+    borderWidth: moderateScale(1),
     borderColor: AppColors.border,
     backgroundColor: AppColors.surface,
     color: AppColors.textPrimary,
@@ -1141,13 +1141,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: scale(12),
     paddingVertical: verticalScale(12),
     borderRadius: moderateScale(12),
-    borderWidth: 1,
+    borderWidth: moderateScale(1),
   },
 
   summaryTitle: { fontSize: 14 },
   summaryEventCard: {
     marginTop: verticalScale(10),
-    borderWidth: 1,
+    borderWidth: moderateScale(1),
     borderRadius: moderateScale(12),
     padding: scale(10),
     flexDirection: 'row',
@@ -1162,7 +1162,7 @@ const styles = StyleSheet.create({
   badge: {
     paddingHorizontal: scale(10),
     paddingVertical: verticalScale(6),
-    borderRadius: 999,
+    borderRadius: moderateScale(999),
     backgroundColor: AppColors.surface,
   },
 
@@ -1170,7 +1170,7 @@ const styles = StyleSheet.create({
     width: scale(58),
     height: scale(58),
     borderRadius: scale(29),
-    borderWidth: 3,
+    borderWidth: moderateScale(3),
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: AppColors.card,
@@ -1182,7 +1182,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     padding: scale(14),
-    borderTopWidth: 1,
+    borderTopWidth: moderateScale(1),
   },
   cta: {
     height: verticalScale(54),
@@ -1192,14 +1192,14 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     color: AppColors.textInverse,
-    fontSize: 16,
+    fontSize: moderateScale(16),
   },
 
   modelCard: {
     width: '48%',
     backgroundColor: AppColors.card,
     borderRadius: moderateScale(12),
-    borderWidth: 1,
+    borderWidth: moderateScale(1),
     overflow: 'hidden',
   },
 
@@ -1215,13 +1215,10 @@ const styles = StyleSheet.create({
 
   dropdown: {
     height: verticalScale(40),
-    borderWidth: 1,
+    borderWidth: moderateScale(1),
     borderColor: AppColors.border,
     backgroundColor: AppColors.card,
     borderRadius: moderateScale(8),
     paddingHorizontal: scale(8),
   },
 });
-
-
-

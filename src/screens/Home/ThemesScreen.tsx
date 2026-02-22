@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     shadowColor: AppColors.textDark,
     shadowOpacity: 0.12,
     shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: verticalScale(2) },
   },
   image: {
     width: '100%',
