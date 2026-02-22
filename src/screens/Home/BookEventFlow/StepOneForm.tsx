@@ -73,7 +73,12 @@ export default function StepOneForm({
       />
 
       {/* City Dropdown */}
-      <CustomText style={styles.label}>Select City</CustomText>
+      <CustomText
+        weight="bold"
+        style={styles.label}
+      >
+        Select City
+      </CustomText>
       <Dropdown
         style={[styles.dropdown, { opacity: selectedState ? 1 : 0.5 }]}
         data={cityOptions}
@@ -85,8 +90,11 @@ export default function StepOneForm({
       />
 
       {/* Event */}
-      <CustomText style={styles.label}>
-        Enter the event or select a saved event.
+      <CustomText
+        weight="bold"
+        style={styles.label}
+      >
+        Enter The Event Name
       </CustomText>
       <TextInput
         value={eventAbout}
@@ -97,8 +105,11 @@ export default function StepOneForm({
       />
 
       {/* Venue */}
-      <CustomText style={styles.label}>
-        Enter the venue or select a saved address.
+      <CustomText
+        weight="bold"
+        style={styles.label}
+      >
+        Select a Venue
       </CustomText>
       <TextInput
         value={venue}
@@ -109,8 +120,11 @@ export default function StepOneForm({
       />
 
       {/* Staff & Days */}
-      <CustomText style={styles.label}>
-        How many staff and days do you need?
+      <CustomText
+        weight="bold"
+        style={styles.label}
+      >
+        Crew Count
       </CustomText>
       <View style={{ flexDirection: 'row', gap: scale(10) }}>
         <TextInput
@@ -120,9 +134,18 @@ export default function StepOneForm({
           style={[styles.input, { flex: 1 }]}
           placeholderTextColor={AppColors.textGrey}
         />
+      </View>
+
+      <CustomText
+        weight="bold"
+        style={styles.label}
+      >
+        Number Of Days
+      </CustomText>
+      <View style={{ flexDirection: 'row', gap: scale(10) }}>
         <TextInput
-          value={days}
-          onChangeText={setDays}
+          value={staff}
+          onChangeText={setStaff}
           keyboardType="number-pad"
           style={[styles.input, { flex: 1 }]}
           placeholderTextColor={AppColors.textGrey}
@@ -130,7 +153,12 @@ export default function StepOneForm({
       </View>
 
       {/* Date & Time */}
-      <CustomText style={styles.label}>Event Start and end date.</CustomText>
+      <CustomText
+        weight="bold"
+        style={styles.label}
+      >
+        Event Start and end date.
+      </CustomText>
 
       <View style={{ gap: verticalScale(10) }}>
         <View style={{ flexDirection: 'row', gap: scale(10) }}>
@@ -164,6 +192,22 @@ export default function StepOneForm({
             <CustomText>{formatTime(endDate)}</CustomText>
           </TouchableOpacity>
         </View>
+      </View>
+
+      <CustomText
+        weight="bold"
+        style={styles.label}
+      >
+        Working Hours
+      </CustomText>
+      <View style={{ flexDirection: 'row', gap: scale(10) }}>
+        <TextInput
+          value={staff}
+          onChangeText={setStaff}
+          keyboardType="number-pad"
+          style={[styles.input, { flex: 1 }]}
+          placeholderTextColor={AppColors.textGrey}
+        />
       </View>
     </View>
   );
