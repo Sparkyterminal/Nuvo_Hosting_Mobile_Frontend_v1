@@ -205,10 +205,10 @@ const styles = StyleSheet.create({
   otpInput: {
     width: scale(56),
     height: verticalScale(48),
-    borderWidth: 1,
+    borderWidth: moderateScale(1),
     borderColor: AppColors.border,
     borderRadius: moderateScale(6),
-    fontSize: 20,
+    fontSize: moderateScale(20),
     backgroundColor: AppColors.surface,
   },
   resendWrapper: {

@@ -9,7 +9,7 @@ import {
 import CustomText from './CustomText';
 import { AppColors } from '../theme/colors';
 import { Dimensions } from 'react-native';
-import { scale } from 'react-native-size-matters';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
 interface Props {
   visible: boolean;
@@ -65,9 +65,9 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: AppColors.surface,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    padding: 16,
+    borderTopLeftRadius: moderateScale(16),
+    borderTopRightRadius: moderateScale(16),
+    padding: scale(16),
     minHeight: SCREEN_HEIGHT * 0.6,
     maxHeight: SCREEN_HEIGHT * 0.9,
   },
@@ -75,10 +75,10 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: scale(12),
+    marginBottom: verticalScale(12),
   },
   body: {
-    marginTop: scale(8),
+    marginTop: verticalScale(8),
   },
 });
 

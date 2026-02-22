@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import AppButton from './AppButton';
 import { AppColors } from '../theme/colors';
+import { moderateScale } from 'react-native-size-matters';
 
 interface FooterButtonProps {
   label: string;
@@ -36,9 +37,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    padding: 16,
+    padding: moderateScale(16),
     backgroundColor: AppColors.card,
-    borderTopWidth: 1,
+    borderTopWidth: moderateScale(1),
     borderTopColor: AppColors.border,
   },
 });

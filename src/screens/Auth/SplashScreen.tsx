@@ -9,6 +9,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import { AppColors } from '../../theme/colors';
+import { scale, verticalScale } from 'react-native-size-matters';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
@@ -51,12 +52,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    width: height * 0.35,
-    height: height * 0.35,
+    width: height *scale(0.35),
+    height: height *verticalScale(0.35),
   },
   loader: {
     position: 'absolute',
-    bottom: height * 0.12,
+    bottom: height * verticalScale(0.12),
   },
 });
 

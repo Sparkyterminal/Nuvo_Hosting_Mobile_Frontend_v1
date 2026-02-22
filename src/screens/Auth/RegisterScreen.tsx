@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(14),
   },
   input: {
-    borderWidth: 1,
+    borderWidth: moderateScale(1),
     borderColor: AppColors.border,
     borderRadius: moderateScale(6),
     paddingHorizontal: scale(12),

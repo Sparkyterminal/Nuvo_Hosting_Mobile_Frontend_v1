@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: AppColors.card,
     borderRadius: moderateScale(16),
-    borderWidth: 1,
+    borderWidth: moderateScale(1),
     overflow: 'hidden',
   },
   image: {
@@ -102,10 +102,10 @@ const styles = StyleSheet.create({
   },
   badge: {
     position: 'absolute',
-    top: 8,
-    right: 8,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
+    top: verticalScale(8),
+    right: scale(8),
+    paddingHorizontal: scale(6),
+    paddingVertical: verticalScale(2),
+    borderRadius: moderateScale(6),
   },
 });

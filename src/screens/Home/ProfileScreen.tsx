@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   coverTitle: {
-    letterSpacing: 1.2,
+    letterSpacing: verticalScale(1.2),
   },
 
   avatarWrapper: {
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     width: scale(90),
     height: scale(90),
     borderRadius: scale(45),
-    borderWidth: 3,
+    borderWidth: moderateScale(3),
     borderColor: AppColors.border,
     overflow: 'hidden',
     backgroundColor: AppColors.textInverse,
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     shadowColor: AppColors.textDark,
     shadowOpacity: 0.08,
     shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: verticalScale(2) },
     elevation: 3,
   },
   fieldRow: {

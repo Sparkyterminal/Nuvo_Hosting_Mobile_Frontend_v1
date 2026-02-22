@@ -87,14 +87,13 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(4),
   },
   input: {
-    borderWidth: scale(1),
+    borderWidth: moderateScale(1),
     borderColor: AppColors.border,
     borderRadius: moderateScale(6),
-    paddingHorizontal: scale(12),
+    paddingHorizontal: moderateScale(12),
     height: verticalScale(38),
-    fontSize: scale(16),
+    fontSize: moderateScale(16),
     backgroundColor: AppColors.surface,
-
     fontFamily: Fonts.regular,
   },
   inputFocused: {

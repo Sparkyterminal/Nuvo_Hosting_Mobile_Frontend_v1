@@ -7,6 +7,7 @@ import HomeScreen from '../screens/Home/HomeScreen';
 import ProfileScreen from '../screens/Home/ProfileScreen';
 import EventsScreen from '../screens/Home/EventsScreen';
 import ExploreScreen from '../screens/Home/ExploreScreen';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
 export type HomeTabParamList = {
   Home: undefined;
@@ -26,13 +27,13 @@ const HomeTabsNavigator = () => {
         tabBarActiveTintColor: AppColors.primary,
         tabBarInactiveTintColor: AppColors.textGrey,
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: moderateScale(12),
         },
         tabBarStyle: {
           backgroundColor: AppColors.card,
           borderTopColor: AppColors.border,
           borderTopWidth: StyleSheet.hairlineWidth,
-
+          height: verticalScale(64),
           elevation: 8,
           shadowColor: AppColors.textDark,
           shadowOpacity: 0.05,
@@ -98,17 +99,11 @@ const styles = StyleSheet.create({
   },
   indicator: {
     position: 'absolute',
-    top: -6,
-    width: 32,
-    height: 3,
-    borderRadius: 2,
+    top: verticalScale(-6), // ⭐ scaled
+    width: scale(32),
+    height: verticalScale(3),
+    borderRadius: moderateScale(2),
     backgroundColor: AppColors.primary,
-  },
-  screen: {
-    flex: 1,
-    backgroundColor: AppColors.textInverse,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 

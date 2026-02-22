@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     shadowColor: AppColors.textDark,
     shadowOpacity: 0.08,
     shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: verticalScale(4) },
 
     elevation: 4,
   },
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
   },
 
   themeDescription: {
-    lineHeight: 17,
+    lineHeight: verticalScale(17),
   },
   /* ---------------- COFOUNDER SECTION ---------------- */
 
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     opacity: 0.85,
     marginBottom: verticalScale(14),
-    lineHeight: 22,
+    lineHeight: verticalScale(22),
   },
 
   cofounderButton: {
@@ -369,12 +369,12 @@ const styles = StyleSheet.create({
   },
 
   heroTitle: {
-    lineHeight: 32,
+    lineHeight: verticalScale(32),
     marginBottom: verticalScale(14),
   },
 
   heroParagraph: {
-    lineHeight: 22,
+    lineHeight: verticalScale(22),
     opacity: 0.92,
     marginBottom: verticalScale(14),
   },

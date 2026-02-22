@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     color: AppColors.textPrimary,
   },
   dropdown: {
-    borderWidth: 1,
+    borderWidth: moderateScale(1),
     borderColor: AppColors.border,
     backgroundColor: AppColors.surface,
     borderRadius: scale(10),
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     borderRadius: scale(10),
     paddingHorizontal: moderateScale(12),
     paddingVertical: verticalScale(10),
-    color: '#111827',
+    color: AppColors.textPrimary,
     fontFamily: Fonts.medium,
   },
 });
