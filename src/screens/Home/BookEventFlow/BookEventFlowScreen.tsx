@@ -75,11 +75,11 @@ const PACKAGE_DETAILS: Record<string, { title: string; description: string }> =
   };
 
 const STEPS = [
-  'Book Event', // 0
+  'What Can we Do For You ?', // 0
   'Select Your Mood', // 1
   'Curate Your Look', // 2
   'Curate Your Crew', // 3
-  'Models',
+  'Select Crew Members',
   'GST Details', // 5
   'Order Summary', // 6
   'Payment', // 7
@@ -403,7 +403,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
         {step === 1 && (
           <View style={styles.card}>
-            <FieldLabel text="Select Your Mood" />
+            {/* <FieldLabel text="Select Your Mood" /> */}
 
             <FlatList
               data={themes}
@@ -446,7 +446,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
         {step === 2 && (
           <View style={styles.card}>
-            <FieldLabel text="Curate Your Look" />
+            {/* <FieldLabel text="Curate Your Look" /> */}
             <FlatList
               data={uniforms}
               keyExtractor={(i) => i.id}
@@ -490,7 +490,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
         {step === 3 && (
           <View style={styles.card}>
-            <FieldLabel text="Curate your crew" />
+            {/* <FieldLabel text="Curate your crew" /> */}
             <View
               style={{ gap: verticalScale(10), marginTop: verticalScale(8) }}
             >
@@ -554,7 +554,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           <View style={styles.card}>
             {/* Header Row */}
             <View style={styles.modelHeaderRow}>
-              <FieldLabel text="Select Model" />
+              {/* <FieldLabel text="Select Model" /> */}
 
               {/* Use your existing dropdown component */}
               <View style={{ width: 110 }}>
@@ -1222,3 +1222,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: scale(8),
   },
 });
+
+
+
