@@ -36,7 +36,7 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
       />
       <ActivityIndicator
         size="large"
-        color="#fff"
+        color={AppColors.textInverse}
         style={styles.loader}
       />
     </View>

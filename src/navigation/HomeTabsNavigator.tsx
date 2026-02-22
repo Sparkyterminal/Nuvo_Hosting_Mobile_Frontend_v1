@@ -29,9 +29,14 @@ const HomeTabsNavigator = () => {
           fontSize: 12,
         },
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopColor: '#E0E0E0',
+          backgroundColor: AppColors.card,
+          borderTopColor: AppColors.border,
           borderTopWidth: StyleSheet.hairlineWidth,
+
+          elevation: 8,
+          shadowColor: AppColors.textDark,
+          shadowOpacity: 0.05,
+          shadowRadius: 6,
         },
         tabBarIcon: ({ color, focused, size }) => {
           let iconName: any = 'home-outline';
@@ -77,11 +82,7 @@ const HomeTabsNavigator = () => {
         name="Events"
         component={EventsScreen}
       />
-      {/* <Tab.Screen
-        name="MyEvents"
-        component={MyEventsScreen}
-        options={{ title: "My Events" }}
-      /> */}
+
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}

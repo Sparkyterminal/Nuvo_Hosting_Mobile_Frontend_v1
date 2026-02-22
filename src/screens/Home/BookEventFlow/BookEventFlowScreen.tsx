@@ -12,7 +12,6 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../navigation/RootNavigator';
 import { BaseContainer } from '../../../components/BaseContainer';
 import CustomText from '../../../components/CustomText';
-import { AppColors } from '../../../theme/colors';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import { LOCATION_DATA } from '../../../constants/locationData';
@@ -26,6 +25,7 @@ import modelsJson from '../../../services/models.json';
 import ModelCard from '../../../components/ModelCard';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Fonts } from '../../../theme/fonts';
+import { AppColors } from '../../../theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
@@ -106,20 +106,6 @@ type ModelItem = {
 };
 
 export default function BookEventFlowScreen({ navigation }: Props) {
-  const COLORS = useMemo(
-    () => ({
-      primary: '#305B77',
-      bg: '#F6F7F9',
-      card: '#FFFFFF',
-      border: '#E6E8EC',
-      text: '#1F2A33',
-      muted: '#6B7280',
-      track: '#D9DEE6',
-      success: '#16A34A',
-    }),
-    [],
-  );
-
   const [step, setStep] = useState(0);
   const themes: ThemeItem[] = themesJson.data;
 
@@ -333,7 +319,10 @@ export default function BookEventFlowScreen({ navigation }: Props) {
       <View
         style={[
           styles.header,
-          { backgroundColor: COLORS.card, borderBottomColor: COLORS.border },
+          {
+            backgroundColor: AppColors.card,
+            borderBottomColor: AppColors.border,
+          },
         ]}
       >
         <TouchableOpacity
@@ -343,13 +332,13 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           <Ionicons
             name="chevron-back"
             size={24}
-            color={COLORS.primary}
+            color={AppColors.primary}
           />
         </TouchableOpacity>
 
         <CustomText
           weight="extraBold"
-          style={[styles.headerTitle, { color: COLORS.primary }]}
+          style={[styles.headerTitle, { color: AppColors.primary }]}
         >
           {title}
         </CustomText>
@@ -358,19 +347,22 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
         <View style={styles.progressWrap}>
           <View
-            style={[styles.progressTrack, { backgroundColor: COLORS.track }]}
+            style={[styles.progressTrack, { backgroundColor: AppColors.track }]}
           >
             <View
               style={[
                 styles.progressFill,
-                { width: `${progressPct}%`, backgroundColor: COLORS.primary },
+                {
+                  width: `${progressPct}%`,
+                  backgroundColor: AppColors.primary,
+                },
               ]}
             />
           </View>
 
           <CustomText
             weight="medium"
-            style={[styles.progressText, { color: COLORS.muted }]}
+            style={[styles.progressText, { color: AppColors.textSecondary }]}
           >
             {step + 1} / {STEPS.length}
           </CustomText>
@@ -379,7 +371,10 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
       {/* Body */}
       <ScrollView
-        contentContainerStyle={[styles.body, { backgroundColor: COLORS.bg }]}
+        contentContainerStyle={[
+          styles.body,
+          { backgroundColor: AppColors.background },
+        ]}
         showsVerticalScrollIndicator={false}
       >
         {step === 0 && (
@@ -435,13 +430,13 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                           title: item.title,
                           description: item.description,
                           image: { uri: item.images[0]?.url },
-                          color: '#305B77', // or your theme color
+                          color: AppColors.primary, // or your theme color
                         },
                       })
                     }
-                    primaryColor={COLORS.primary}
-                    borderColor={COLORS.border}
-                    backgroundColor={COLORS.card}
+                    primaryColor={AppColors.primary}
+                    borderColor={AppColors.border}
+                    backgroundColor={AppColors.card}
                   />
                 );
               }}
@@ -479,13 +474,13 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                           title: item.title,
                           description: `${item.title} includes premium fabric and professional styling.`,
                           image: item.image,
-                          color: '#8B5CF6', // optional different color for uniforms
+                          color: AppColors.primary, // optional different color for uniforms
                         },
                       })
                     }
-                    primaryColor={COLORS.primary}
-                    borderColor={COLORS.border}
-                    backgroundColor={COLORS.card}
+                    primaryColor={AppColors.primary}
+                    borderColor={AppColors.border}
+                    backgroundColor={AppColors.card}
                   />
                 );
               }}
@@ -509,15 +504,19 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                     style={[
                       styles.packageRow,
                       {
-                        borderColor: selected ? COLORS.primary : COLORS.border,
-                        backgroundColor: COLORS.card,
+                        borderColor: selected
+                          ? AppColors.primary
+                          : AppColors.border,
+                        backgroundColor: AppColors.card,
                       },
                     ]}
                   >
                     <MaterialCommunityIcons
                       name={p.icon}
                       size={22}
-                      color={selected ? COLORS.primary : COLORS.muted}
+                      color={
+                        selected ? AppColors.primary : AppColors.textSecondary
+                      }
                     />
 
                     <CustomText
@@ -525,7 +524,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                       style={{
                         flex: 1,
                         marginLeft: scale(10),
-                        color: COLORS.text,
+                        color: AppColors.textPrimary,
                       }}
                     >
                       {p.title}
@@ -541,7 +540,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                       <Ionicons
                         name="information-circle-outline"
                         size={22}
-                        color={COLORS.muted}
+                        color={AppColors.textSecondary}
                       />
                     </TouchableOpacity>
                   </TouchableOpacity>
@@ -550,40 +549,6 @@ export default function BookEventFlowScreen({ navigation }: Props) {
             </View>
           </View>
         )}
-
-        {/* {step === 4 && (
-          <View style={styles.card}>
-            <FieldLabel text="Select Model" />
-
-            <FlatList
-              data={models}
-              keyExtractor={(item) => item.id}
-              numColumns={2}
-              scrollEnabled={false}
-              columnWrapperStyle={{
-                justifyContent: 'space-between',
-                marginBottom: verticalScale(12),
-              }}
-              renderItem={({ item }) => {
-                const selected = item.id === selectedModelId;
-
-                return (
-                  <ModelCard
-                    image={item.image}
-                    name={item.name}
-                    height={item.height}
-                    selected={selected}
-                    onPress={() => setSelectedModelId(item.id)}
-                    primaryColor={COLORS.primary}
-                    borderColor={COLORS.border}
-                    textColor={COLORS.text}
-                    mutedColor={COLORS.muted}
-                  />
-                );
-              }}
-            />
-          </View>
-        )} */}
 
         {step === 4 && (
           <View style={styles.card}>
@@ -638,10 +603,10 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                       height={item.height}
                       selected={selected}
                       onPress={() => setSelectedModelId(item.id)}
-                      primaryColor={COLORS.primary}
-                      borderColor={COLORS.border}
-                      textColor={COLORS.text}
-                      mutedColor={COLORS.muted}
+                      primaryColor={AppColors.primary}
+                      borderColor={AppColors.border}
+                      textColor={AppColors.textPrimary}
+                      mutedColor={AppColors.textSecondary}
                     />
                   </View>
                 );
@@ -685,13 +650,16 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           <View style={styles.card}>
             <CustomText
               weight="extraBold"
-              style={[styles.summaryTitle, { color: COLORS.text }]}
+              style={[styles.summaryTitle, { color: AppColors.textPrimary }]}
             >
               Order Summary
             </CustomText>
 
             <View
-              style={[styles.summaryEventCard, { borderColor: COLORS.border }]}
+              style={[
+                styles.summaryEventCard,
+                { borderColor: AppColors.border },
+              ]}
             >
               <Image
                 source={require('../../../assets/images/home.jpg')}
@@ -707,7 +675,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                 >
                   <CustomText
                     weight="extraBold"
-                    style={{ color: COLORS.text }}
+                    style={{ color: AppColors.textPrimary }}
                   >
                     South Indian Style Wedding
                   </CustomText>
@@ -716,27 +684,35 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                       weight="bold"
                       style={{
                         fontSize: 12,
-                        color: COLORS.text,
+                        color: AppColors.textPrimary,
                       }}
                     >
                       Booked
                     </CustomText>
                   </View>
                 </View>
-                <CustomText style={{ marginTop: 6, color: COLORS.muted }}>
+                <CustomText
+                  style={{ marginTop: 6, color: AppColors.textSecondary }}
+                >
                   Date & Time: 24 April, 2023, 10:00 PM
                 </CustomText>
-                <CustomText style={{ marginTop: 4, color: COLORS.muted }}>
+                <CustomText
+                  style={{ marginTop: 4, color: AppColors.textSecondary }}
+                >
                   Event Venue: Lock Stock & Barrel, Dubai
                 </CustomText>
-                <CustomText style={{ marginTop: 4, color: COLORS.muted }}>
+                <CustomText
+                  style={{ marginTop: 4, color: AppColors.textSecondary }}
+                >
                   Total Staff: {staff}
                 </CustomText>
               </View>
             </View>
 
             <View style={{ marginTop: verticalScale(12) }}>
-              <CustomText style={[styles.summaryTitle, { color: COLORS.text }]}>
+              <CustomText
+                style={[styles.summaryTitle, { color: AppColors.textPrimary }]}
+              >
                 Billing Details
               </CustomText>
 
@@ -763,7 +739,9 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
         {step === 7 && (
           <View style={styles.card}>
-            <CustomText style={[styles.summaryTitle, { color: COLORS.text }]}>
+            <CustomText
+              style={[styles.summaryTitle, { color: AppColors.textPrimary }]}
+            >
               Payment Method
             </CustomText>
             <View
@@ -807,12 +785,12 @@ export default function BookEventFlowScreen({ navigation }: Props) {
               }}
             >
               <View
-                style={[styles.checkCircle, { borderColor: COLORS.primary }]}
+                style={[styles.checkCircle, { borderColor: AppColors.primary }]}
               >
                 <Ionicons
                   name="checkmark"
                   size={26}
-                  color={COLORS.primary}
+                  color={AppColors.primary}
                 />
               </View>
               <CustomText
@@ -820,7 +798,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                 style={{
                   marginTop: 10,
                   fontSize: 18,
-                  color: COLORS.text,
+                  color: AppColors.textPrimary,
                 }}
               >
                 Booking Successful
@@ -829,7 +807,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                 style={{
                   marginTop: 6,
                   textAlign: 'center',
-                  color: COLORS.muted,
+                  color: AppColors.textSecondary,
                 }}
               >
                 You have successfully booked the event.
@@ -854,7 +832,9 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                 v="10:45 AM"
               />
               <View style={{ height: verticalScale(10) }} />
-              <CustomText style={{ textAlign: 'center', color: COLORS.muted }}>
+              <CustomText
+                style={{ textAlign: 'center', color: AppColors.textSecondary }}
+              >
                 Total Pay
               </CustomText>
               <CustomText
@@ -862,7 +842,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                 style={{
                   textAlign: 'center',
                   fontSize: 18,
-                  color: COLORS.primary,
+                  color: AppColors.primary,
                 }}
               >
                 {totalAmount}
@@ -878,14 +858,17 @@ export default function BookEventFlowScreen({ navigation }: Props) {
       <View
         style={[
           styles.footer,
-          { backgroundColor: COLORS.bg, borderTopColor: COLORS.border },
+          {
+            backgroundColor: AppColors.background,
+            borderTopColor: AppColors.border,
+          },
         ]}
       >
         {step === 6 ? (
           <TouchableOpacity
             onPress={onGoHome}
             activeOpacity={0.9}
-            style={[styles.cta, { backgroundColor: COLORS.primary }]}
+            style={[styles.cta, { backgroundColor: AppColors.primary }]}
           >
             <CustomText
               weight="extraBold"
@@ -907,8 +890,8 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                   (step === 2 && !selectedUniformId) ||
                   (step === 3 && !selectedPackageId) ||
                   (step === 6 && !payment)
-                    ? '#B9C3CC'
-                    : COLORS.primary,
+                    ? AppColors.disabled
+                    : AppColors.primary,
               },
             ]}
           >
@@ -939,7 +922,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
       >
         <View
           style={{
-            backgroundColor: '#fff',
+            backgroundColor: AppColors.card,
             borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
             padding: scale(16),
@@ -951,7 +934,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
             style={{
               width: 40,
               height: 4,
-              backgroundColor: '#D1D5DB',
+              backgroundColor: AppColors.divider,
               borderRadius: 2,
               alignSelf: 'center',
               marginBottom: 12,
@@ -968,7 +951,9 @@ export default function BookEventFlowScreen({ navigation }: Props) {
             {details?.title}
           </CustomText>
 
-          <CustomText style={{ color: '#6B7280', lineHeight: 22 }}>
+          <CustomText
+            style={{ color: AppColors.textSecondary, lineHeight: 22 }}
+          >
             {details?.description}
           </CustomText>
 
@@ -976,7 +961,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
             onPress={() => setIsPackageInfoVisible(false)}
             style={{
               marginTop: 'auto',
-              backgroundColor: COLORS.primary,
+              backgroundColor: AppColors.primary,
               paddingVertical: 14,
               borderRadius: 12,
               alignItems: 'center',
@@ -984,7 +969,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
           >
             <CustomText
               weight="bold"
-              style={{ color: '#fff' }}
+              style={{ color: AppColors.textInverse }}
             >
               Close
             </CustomText>
@@ -1006,13 +991,13 @@ function RowKV({ k, v, bold }: { k: string; v: string; bold?: boolean }) {
     >
       <CustomText
         weight={bold ? 'extraBold' : 'medium'}
-        style={{ color: '#6B7280' }}
+        style={{ color: AppColors.textSecondary }}
       >
         {k}
       </CustomText>
       <CustomText
         weight={bold ? 'extraBold' : 'bold'}
-        style={{ color: '#111827' }}
+        style={{ color: AppColors.textPrimary }}
       >
         {v}
       </CustomText>
@@ -1041,8 +1026,8 @@ function RadioRow({
         paddingHorizontal: scale(12),
         borderRadius: moderateScale(10),
         borderWidth: 1,
-        borderColor: selected ? '#305B77' : '#E6E8EC',
-        backgroundColor: '#fff',
+        borderColor: selected ? AppColors.primary : AppColors.textSecondary,
+        backgroundColor: AppColors.card,
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -1052,7 +1037,7 @@ function RadioRow({
             height: scale(18),
             borderRadius: scale(9),
             borderWidth: 2,
-            borderColor: selected ? '#305B77' : '#9CA3AF',
+            borderColor: selected ? AppColors.primary : AppColors.textSecondary,
             alignItems: 'center',
             justifyContent: 'center',
           }}
@@ -1063,14 +1048,14 @@ function RadioRow({
                 width: scale(10),
                 height: scale(10),
                 borderRadius: scale(5),
-                backgroundColor: '#305B77',
+                backgroundColor: AppColors.primary,
               }}
             />
           )}
         </View>
         <CustomText
           weight="bold"
-          style={{ marginLeft: scale(10), color: '#111827' }}
+          style={{ marginLeft: scale(10), color: AppColors.textPrimary }}
         >
           {label}
         </CustomText>
@@ -1133,20 +1118,20 @@ const styles = StyleSheet.create({
     paddingBottom: verticalScale(90),
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: AppColors.card,
+    borderColor: AppColors.border,
     borderRadius: moderateScale(12),
     padding: scale(12),
     borderWidth: 1,
-    borderColor: '#E6E8EC',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#E6E8EC',
-    backgroundColor: '#F9FAFB',
+    borderColor: AppColors.border,
+    backgroundColor: AppColors.surface,
+    color: AppColors.textPrimary,
     borderRadius: moderateScale(10),
     paddingHorizontal: scale(12),
     paddingVertical: verticalScale(10),
-    color: '#111827',
     fontFamily: Fonts.medium,
   },
 
@@ -1172,13 +1157,13 @@ const styles = StyleSheet.create({
     width: scale(64),
     height: scale(64),
     borderRadius: moderateScale(10),
-    backgroundColor: '#EEE',
+    backgroundColor: AppColors.surface,
   },
   badge: {
     paddingHorizontal: scale(10),
     paddingVertical: verticalScale(6),
     borderRadius: 999,
-    backgroundColor: '#E6E6E6',
+    backgroundColor: AppColors.surface,
   },
 
   checkCircle: {
@@ -1188,7 +1173,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: AppColors.card,
   },
 
   footer: {
@@ -1206,13 +1191,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   ctaText: {
-    color: '#fff',
+    color: AppColors.textInverse,
     fontSize: 16,
   },
 
   modelCard: {
     width: '48%',
-    backgroundColor: '#fff',
+    backgroundColor: AppColors.card,
     borderRadius: moderateScale(12),
     borderWidth: 1,
     overflow: 'hidden',
@@ -1231,9 +1216,9 @@ const styles = StyleSheet.create({
   dropdown: {
     height: verticalScale(40),
     borderWidth: 1,
-    borderColor: '#E6E8EC',
+    borderColor: AppColors.border,
+    backgroundColor: AppColors.card,
     borderRadius: moderateScale(8),
     paddingHorizontal: scale(8),
-    backgroundColor: '#fff',
   },
 });

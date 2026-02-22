@@ -25,7 +25,7 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
   const phoneNumber = '+91 8762078061';
 
   const [otpValues, setOtpValues] = useState<string[]>(
-    Array(OTP_LENGTH).fill('')
+    Array(OTP_LENGTH).fill(''),
   );
   const [secondsLeft, setSecondsLeft] = useState(50);
   const [isResendEnabled, setIsResendEnabled] = useState(false);
@@ -111,7 +111,7 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
 
         <CustomText
           variant="body"
-          color={AppColors.textGearDark}
+          color={AppColors.textPrimary}
           style={styles.subtitle}
         >
           Enter the 4 digits OTP sent to you at
@@ -121,7 +121,7 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
           variant="body"
           weight="medium"
           style={styles.phone}
-          color={AppColors.textGearDark}
+          color={AppColors.textPrimary}
         >
           {phoneNumber}
         </CustomText>
@@ -160,7 +160,7 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
           </CustomText>
           <CustomText
             variant="caption"
-            color={isResendEnabled ? AppColors.textGrey : AppColors.textError}
+            color={isResendEnabled ? AppColors.primary : AppColors.textGrey}
             style={{ marginLeft: 4 }}
           >
             {isResendEnabled ? '' : ` in ${secondsLeft} Seconds`}
@@ -206,10 +206,10 @@ const styles = StyleSheet.create({
     width: scale(56),
     height: verticalScale(48),
     borderWidth: 1,
-    borderColor: AppColors.textGrey,
+    borderColor: AppColors.border,
     borderRadius: moderateScale(6),
     fontSize: 20,
-    backgroundColor: AppColors.textInverse,
+    backgroundColor: AppColors.surface,
   },
   resendWrapper: {
     alignSelf: 'center',

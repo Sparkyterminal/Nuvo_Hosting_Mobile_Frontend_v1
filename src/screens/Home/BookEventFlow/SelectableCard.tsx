@@ -2,6 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Image, StyleSheet, Dimensions } from 'react-native';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import CustomText from '../../../components/CustomText';
+import { AppColors } from '../../../theme/colors';
 
 type Props = {
   image: any;
@@ -89,15 +90,15 @@ const styles = StyleSheet.create({
     width: '100%',
     height: verticalScale(90),
     borderRadius: moderateScale(10),
-    backgroundColor: '#EEE',
+    backgroundColor: AppColors.surface,
     marginBottom: verticalScale(8),
   },
   title: {
-    color: '#111827',
+    color: AppColors.textPrimary,
   },
   price: {
     marginTop: 2,
-    color: '#6B7280',
+    color: AppColors.textSecondary,
   },
   button: {
     marginTop: verticalScale(10),
@@ -107,6 +108,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    color: '#fff',
+    color: AppColors.textInverse,
   },
 });

@@ -52,7 +52,7 @@ const ScreenHeader: React.FC<ScreenHeaderProps> = ({
         variant="title"
         weight="bold"
         style={styles.headerTitle}
-        color={AppColors.primary}
+        color={AppColors.textPrimary}
       >
         {title}
       </CustomText>
@@ -66,7 +66,7 @@ const ScreenHeader: React.FC<ScreenHeaderProps> = ({
           <MaterialIcons
             name="more-vert"
             size={24}
-            color={AppColors.primary}
+            color={AppColors.textPrimary}
           />
         </TouchableOpacity>
       ) : (
@@ -82,6 +82,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: scale(16),
     paddingTop: verticalScale(4),
+    // backgroundColor: AppColors.background,
+
+    backgroundColor: AppColors.background,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: AppColors.border,
   },
   headerTitle: {
     flex: 1,

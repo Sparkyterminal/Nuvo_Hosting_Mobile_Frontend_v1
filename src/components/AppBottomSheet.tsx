@@ -38,6 +38,7 @@ const AppBottomSheet: React.FC<Props> = ({
             <CustomText
               weight="bold"
               variant="title"
+              color={AppColors.textPrimary}
             >
               {title}
             </CustomText>
@@ -59,11 +60,11 @@ const AppBottomSheet: React.FC<Props> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: AppColors.overlay,
     justifyContent: 'flex-end',
   },
   container: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: AppColors.surface,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     padding: 16,
