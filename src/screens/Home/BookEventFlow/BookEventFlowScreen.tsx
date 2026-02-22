@@ -26,6 +26,7 @@ import ModelCard from '../../../components/ModelCard';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Fonts } from '../../../theme/fonts';
 import { AppColors } from '../../../theme/colors';
+import FooterButton from '../../../components/FooterButton';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
@@ -131,7 +132,8 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
   const models: ModelItem[] = modelsJson.data;
 
-  const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
+  // const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
+  const [selectedModelIds, setSelectedModelIds] = useState<string[]>([]);
 
   const [modelViewMode, setModelViewMode] = useState<'1' | '2'>('2');
   const modelViewOptions = [
@@ -212,6 +214,13 @@ export default function BookEventFlowScreen({ navigation }: Props) {
     value: item.id,
   }));
 
+  // multi modelSelect code
+  const toggleModel = (id: string) => {
+    setSelectedModelIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  };
+
   const cityOptions = useMemo(() => {
     const found = LOCATION_DATA.find((item) => item.id === selectedState);
 
@@ -289,16 +298,12 @@ export default function BookEventFlowScreen({ navigation }: Props) {
   };
 
   const onNext = () => {
-    // Minimal validation (you can tighten later)
     if (step === 0 && (!eventAbout.trim() || !venue.trim())) return;
-    // if (step === 1 && !selectedUniformId) return;
-    // if (step === 2 && !selectedPackageId) return;
-    // if (step === 5 && !payment) return;
     if (step === 1 && !selectedThemeId) return;
     if (step === 2 && !selectedUniformId) return;
     if (step === 3 && !selectedPackageId) return;
-    if (step === 4 && !selectedModelId) return;
-    if (step === 6 && !payment) return;
+    if (step === 4 && selectedModelIds.length === 0) return;
+    if (step === 7 && !payment) return; // ✅ FIXED
 
     if (step < STEPS.length - 1) setStep((s) => s + 1);
   };
@@ -308,6 +313,24 @@ export default function BookEventFlowScreen({ navigation }: Props) {
     navigation.popToTop();
     navigation.navigate('Home');
   };
+
+  const isDisabled =
+    (step === 0 && (!eventAbout.trim() || !venue.trim())) ||
+    (step === 1 && !selectedThemeId) ||
+    (step === 2 && !selectedUniformId) ||
+    (step === 3 && !selectedPackageId) ||
+    (step === 4 && selectedModelIds.length === 0) ||
+    (step === 7 && !payment);
+
+  const isLastStep = step === STEPS.length - 1;
+
+  const footerLabel = isLastStep
+    ? 'Go to Home'
+    : step === 7
+      ? payLabel
+      : 'Proceed to Next Step';
+
+  const footerAction = isLastStep ? onGoHome : onNext;
 
   const progressPct = ((step + 1) / STEPS.length) * 100;
 
@@ -320,7 +343,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
         style={[
           styles.header,
           {
-            backgroundColor: AppColors.card,
+            backgroundColor: AppColors.background,
             borderBottomColor: AppColors.border,
           },
         ]}
@@ -402,7 +425,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
         )}
 
         {step === 1 && (
-          <View style={styles.card}>
+          <View style={styles.themCard}>
             {/* <FieldLabel text="Select Your Mood" /> */}
 
             <FlatList
@@ -445,7 +468,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
         )}
 
         {step === 2 && (
-          <View style={styles.card}>
+          <View style={styles.themCard}>
             {/* <FieldLabel text="Curate Your Look" /> */}
             <FlatList
               data={uniforms}
@@ -588,7 +611,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                 marginTop: verticalScale(10),
               }}
               renderItem={({ item }) => {
-                const selected = item.id === selectedModelId;
+                const selected = selectedModelIds.includes(item.id);
 
                 return (
                   <View
@@ -602,7 +625,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                       name={item.name}
                       height={item.height}
                       selected={selected}
-                      onPress={() => setSelectedModelId(item.id)}
+                      onPress={() => toggleModel(item.id)}
                       primaryColor={AppColors.primary}
                       borderColor={AppColors.border}
                       textColor={AppColors.textPrimary}
@@ -616,7 +639,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
         )}
 
         {step === 5 && (
-          <View style={styles.card}>
+          <View style={styles.gstCard}>
             <FieldLabel text="GST Details for Corporate Events (optional)" />
             <TextInput
               value={companyName}
@@ -679,17 +702,6 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                   >
                     South Indian Style Wedding
                   </CustomText>
-                  <View style={styles.badge}>
-                    <CustomText
-                      weight="bold"
-                      style={{
-                        fontSize: 12,
-                        color: AppColors.textPrimary,
-                      }}
-                    >
-                      Booked
-                    </CustomText>
-                  </View>
                 </View>
                 <CustomText
                   style={{ marginTop: 6, color: AppColors.textSecondary }}
@@ -854,60 +866,13 @@ export default function BookEventFlowScreen({ navigation }: Props) {
         <View style={{ height: verticalScale(16) }} />
       </ScrollView>
 
-      {/* Bottom Button */}
-      <View
-        style={[
-          styles.footer,
-          {
-            backgroundColor: AppColors.background,
-            borderTopColor: AppColors.border,
-          },
-        ]}
-      >
-        {step === 6 ? (
-          <TouchableOpacity
-            onPress={onGoHome}
-            activeOpacity={0.9}
-            style={[styles.cta, { backgroundColor: AppColors.primary }]}
-          >
-            <CustomText
-              weight="extraBold"
-              style={styles.ctaText}
-            >
-              Go to Home
-            </CustomText>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            onPress={onNext}
-            activeOpacity={0.9}
-            style={[
-              styles.cta,
-              {
-                backgroundColor:
-                  (step === 0 && (!eventAbout.trim() || !venue.trim())) ||
-                  (step === 1 && !selectedThemeId) ||
-                  (step === 2 && !selectedUniformId) ||
-                  (step === 3 && !selectedPackageId) ||
-                  (step === 6 && !payment)
-                    ? AppColors.disabled
-                    : AppColors.primary,
-              },
-            ]}
-          >
-            <CustomText
-              weight="extraBold"
-              style={styles.ctaText}
-            >
-              {step === 4
-                ? payLabel
-                : step === 5
-                  ? payLabel
-                  : 'Proceed to Next Step'}
-            </CustomText>
-          </TouchableOpacity>
-        )}
-      </View>
+      <FooterButton
+        label={footerLabel}
+        onPress={footerAction}
+        disabled={isDisabled}
+        containerStyle={{ backgroundColor: AppColors.background }}
+      />
+
       <DateTimePickerModal
         isVisible={pickerVisible}
         mode={pickerMode}
@@ -1096,6 +1061,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: scale(10),
+    backgroundColor: AppColors.background,
   },
 
   progressTrack: {
@@ -1123,6 +1089,23 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(12),
     padding: scale(12),
     borderWidth: moderateScale(1),
+  },
+  themCard: {
+    backgroundColor: AppColors.card,
+    borderColor: AppColors.border,
+    borderRadius: moderateScale(12),
+    padding: scale(4),
+    margin: moderateScale(-7),
+    gap: moderateScale(6),
+    borderWidth: moderateScale(1),
+  },
+  gstCard: {
+    backgroundColor: AppColors.card,
+    borderColor: AppColors.border,
+    borderRadius: moderateScale(12),
+    padding: scale(12),
+    borderWidth: moderateScale(1),
+    gap: scale(10),
   },
   input: {
     borderWidth: moderateScale(1),

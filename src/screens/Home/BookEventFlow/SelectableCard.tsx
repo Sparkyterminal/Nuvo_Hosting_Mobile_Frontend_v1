@@ -48,15 +48,17 @@ export default function SelectableCard({
       />
 
       <CustomText
-        weight="extraBold"
+        weight="bold"
         style={styles.title}
+        numberOfLines={1}
+        ellipsizeMode="tail"
       >
         {title}
       </CustomText>
 
       {price && (
         <CustomText
-          weight="bold"
+          weight="medium"
           style={styles.price}
         >
           {price}
@@ -85,6 +87,7 @@ const styles = StyleSheet.create({
     borderWidth: moderateScale(1),
     borderRadius: moderateScale(12),
     padding: scale(10),
+    minHeight: verticalScale(180),
   },
   image: {
     width: '100%',
@@ -101,7 +104,7 @@ const styles = StyleSheet.create({
     color: AppColors.textSecondary,
   },
   button: {
-    marginTop: verticalScale(10),
+    marginTop: 'auto',
     height: verticalScale(36),
     borderRadius: moderateScale(10),
     alignItems: 'center',

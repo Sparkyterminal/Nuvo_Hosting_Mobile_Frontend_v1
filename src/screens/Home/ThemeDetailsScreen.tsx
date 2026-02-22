@@ -12,6 +12,7 @@ import CustomText from '../../components/CustomText';
 import { AppColors } from '../../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { scale, verticalScale } from 'react-native-size-matters';
+import FooterButton from '../../components/FooterButton';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ThemeDetails'>;
 
@@ -95,20 +96,13 @@ const ThemeDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
           packages, etc).
         </CustomText>
 
-        <TouchableOpacity
-          style={[
-            styles.primaryBtn,
-            { backgroundColor: data.color || AppColors.primary },
-          ]}
-        >
-          <CustomText
-            variant="body"
-            weight="bold"
-            color={AppColors.textInverse}
-          >
-            Book Now
-          </CustomText>
-        </TouchableOpacity>
+        <FooterButton
+          label="Book Now"
+          onPress={() => {
+            console.log('Book Now pressed');
+          }}
+          containerStyle={{ backgroundColor: AppColors.background }}
+        />
       </View>
     </BaseContainer>
   );
@@ -158,6 +152,7 @@ const styles = StyleSheet.create({
     borderRadius: scale(999),
   },
   content: {
+    flex: 1,
     paddingHorizontal: scale(16),
     paddingTop: verticalScale(16),
   },

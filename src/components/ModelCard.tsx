@@ -57,9 +57,9 @@ const ModelCard = ({
 
         <CustomText
           style={{
-            marginTop: 4,
+            marginTop: verticalScale(4),
             color: mutedColor,
-            fontSize: 12,
+            fontSize: moderateScale(12),
           }}
         >
           Height: {height}
@@ -73,7 +73,7 @@ const ModelCard = ({
             weight="extraBold"
             style={{
               color: AppColors.textInverse,
-              fontSize: 10,
+              fontSize: moderateScale(10),
             }}
           >
             Selected
