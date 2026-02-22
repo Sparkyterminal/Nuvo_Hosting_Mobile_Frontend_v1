@@ -29,6 +29,7 @@ const ExploreScreen = () => {
         <CustomText
           variant="subtitle"
           weight="bold"
+          color={AppColors.textPrimary}
         >
           {item.title}
         </CustomText>
@@ -61,7 +62,10 @@ const ExploreScreen = () => {
         </CustomText>
 
         <TouchableOpacity
-          style={[styles.viewBtn, { backgroundColor: item.color }]}
+          style={[
+            styles.viewBtn,
+            { backgroundColor: item.color || AppColors.primary },
+          ]}
           onPress={() =>
             navigation.navigate('ThemeDetails', {
               data: {
@@ -69,7 +73,7 @@ const ExploreScreen = () => {
                 title: item.title,
                 description: item.description,
                 image: { uri: item.images[0]?.url },
-                color: '#305B77',
+                color: AppColors.primary,
               },
             })
           }
@@ -77,7 +81,7 @@ const ExploreScreen = () => {
           <CustomText
             variant="caption"
             weight="bold"
-            color="#fff"
+            color={AppColors.textInverse}
           >
             View Details
           </CustomText>
@@ -205,11 +209,12 @@ const styles = StyleSheet.create({
     marginTop: scale(20),
     fontSize: scale(18),
     textAlign: 'center',
+    color: AppColors.textPrimary,
   },
 
   card: {
     margin: scale(12),
-    backgroundColor: '#F9F9F9',
+    backgroundColor: AppColors.surface,
     borderRadius: moderateScale(12),
     padding: scale(10),
   },
@@ -227,6 +232,7 @@ const styles = StyleSheet.create({
 
   description: {
     marginTop: verticalScale(8),
+    color: AppColors.textGrey,
   },
 
   dotContainer: {
@@ -242,7 +248,7 @@ const styles = StyleSheet.create({
     height: height * 0.8,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: AppColors.surface,
   },
 
   modalImage: {
@@ -254,6 +260,7 @@ const styles = StyleSheet.create({
     marginTop: verticalScale(10),
     fontSize: scale(16),
     textAlign: 'center',
+    color: AppColors.textPrimary,
   },
 
   // modal 2.0
@@ -267,7 +274,7 @@ const styles = StyleSheet.create({
   tinderCard: {
     width: width,
     height: height * 0.75,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: AppColors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -293,7 +300,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: verticalScale(10),
     fontSize: scale(14),
-    color: '#333',
+    color: AppColors.textPrimary,
   },
 
   // modal 3.0
@@ -310,7 +317,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: '45%',
-    // backgroundColor: 'rgba(0,0,0,0.45)',
     borderBottomLeftRadius: moderateScale(16),
     borderBottomRightRadius: moderateScale(16),
   },
@@ -348,22 +354,23 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#4CAF50',
+    backgroundColor: AppColors.success,
+
     marginRight: 6,
   },
 
   onlineText: {
-    color: '#fff',
+    color: AppColors.textInverse,
     fontSize: scale(12),
   },
 
   nameText: {
-    color: '#fff',
+    color: AppColors.textInverse,
     fontSize: scale(20),
   },
 
   locationText: {
-    color: '#fff',
+    color: AppColors.textInverse,
     fontSize: scale(14),
     marginTop: verticalScale(4),
   },

@@ -146,7 +146,7 @@ const ProfileFieldRow: React.FC<ProfileFieldRowProps> = ({
         </CustomText>
         <CustomText
           variant="body"
-          color={AppColors.textGearDark}
+          color={AppColors.surface}
         >
           {value}
         </CustomText>
@@ -169,7 +169,7 @@ const ProfileFieldRow: React.FC<ProfileFieldRowProps> = ({
 const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: verticalScale(24),
-    backgroundColor: AppColors.textInverse,
+    backgroundColor: AppColors.background,
   },
 
   coverWrapper: {
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   },
   coverOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(23, 88, 119, 0.55)',
+    backgroundColor: AppColors.overlayPrimary,
     paddingHorizontal: scale(16),
     paddingTop: verticalScale(16),
     paddingBottom: verticalScale(16),
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     height: scale(90),
     borderRadius: scale(45),
     borderWidth: 3,
-    borderColor: AppColors.textInverse,
+    borderColor: AppColors.border,
     overflow: 'hidden',
     backgroundColor: AppColors.textInverse,
   },
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   },
   fieldRowBorder: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: AppColors.textInverse,
+    borderBottomColor: AppColors.border,
   },
 });
 

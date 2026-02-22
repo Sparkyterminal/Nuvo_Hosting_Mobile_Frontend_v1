@@ -45,7 +45,7 @@ const AppInput: React.FC<AppInputProps> = ({
         <CustomText
           variant="caption"
           weight="medium"
-          color={AppColors.textGearDark}
+          color={AppColors.textSecondary}
           style={styles.label}
         >
           {label}
@@ -69,7 +69,7 @@ const AppInput: React.FC<AppInputProps> = ({
       {!!error && (
         <CustomText
           variant="caption"
-          color={AppColors.textError}
+          color={AppColors.error}
           style={styles.errorText}
         >
           {error}
@@ -88,19 +88,20 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: scale(1),
-    borderColor: AppColors.textGrey,
+    borderColor: AppColors.border,
     borderRadius: moderateScale(6),
     paddingHorizontal: scale(12),
     height: verticalScale(38),
     fontSize: scale(16),
-    backgroundColor: AppColors.textInverse,
+    backgroundColor: AppColors.surface,
+
     fontFamily: Fonts.regular,
   },
   inputFocused: {
     borderColor: AppColors.primary,
   },
   inputError: {
-    borderColor: AppColors.textError,
+    borderColor: AppColors.error,
   },
   errorText: {
     marginTop: verticalScale(4),

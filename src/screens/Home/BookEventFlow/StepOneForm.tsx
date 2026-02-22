@@ -93,6 +93,7 @@ export default function StepOneForm({
         onChangeText={setEventAbout}
         style={styles.input}
         placeholder="Enter your event "
+        placeholderTextColor={AppColors.textGrey}
       />
 
       {/* Venue */}
@@ -104,6 +105,7 @@ export default function StepOneForm({
         onChangeText={setVenue}
         style={styles.input}
         placeholder="Enter your event Address"
+        placeholderTextColor={AppColors.textGrey}
       />
 
       {/* Staff & Days */}
@@ -116,12 +118,14 @@ export default function StepOneForm({
           onChangeText={setStaff}
           keyboardType="number-pad"
           style={[styles.input, { flex: 1 }]}
+          placeholderTextColor={AppColors.textGrey}
         />
         <TextInput
           value={days}
           onChangeText={setDays}
           keyboardType="number-pad"
           style={[styles.input, { flex: 1 }]}
+          placeholderTextColor={AppColors.textGrey}
         />
       </View>
 
@@ -167,32 +171,33 @@ export default function StepOneForm({
 
 import { StyleSheet } from 'react-native';
 import { Fonts } from '../../../theme/fonts';
+import { AppColors } from '../../../theme/colors';
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: AppColors.card,
     borderRadius: scale(12),
     padding: scale(12),
     borderWidth: scale(1),
-    borderColor: '#E6E8EC',
+    borderColor: AppColors.border,
   },
   label: {
     marginTop: verticalScale(10),
     marginBottom: verticalScale(6),
-    color: '#111827',
+    color: AppColors.textPrimary,
   },
   dropdown: {
     borderWidth: 1,
-    borderColor: '#E6E8EC',
-    backgroundColor: '#F9FAFB',
+    borderColor: AppColors.border,
+    backgroundColor: AppColors.surface,
     borderRadius: scale(10),
     paddingHorizontal: moderateScale(12),
     paddingVertical: verticalScale(12),
   },
   input: {
     borderWidth: scale(1),
-    borderColor: '#E6E8EC',
-    backgroundColor: '#F9FAFB',
+    borderColor: AppColors.border,
+    backgroundColor: AppColors.surface,
     borderRadius: scale(10),
     paddingHorizontal: moderateScale(12),
     paddingVertical: verticalScale(10),

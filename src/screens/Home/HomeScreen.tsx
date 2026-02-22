@@ -114,6 +114,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.cofounderContainer}>
           <CustomText
             variant="subtitle"
+            color={AppColors.textPrimary}
             weight="extraBold"
             style={styles.cofounderHeading}
           >
@@ -178,12 +179,11 @@ const styles = StyleSheet.create({
 
   heroOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.45)',
+    backgroundColor: AppColors.overlay,
     paddingHorizontal: scale(20),
     paddingTop: verticalScale(18),
     paddingBottom: verticalScale(30),
     gap: verticalScale(20),
-    // justifyContent: 'space-between',
   },
 
   heroTopRow: {
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     height: scale(42),
     borderRadius: scale(21),
     borderWidth: 1.5,
-    borderColor: '#fff',
+    borderColor: AppColors.textInverse,
   },
 
   iconButton: {
@@ -247,9 +247,9 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(14),
     borderRadius: moderateScale(18),
     overflow: 'hidden',
-    backgroundColor: '#fff',
+    backgroundColor: AppColors.card,
 
-    shadowColor: '#000',
+    shadowColor: AppColors.textDark,
     shadowOpacity: 0.08,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
@@ -289,11 +289,11 @@ const styles = StyleSheet.create({
   },
 
   cofounderCard: {
-    backgroundColor: '#fff',
+    backgroundColor: AppColors.card,
     borderRadius: moderateScale(22),
     alignItems: 'center',
 
-    shadowColor: '#000',
+    shadowColor: AppColors.textDark,
     shadowOpacity: 0.08,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 5 },
@@ -320,6 +320,7 @@ const styles = StyleSheet.create({
   },
 
   cofounderDescription: {
+    color: AppColors.textPrimary,
     textAlign: 'left',
     opacity: 0.85,
     marginBottom: verticalScale(14),
@@ -327,7 +328,7 @@ const styles = StyleSheet.create({
   },
 
   cofounderButton: {
-    backgroundColor: '#2E6DA4',
+    backgroundColor: AppColors.primary,
     paddingVertical: verticalScale(8),
     paddingHorizontal: scale(20),
     borderRadius: scale(20),

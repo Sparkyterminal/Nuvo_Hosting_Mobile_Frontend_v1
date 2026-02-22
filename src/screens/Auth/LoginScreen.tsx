@@ -78,7 +78,7 @@ const LooginScreen: React.FC<Props> = ({ navigation }) => {
 
             <CustomText
               variant="body"
-              color={AppColors.textGearDark}
+              color={AppColors.textGrey}
               style={styles.subtitle}
             >
               Enter your Email
@@ -99,7 +99,7 @@ const LooginScreen: React.FC<Props> = ({ navigation }) => {
               <Checkbox
                 value={privacyChecked}
                 onValueChange={setPrivacyChecked}
-                color={privacyChecked ? AppColors.primary : undefined}
+                color={privacyChecked ? AppColors.primary : AppColors.border}
               />
 
               <CustomText
@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: scale(16),
     paddingTop: verticalScale(32),
+    backgroundColor: AppColors.background,
   },
   title: {
     textAlign: 'center',
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
   },
 
   checkboxText: {
-    color: AppColors.textGearDark,
+    color: AppColors.textPrimary,
   },
   linkText: {
     color: AppColors.primary,

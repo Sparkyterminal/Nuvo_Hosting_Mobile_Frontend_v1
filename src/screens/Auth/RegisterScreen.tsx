@@ -29,7 +29,6 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Scrollable + keyboard-aware content */}
       <KeyboardAwareScrollView
-        // onTouchStart={() => Keyboard.dismiss()}
         contentContainerStyle={styles.keyboardView}
         enableOnAndroid={true}
         keyboardShouldPersistTaps="handled"
@@ -50,7 +49,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
         <CustomText
           variant="body"
-          color={AppColors.textGearDark}
+          color={AppColors.textPrimary}
           style={styles.sectionSubtitle}
         >
           Enter your name and email to sign up
@@ -115,14 +114,15 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: AppColors.textGrey,
+    borderColor: AppColors.border,
     borderRadius: moderateScale(6),
     paddingHorizontal: scale(12),
     height: verticalScale(38),
     fontSize: 16,
     marginBottom: verticalScale(12),
-    backgroundColor: '#FFFFFF',
+    backgroundColor: AppColors.surface,
     fontFamily: Fonts.regular,
+    color: AppColors.textPrimary,
   },
   sendOtpButton: {
     marginTop: verticalScale(8),

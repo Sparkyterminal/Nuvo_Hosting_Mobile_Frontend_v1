@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import AppButton from './AppButton';
+import { AppColors } from '../theme/colors';
 
 interface FooterButtonProps {
   label: string;
@@ -36,9 +37,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 16,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: AppColors.card,
     borderTopWidth: 1,
-    borderTopColor: '#E5E5E5',
+    borderTopColor: AppColors.border,
   },
 });
 

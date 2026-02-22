@@ -41,7 +41,12 @@ const ThemeDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
 
           <View style={styles.bottomBlock}>
-            <View style={[styles.badge, { backgroundColor: data.color }]}>
+            <View
+              style={[
+                styles.badge,
+                { backgroundColor: data.color || AppColors.primary },
+              ]}
+            >
               <CustomText
                 variant="caption"
                 weight="bold"
@@ -76,7 +81,7 @@ const ThemeDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
         <CustomText
           variant="subtitle"
           weight="extraBold"
-          color={AppColors.textDark}
+          color={AppColors.textPrimary}
         >
           About this theme
         </CustomText>
@@ -91,7 +96,10 @@ const ThemeDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
         </CustomText>
 
         <TouchableOpacity
-          style={[styles.primaryBtn, { backgroundColor: data.color }]}
+          style={[
+            styles.primaryBtn,
+            { backgroundColor: data.color || AppColors.primary },
+          ]}
         >
           <CustomText
             variant="body"
@@ -117,7 +125,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.55)',
+    backgroundColor: AppColors.overlay,
     borderBottomLeftRadius: scale(18),
     borderBottomRightRadius: scale(18),
     overflow: 'hidden',
@@ -133,7 +141,7 @@ const styles = StyleSheet.create({
     width: scale(38),
     height: scale(38),
     borderRadius: scale(19),
-    backgroundColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: AppColors.overlayLight,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   View,
   StyleSheet,
@@ -12,6 +12,7 @@ import { BaseContainer } from '../../components/BaseContainer';
 import CustomText from '../../components/CustomText';
 import { HomeTabParamList } from '../../navigation/HomeTabsNavigator';
 import ScreenHeader from '../../components/ScreenHeader';
+import { AppColors } from '../../theme/colors';
 
 type Props = NativeStackScreenProps<HomeTabParamList, 'Events'>;
 
@@ -28,21 +29,6 @@ type EventItem = {
 };
 
 const EventsScreen: React.FC<Props> = ({ navigation }) => {
-  const COLORS = useMemo(
-    () => ({
-      primary: '#305B77', // close to screenshot
-      textPrimary: '#1F2A33',
-      textMuted: '#6B7280',
-      border: '#E7E7E7',
-      cardBg: '#FFFFFF',
-      chipBg: '#E6E6E6',
-      bg: '#FFFFFF',
-      ring: '#F2E7C8',
-      line: '#CFCFCF',
-    }),
-    [],
-  );
-
   const demoEvent: EventItem = {
     id: '265894',
     titleLine1: 'South Indian',
@@ -73,39 +59,42 @@ const EventsScreen: React.FC<Props> = ({ navigation }) => {
       />
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.content, { backgroundColor: COLORS.bg }]}
+        contentContainerStyle={[
+          styles.content,
+          { backgroundColor: AppColors.background },
+        ]}
       >
         {/* Section 1 */}
         <View style={styles.section}>
           <CustomText
             weight="extraBold"
-            style={[styles.h1, { color: COLORS.primary }]}
+            style={[styles.h1, { color: AppColors.primary }]}
           >
             Your Event Starts Here
           </CustomText>
-          <CustomText style={[styles.sub, { color: COLORS.textMuted }]}>
+          <CustomText style={[styles.sub, { color: AppColors.textGrey }]}>
             Plan, book, and celebrate effortlessly.
           </CustomText>
 
           <PrimaryButton
             label="Book Events"
             onPress={onPressBookEvents}
-            background={COLORS.primary}
+            background={AppColors.primary}
           />
         </View>
 
         {/* Section 2 */}
         <View style={[styles.section, { marginTop: 26 }]}>
-          <CustomText style={[styles.h1, { color: COLORS.primary }]}>
+          <CustomText style={[styles.h1, { color: AppColors.primary }]}>
             Your Events, the Nuvo Way
           </CustomText>
-          <CustomText style={[styles.sub, { color: COLORS.textMuted }]}>
+          <CustomText style={[styles.sub, { color: AppColors.textGrey }]}>
             Track what’s booked — effortlessly.
           </CustomText>
 
           <EventCard
             item={demoEvent}
-            colors={COLORS}
+            // colors={COLORS}
             onPressTrack={onPressTrackStatus}
           />
         </View>
@@ -144,17 +133,17 @@ function PrimaryButton({
 function EventCard({
   item,
   onPressTrack,
-  colors,
+  // colors,
 }: {
   item: EventItem;
   onPressTrack: () => void;
-  colors: any;
+  // colors: any;
 }) {
   return (
     <View
       style={[
         styles.card,
-        { borderColor: colors.border, backgroundColor: colors.cardBg },
+        { borderColor: AppColors.border, backgroundColor: AppColors.card },
       ]}
     >
       {/* Top row */}
@@ -168,24 +157,24 @@ function EventCard({
             <View style={{ flex: 1 }}>
               <CustomText
                 weight="bold"
-                style={[styles.cardTitle, { color: colors.textPrimary }]}
+                style={[styles.cardTitle, { color: AppColors.textPrimary }]}
               >
                 {item.titleLine1}
               </CustomText>
               {!!item.titleLine2 && (
                 <CustomText
                   weight="bold"
-                  style={[styles.cardTitle, { color: colors.textPrimary }]}
+                  style={[styles.cardTitle, { color: AppColors.textPrimary }]}
                 >
                   {item.titleLine2}
                 </CustomText>
               )}
             </View>
 
-            <View style={[styles.chip, { backgroundColor: colors.chipBg }]}>
+            <View style={[styles.chip, { backgroundColor: AppColors.surface }]}>
               <CustomText
                 weight="medium"
-                style={[styles.chipText, { color: colors.textPrimary }]}
+                style={[styles.chipText, { color: AppColors.textPrimary }]}
               >
                 {item.status}
               </CustomText>
@@ -194,14 +183,14 @@ function EventCard({
 
           <CustomText
             weight="extraBold"
-            style={[styles.price, { color: colors.textPrimary }]}
+            style={[styles.price, { color: AppColors.textPrimary }]}
           >
             {item.priceText}
           </CustomText>
 
           <CustomText
             weight="medium"
-            style={[styles.orderId, { color: colors.textMuted }]}
+            style={[styles.orderId, { color: AppColors.textGrey }]}
           >
             Order id:{item.orderId}
           </CustomText>
@@ -212,16 +201,16 @@ function EventCard({
       <ProgressTracker
         steps={item.steps}
         completedSteps={item.completedSteps}
-        primary={colors.primary}
-        ring={colors.ring}
-        line={colors.line}
+        primary={AppColors.primary}
+        ring={AppColors.surface}
+        line={AppColors.border}
       />
 
       {/* Track status button */}
       <TouchableOpacity
         activeOpacity={0.9}
         onPress={onPressTrack}
-        style={[styles.trackBtn, { backgroundColor: colors.primary }]}
+        style={[styles.trackBtn, { backgroundColor: AppColors.primary }]}
       >
         <CustomText
           weight="extraBold"
@@ -275,7 +264,7 @@ function ProgressTracker({
                 <View
                   style={[
                     styles.dotInner,
-                    { backgroundColor: isDone ? primary : '#CFCFCF' },
+                    { backgroundColor: isDone ? primary : AppColors.divider },
                   ]}
                 />
               </View>
@@ -321,7 +310,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   primaryBtnText: {
-    color: '#FFFFFF',
+    color: AppColors.textInverse,
     fontSize: 18,
   },
 
@@ -343,7 +332,7 @@ const styles = StyleSheet.create({
     width: 74,
     height: 74,
     borderRadius: 8,
-    backgroundColor: '#EEE',
+    backgroundColor: AppColors.surface,
   },
   cardInfo: {
     flex: 1,
@@ -421,7 +410,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   trackBtnText: {
-    color: '#FFFFFF',
+    color: AppColors.textInverse,
     fontSize: 18,
   },
 });

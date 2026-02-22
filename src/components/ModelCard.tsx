@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import CustomText from './CustomText';
+import { AppColors } from '../theme/colors';
 // import CustomText from '../CustomText';
 
 type Props = {
@@ -71,7 +72,7 @@ const ModelCard = ({
           <CustomText
             weight="extraBold"
             style={{
-              color: '#fff',
+              color: AppColors.textInverse,
               fontSize: 10,
             }}
           >
@@ -87,7 +88,7 @@ export default ModelCard;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: AppColors.card,
     borderRadius: moderateScale(16),
     borderWidth: 1,
     overflow: 'hidden',
