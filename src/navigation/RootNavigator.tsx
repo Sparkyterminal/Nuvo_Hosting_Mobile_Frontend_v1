@@ -6,9 +6,10 @@ import LooginScreen from '../screens/Auth/LoginScreen';
 import RegisterScreen from '../screens/Auth/RegisterScreen';
 import OtpVerificationScreen from '../screens/Auth/OtpVerificationScreen';
 import HomeTabsNavigator from './HomeTabsNavigator';
-import ThemesScreen from '../screens/Home/ThemesScreen';
 import ThemeDetailsScreen from '../screens/Home/ThemeDetailsScreen';
 import BookEventFlowScreen from '../screens/Home/BookEventFlow/BookEventFlowScreen';
+import EmployeeTabsNavigator from './EmployeeTabsNavigator';
+import EventHistoryScreen from '../screens/EmployeeScreen/EventHistoryScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -18,6 +19,7 @@ export type RootStackParamList = {
   OtpVerification: undefined;
   Home: undefined;
   Themes: undefined;
+  EventHistory: undefined;
 
   ThemeDetails: {
     data: {
@@ -36,6 +38,8 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const RootNavigator = () => {
   const isLoggedIn = true;
+  const role = 'employee';
+  // const role = '';
 
   return (
     <NavigationContainer>
@@ -44,6 +48,46 @@ const RootNavigator = () => {
           name="Splash"
           component={SplashScreen}
         />
+        {/* {!isLoggedIn ? (
+          <>
+            <Stack.Screen
+              name="Onboarding"
+              component={OnboardingScreen}
+            />
+            <Stack.Screen
+              name="Login"
+              component={LooginScreen}
+            />
+            <Stack.Screen
+              name="Register"
+              component={RegisterScreen}
+            />
+            <Stack.Screen
+              name="OtpVerification"
+              component={OtpVerificationScreen}
+            />
+          </>
+        ) : (
+          <>
+            <Stack.Screen
+              name="Home"
+              component={HomeTabsNavigator}
+            />
+
+            <Stack.Screen
+              name="ThemeDetails"
+              component={ThemeDetailsScreen}
+            />
+
+            <Stack.Screen
+              name="BookEventFlow"
+              component={BookEventFlowScreen}
+            />
+          </>
+
+          
+        )} */}
+
         {!isLoggedIn ? (
           <>
             <Stack.Screen
@@ -65,25 +109,24 @@ const RootNavigator = () => {
           </>
         ) : (
           <>
-            {/* Home now shows the bottom tabs */}
             <Stack.Screen
               name="Home"
-              component={HomeTabsNavigator}
-            />
-
-            <Stack.Screen
-              name="Themes"
-              component={ThemesScreen}
+              component={
+                role === 'employee' ? EmployeeTabsNavigator : HomeTabsNavigator
+              }
             />
 
             <Stack.Screen
               name="ThemeDetails"
               component={ThemeDetailsScreen}
             />
-
             <Stack.Screen
               name="BookEventFlow"
               component={BookEventFlowScreen}
+            />
+            <Stack.Screen
+              name="EventHistory"
+              component={EventHistoryScreen}
             />
           </>
         )}
