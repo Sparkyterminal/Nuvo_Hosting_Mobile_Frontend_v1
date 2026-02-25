@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import { TouchableOpacity } from 'react-native';
+import AppButton from '../../components/AppButton';
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -61,11 +62,9 @@ const ExploreScreen = () => {
           {item.description}
         </CustomText>
 
-        <TouchableOpacity
-          style={[
-            styles.viewBtn,
-            { backgroundColor: item.color || AppColors.primary },
-          ]}
+        <AppButton
+          label="View Details"
+          containerStyle={styles.viewBtn}
           onPress={() =>
             navigation.navigate('ThemeDetails', {
               data: {
@@ -77,34 +76,7 @@ const ExploreScreen = () => {
               },
             })
           }
-        >
-          <CustomText
-            variant="caption"
-            weight="bold"
-            color={AppColors.textInverse}
-          >
-            View Details
-          </CustomText>
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
-  const ModalCard = ({ item }: any) => {
-    return (
-      <View style={styles.modalCard}>
-        <Image
-          source={{ uri: item.image }}
-          style={styles.modalImage}
-          contentFit="cover"
         />
-
-        <CustomText
-          weight="bold"
-          style={styles.modalName}
-        >
-          {item.name}
-        </CustomText>
       </View>
     );
   };
