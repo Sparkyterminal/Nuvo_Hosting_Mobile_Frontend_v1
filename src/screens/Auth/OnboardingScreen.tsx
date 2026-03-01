@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -18,7 +18,7 @@ import AppButton from '../../components/AppButton';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 type OnboardingSlide = {
   id: string;
@@ -26,6 +26,8 @@ type OnboardingSlide = {
   subtitle: string;
   image: any;
 };
+
+const LOGO = require('../../assets/images/novo.jpg');
 
 const SLIDES: OnboardingSlide[] = [
   {
@@ -50,7 +52,6 @@ const SLIDES: OnboardingSlide[] = [
 
 const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const flatListRef = useRef<FlatList<OnboardingSlide>>(null);
 
   const renderItem: ListRenderItem<OnboardingSlide> = ({ item }) => {
     return (
@@ -58,19 +59,16 @@ const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
         source={item.image}
         style={styles.imageBackground}
       >
-        {/* Bottom card */}
         <View style={styles.cardWrapper}>
           <View style={styles.card}>
-            {/* Logo */}
             <View style={styles.logoContainer}>
               <Image
-                source={require('../../assets/images/novo.jpg')}
+                source={LOGO}
                 style={styles.logo}
                 resizeMode="contain"
               />
             </View>
 
-            {/* Title */}
             <CustomText
               variant="title"
               weight="bold"
@@ -79,7 +77,6 @@ const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
               {item.title}
             </CustomText>
 
-            {/* Subtitle */}
             <CustomText
               variant="body"
               style={styles.subtitle}
@@ -88,7 +85,6 @@ const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
               {item.subtitle}
             </CustomText>
 
-            {/* Dots indicator */}
             <View style={styles.dotsRow}>
               {SLIDES.map((slide, index) => {
                 const isActive = index === currentIndex;
@@ -101,14 +97,12 @@ const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
               })}
             </View>
 
-            {/* Register button */}
             <AppButton
               label="Register"
               onPress={() => navigation.navigate('Register')}
               containerStyle={styles.primaryButton}
             />
 
-            {/* Footer: Login link */}
             <View style={styles.footerRow}>
               <CustomText
                 variant="caption"
@@ -135,7 +129,6 @@ const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <FlatList
-        ref={flatListRef}
         data={SLIDES}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
@@ -151,8 +144,6 @@ const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-// make card height slightly adaptive – taller on short screens
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -160,7 +151,6 @@ const styles = StyleSheet.create({
   },
   imageBackground: {
     width,
-    height,
     justifyContent: 'flex-end',
   },
   cardWrapper: {
@@ -173,12 +163,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: scale(20),
     paddingTop: verticalScale(40),
     paddingBottom: verticalScale(20),
-    minHeight: scale(120),
     shadowColor: AppColors.textDark,
     shadowOpacity: 0.15,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: verticalScale(4) },
-    // elevation (Android)
     elevation: 6,
   },
   logoContainer: {

@@ -14,24 +14,23 @@ import { scale, verticalScale } from 'react-native-size-matters';
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
 const { height } = Dimensions.get('window');
+const LOGO = require('../../assets/images/novoLogo.png');
 
 const SplashScreen: React.FC<Props> = ({ navigation }) => {
-  const isLoggedIn = true;
   useEffect(() => {
+    const isLoggedIn = false; // TODO: replace with real auth check
+
     const timer = setTimeout(() => {
-      if (isLoggedIn) {
-        navigation.replace('Home');
-      } else {
-        navigation.replace('Onboarding');
-      }
+      navigation.replace(isLoggedIn ? 'Home' : 'Onboarding');
     }, 2500);
+
     return () => clearTimeout(timer);
   }, [navigation]);
 
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../assets/images/novoLogo.png')}
+        source={LOGO}
         style={styles.logo}
         resizeMode="contain"
       />
@@ -52,12 +51,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    width: height *scale(0.35),
-    height: height *verticalScale(0.35),
+    width: scale(180),
+    height: verticalScale(120),
   },
   loader: {
     position: 'absolute',
-    bottom: height * verticalScale(0.12),
+    bottom: height * 0.12,
   },
 });
 
