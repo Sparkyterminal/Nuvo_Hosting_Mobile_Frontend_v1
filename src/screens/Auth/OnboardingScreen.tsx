@@ -98,12 +98,13 @@ const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
             </View>
 
             <AppButton
-              label="Register"
-              onPress={() => navigation.navigate('Register')}
+              label="Let's go"
+              // onPress={() => navigation.navigate('Register')}
+              onPress={() => navigation.navigate('Login')}
               containerStyle={styles.primaryButton}
             />
 
-            <View style={styles.footerRow}>
+            {/* <View style={styles.footerRow}>
               <CustomText
                 variant="caption"
                 color={AppColors.textGrey}
@@ -119,7 +120,7 @@ const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
                   Login
                 </CustomText>
               </TouchableOpacity>
-            </View>
+            </View> */}
           </View>
         </View>
       </ImageBackground>

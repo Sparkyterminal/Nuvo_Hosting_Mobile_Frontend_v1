@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: moderateScale(16),
-    backgroundColor: AppColors.card,
+    backgroundColor: AppColors.background,
     borderTopWidth: moderateScale(1),
     borderTopColor: AppColors.border,
   },

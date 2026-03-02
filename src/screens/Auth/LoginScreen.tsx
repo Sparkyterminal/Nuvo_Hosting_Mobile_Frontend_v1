@@ -6,7 +6,7 @@ import { BaseContainer } from '../../components/BaseContainer';
 import CustomText from '../../components/CustomText';
 import ScreenHeader from '../../components/ScreenHeader';
 import { AppColors } from '../../theme/colors';
-import {  scale, verticalScale } from 'react-native-size-matters';
+import { scale, verticalScale } from 'react-native-size-matters';
 import AppInput from '../../components/AppInput';
 import FooterButton from '../../components/FooterButton';
 import Checkbox from 'expo-checkbox';
@@ -126,7 +126,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
             <FooterButton
               label="Send OTP"
-              onPress={() => navigation.navigate('Onboarding')}
+              onPress={() => navigation.navigate('OtpVerification')}
               disabled={!isValid}
             />
           </View>

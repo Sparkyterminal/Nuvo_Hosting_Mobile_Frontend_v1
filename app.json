@@ -4,17 +4,17 @@
     "slug": "novohosting",
     "version": "1.0.0",
     "splash": {
-      "backgroundColor": "#2B5876"
+      "backgroundColor": "#5B4C3A"
     },
     "plugins": [
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#2B5876",
+          "backgroundColor": "#5B4C3A",
           "image": "./assets/novoLogo.png",
           "resizeMode": "contain",
           "dark": {
-            "backgroundColor": "#2B5876",
+            "backgroundColor": "#5B4C3A",
             "image": "./assets/novoLogo.png",
             "resizeMode": "contain"
           }
