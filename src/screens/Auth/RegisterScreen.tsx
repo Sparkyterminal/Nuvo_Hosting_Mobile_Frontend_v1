@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TextInput } from 'react-native';
+import { StyleSheet, View, TextInput, Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import { BaseContainer } from '../../components/BaseContainer';
@@ -10,13 +10,51 @@ import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import ScreenHeader from '../../components/ScreenHeader';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Fonts } from '../../theme/fonts';
+import { completeClientProfile } from '../../services/api/userService';
+import { handleApiError } from '../../utils/apiErrorHandler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
 const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [phnNumber, setPhnNumber] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleRegister = async () => {
+    try {
+      setLoading(true);
+
+      const res = await completeClientProfile({
+        full_name: name,
+        phone_number: phnNumber,
+        city: 'Bangalore',
+        state: 'Karnataka',
+        country: 'India',
+        subscription_plan: 'SILVER',
+      });
+
+      Alert.alert('Success', res.message || 'Profile completed');
+
+      // Now user is fully onboarded
+      await AsyncStorage.setItem('isLoggedIn', 'true');
+
+      const storedUser = await AsyncStorage.getItem('user');
+
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        parsedUser.profile_completed = true;
+        await AsyncStorage.setItem('user', JSON.stringify(parsedUser));
+      }
+
+      navigation.replace('Splash');
+    } catch (error) {
+      const message = handleApiError(error);
+      Alert.alert('Error', message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <BaseContainer>
@@ -64,15 +102,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
             value={name}
             onChangeText={setName}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="E-mail"
-            placeholderTextColor={AppColors.textGrey}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={email}
-            onChangeText={setEmail}
-          />
+
           <TextInput
             style={styles.input}
             placeholder="Mobile number"
@@ -85,8 +115,8 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Button (will move up with keyboard, still scrollable) */}
         <AppButton
-          label="Send OTP"
-          onPress={() => console.log(navigation.navigate('OtpVerification'))}
+          label={loading ? 'Saving...' : 'Save'}
+          onPress={handleRegister}
           containerStyle={styles.sendOtpButton}
         />
       </KeyboardAwareScrollView>
