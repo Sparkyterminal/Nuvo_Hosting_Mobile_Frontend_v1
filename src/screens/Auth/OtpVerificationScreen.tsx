@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   Keyboard,
+  Alert,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
@@ -15,20 +16,24 @@ import ScreenHeader from '../../components/ScreenHeader';
 import { AppColors } from '../../theme/colors';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+import { resendOtp, verifyOtp } from '../../services/api/authService';
+import { handleApiError } from '../../utils/apiErrorHandler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'OtpVerification'>;
 
 const OTP_LENGTH = 4;
 
 const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
-  // you can pass phone from route.params later; using static one for now
-  const phoneNumber = '+91 8762078061';
+  const { email } = route.params;
+  const OTP_EXPIRY_SECONDS = 300;
 
   const [otpValues, setOtpValues] = useState<string[]>(
     Array(OTP_LENGTH).fill(''),
   );
-  const [secondsLeft, setSecondsLeft] = useState(50);
+  const [secondsLeft, setSecondsLeft] = useState(OTP_EXPIRY_SECONDS);
   const [isResendEnabled, setIsResendEnabled] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const inputsRef = useRef<Array<TextInput | null>>([]);
 
@@ -38,9 +43,11 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
       setIsResendEnabled(true);
       return;
     }
+
     const timer = setInterval(() => {
       setSecondsLeft((prev) => prev - 1);
     }, 1000);
+
     return () => clearInterval(timer);
   }, [secondsLeft]);
 
@@ -59,27 +66,115 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds
+      .toString()
+      .padStart(2, '0')}`;
+  };
+
   const handleKeyPress = (key: string, index: number) => {
     if (key === 'Backspace' && !otpValues[index] && index > 0) {
       inputsRef.current[index - 1]?.focus();
     }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     if (!isResendEnabled) return;
-    // TODO: call API to resend OTP
-    console.log('Resend OTP');
-    setSecondsLeft(50);
-    setIsResendEnabled(false);
+
+    try {
+      const res = await resendOtp(email);
+
+      Alert.alert('Success', res.message || 'OTP resent');
+
+      setSecondsLeft(50);
+      setIsResendEnabled(false);
+    } catch (error) {
+      const message = handleApiError(error);
+      Alert.alert('Error', message);
+    }
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     const otp = otpValues.join('');
+
     if (otp.length !== OTP_LENGTH) return;
-    console.log('Verify OTP', otp);
-    // TODO: call verify API, then navigate
-    // navigation.replace('SomeNextScreen');
+
+    try {
+      setLoading(true);
+
+      const res = await verifyOtp({
+        email,
+        otp,
+        role: 'CLIENT',
+      });
+
+      const { access_token, refresh_token, user } = res.data;
+
+      // store tokens
+      await AsyncStorage.setItem('access_token', access_token);
+      await AsyncStorage.setItem('refresh_token', refresh_token);
+
+      // store user
+      await AsyncStorage.setItem('user', JSON.stringify(user));
+      await AsyncStorage.setItem('role', user.role);
+
+      Alert.alert('Success', res.message || 'Login successful');
+
+      if (!user.profile_completed) {
+        navigation.replace('Register');
+        return;
+      }
+
+      await AsyncStorage.setItem('isLoggedIn', 'true');
+
+      navigation.replace('Splash');
+    } catch (error) {
+      const message = handleApiError(error);
+      Alert.alert('Error', message);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // const handleRegister = async () => {
+  //   const otp = otpValues.join('');
+
+  //   if (otp.length !== OTP_LENGTH) return;
+
+  //   try {
+  //     setLoading(true);
+
+  //     const res = await verifyOtp({
+  //       email,
+  //       otp,
+  //       role: 'CLIENT',
+  //     });
+
+  //     const user = res.data.user;
+
+  //     await AsyncStorage.setItem('user', JSON.stringify(user));
+  //     await AsyncStorage.setItem('role', user.role);
+
+  //     Alert.alert('Success', res.message || 'Login successful');
+
+  //     if (!user.profile_completed) {
+  //       navigation.replace('Register');
+  //       return;
+  //     }
+
+  //     await AsyncStorage.setItem('isLoggedIn', 'true');
+
+  //     navigation.replace('Splash');
+  //   } catch (error) {
+  //     const message = handleApiError(error);
+  //     Alert.alert('Error', message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const isOtpComplete = otpValues.join('').length === OTP_LENGTH;
 
@@ -123,7 +218,7 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
           style={styles.phone}
           color={AppColors.textPrimary}
         >
-          {phoneNumber}
+          {email}
         </CustomText>
 
         {/* OTP Boxes */}
@@ -163,14 +258,16 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
             color={isResendEnabled ? AppColors.primary : AppColors.textGrey}
             style={{ marginLeft: 4 }}
           >
-            {isResendEnabled ? '' : ` in ${secondsLeft} Seconds`}
+            {/* {isResendEnabled ? '' : ` in ${secondsLeft} Seconds`} */}
+            {isResendEnabled ? '' : ` in ${formatTime(secondsLeft)}`}
           </CustomText>
         </TouchableOpacity>
 
         {/* Register button */}
         <AppButton
-          label="Register"
-          onPress={() => navigation.navigate('Home')}
+          label={loading ? 'Verifying...' : 'Register'}
+          onPress={handleRegister}
+          disabled={!isOtpComplete || loading}
           containerStyle={styles.registerButton}
         />
       </KeyboardAwareScrollView>

@@ -17,11 +17,28 @@ import { AppColors } from '../../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
+
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const storedUser = await AsyncStorage.getItem('user');
+
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    };
+
+    loadUser();
+  }, []);
+
   return (
     <BaseContainer>
       <ScrollView
@@ -51,7 +68,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                       weight="bold"
                       color={AppColors.textInverse}
                     >
-                      Stark
+                      {user?.full_name || 'User'}
                     </CustomText>
                   </View>
                 </View>

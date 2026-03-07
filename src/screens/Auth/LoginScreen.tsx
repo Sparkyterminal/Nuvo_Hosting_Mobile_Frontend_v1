@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+} from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import { BaseContainer } from '../../components/BaseContainer';
@@ -11,6 +17,8 @@ import AppInput from '../../components/AppInput';
 import FooterButton from '../../components/FooterButton';
 import Checkbox from 'expo-checkbox';
 import AppBottomSheet from '../../components/AppBottomSheet';
+import { sendOtp } from '../../services/api/authService';
+import { handleApiError } from '../../utils/apiErrorHandler';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
@@ -21,6 +29,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [sheetContent, setSheetContent] = useState('');
   const [privacyChecked, setPrivacyChecked] = useState(false);
   const [termsChecked, setTermsChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const isValid = email.trim().length > 0 && privacyChecked && termsChecked;
 
@@ -38,6 +47,28 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       'This is the Terms of Use content. You can show all terms and conditions here in a scrollable view.',
     );
     setSheetVisible(true);
+  };
+
+  const handleSendOtp = async () => {
+    try {
+      setLoading(true);
+
+      const res = await sendOtp({
+        email: email.trim(),
+        // role: 'CLIENT',
+      });
+
+      Alert.alert('Success', res.message || 'OTP sent successfully');
+
+      navigation.navigate('OtpVerification', {
+        email: email.trim(),
+      });
+    } catch (error) {
+      const message = handleApiError(error);
+      Alert.alert('Error', message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -125,9 +156,9 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             </View>
 
             <FooterButton
-              label="Send OTP"
-              onPress={() => navigation.navigate('OtpVerification')}
-              disabled={!isValid}
+              label={loading ? 'Sending...' : 'Send OTP'}
+              onPress={handleSendOtp}
+              disabled={!isValid || loading}
             />
           </View>
 

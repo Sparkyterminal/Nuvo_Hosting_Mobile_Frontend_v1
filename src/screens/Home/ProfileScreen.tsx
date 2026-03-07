@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -14,10 +14,26 @@ import { HomeTabParamList } from '../../navigation/HomeTabsNavigator';
 import { AppColors } from '../../theme/colors';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect } from 'react';
 
 type Props = BottomTabScreenProps<HomeTabParamList, 'Profile'>;
 
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
+  const [users, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const storedUser = await AsyncStorage.getItem('user');
+
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    };
+
+    loadUser();
+  }, []);
+
   const user = {
     name: 'Stark',
     location: 'CPT',
@@ -89,30 +105,30 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.fieldsCard}>
           <ProfileFieldRow
             label="Name"
-            value={user.name}
+            value={users?.full_name}
             onEdit={() => handleEditField('name')}
           />
           <ProfileFieldRow
             label="Email"
-            value={user.email}
+            value={users?.email}
             onEdit={() => handleEditField('email')}
           />
-          <ProfileFieldRow
+          {/* <ProfileFieldRow
             label="Password"
             value="********"
             onEdit={() => handleEditField('password')}
-          />
-          <ProfileFieldRow
+          /> */}
+          {/* <ProfileFieldRow
             label="User ID"
             value={user.userId}
             onEdit={() => handleEditField('userId')}
-          />
-          <ProfileFieldRow
+          /> */}
+          {/* <ProfileFieldRow
             label="Zip Code"
             value={user.zipCode}
             onEdit={() => handleEditField('zipCode')}
             isLast
-          />
+          /> */}
         </View>
       </ScrollView>
     </BaseContainer>
@@ -152,7 +168,7 @@ const ProfileFieldRow: React.FC<ProfileFieldRowProps> = ({
         </CustomText>
       </View>
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={onEdit}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
@@ -161,7 +177,7 @@ const ProfileFieldRow: React.FC<ProfileFieldRowProps> = ({
           size={20}
           color={AppColors.primary}
         />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };

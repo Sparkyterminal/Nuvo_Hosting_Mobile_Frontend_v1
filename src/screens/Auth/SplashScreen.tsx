@@ -10,6 +10,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import { AppColors } from '../../theme/colors';
 import { scale, verticalScale } from 'react-native-size-matters';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
@@ -17,15 +18,64 @@ const { height } = Dimensions.get('window');
 const LOGO = require('../../assets/images/novoLogo.png');
 
 const SplashScreen: React.FC<Props> = ({ navigation }) => {
+  // const checkAuth = async () => {
+  //   try {
+  //     const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
+  //     const user = await AsyncStorage.getItem('user');
+
+  //     const parsedUser = user ? JSON.parse(user) : null;
+
+  //     setTimeout(() => {
+  //       if (!isLoggedIn) {
+  //         navigation.replace('Onboarding');
+  //         return;
+  //       }
+
+  //       if (!parsedUser?.profile_completed) {
+  //         navigation.replace('Register');
+  //         return;
+  //       }
+
+  //       navigation.replace('Home');
+  //     }, 2000);
+  //   } catch (error) {
+  //     navigation.replace('Onboarding');
+  //   }
+  // };
+
+  const checkAuth = async () => {
+    try {
+      const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
+      const user = await AsyncStorage.getItem('user');
+
+      const parsedUser = user ? JSON.parse(user) : null;
+
+      setTimeout(() => {
+        if (!parsedUser) {
+          navigation.replace('Onboarding');
+          return;
+        }
+
+        if (!parsedUser.profile_completed) {
+          navigation.replace('Register');
+          return;
+        }
+
+        if (isLoggedIn === 'true') {
+          navigation.replace('Home');
+          return;
+        }
+
+        navigation.replace('Onboarding');
+      }, 2000);
+    } catch {
+      navigation.replace('Onboarding');
+    }
+  };
+
   useEffect(() => {
-    const isLoggedIn = false; // TODO: replace with real auth check
-
-    const timer = setTimeout(() => {
-      navigation.replace(isLoggedIn ? 'Home' : 'Onboarding');
-    }, 2500);
-
-    return () => clearTimeout(timer);
-  }, [navigation]);
+    checkAuth();
+  }, []);
 
   return (
     <View style={styles.container}>
