@@ -19,6 +19,7 @@ import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
+import { getCurrentUser } from '../../services/api/userService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -26,18 +27,25 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [user, setUser] = useState<any>(null);
+  const [getUser, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchUserData = async () => {
+    try {
+      const res = await getCurrentUser();
+      setUserData(res.data);
+    } catch (error) {
+      console.log('Theme fetch error', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadUser = async () => {
-      const storedUser = await AsyncStorage.getItem('user');
-
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-    };
-
-    loadUser();
+    fetchUserData();
   }, []);
+
+  console.log('getUser====', getUser);
 
   return (
     <BaseContainer>
@@ -68,7 +76,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                       weight="bold"
                       color={AppColors.textInverse}
                     >
-                      {user?.full_name || 'User'}
+                      {getUser?.full_name || 'User'}
                     </CustomText>
                   </View>
                 </View>
