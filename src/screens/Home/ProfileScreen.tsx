@@ -16,28 +16,31 @@ import { Ionicons, Feather } from '@expo/vector-icons';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect } from 'react';
-import { getCurrentUser } from '../../services/api/userService';
 
 type Props = BottomTabScreenProps<HomeTabParamList, 'Profile'>;
 
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
-  const [getUser, setUserData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  const fetchUserData = async () => {
-    try {
-      const res = await getCurrentUser();
-      setUserData(res.data);
-    } catch (error) {
-      console.log('Theme fetch error', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [users, setUser] = useState<any>(null);
 
   useEffect(() => {
-    fetchUserData();
+    const loadUser = async () => {
+      const storedUser = await AsyncStorage.getItem('user');
+
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    };
+
+    loadUser();
   }, []);
+
+  const user = {
+    name: 'Stark',
+    location: 'CPT',
+    email: 'stark@gmail.com',
+    userId: '9999',
+    zipCode: '562108',
+  };
 
   const handleEditField = (field: string) => {
     console.log('Edit field:', field);
@@ -87,27 +90,27 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             weight="extraBold"
             color={AppColors.primary}
           >
-            {getUser?.full_name}
+            {user.name.toUpperCase()}
           </CustomText>
-          {/* <CustomText
+          <CustomText
             variant="caption"
             color={AppColors.textGrey}
             style={{ marginTop: verticalScale(2) }}
           >
             {user.location.toUpperCase()}
-          </CustomText> */}
+          </CustomText>
         </View>
 
         {/* Fields */}
         <View style={styles.fieldsCard}>
           <ProfileFieldRow
             label="Name"
-            value={getUser?.full_name}
+            value={users?.full_name}
             onEdit={() => handleEditField('name')}
           />
           <ProfileFieldRow
             label="Email"
-            value={getUser?.email}
+            value={users?.email}
             onEdit={() => handleEditField('email')}
           />
           {/* <ProfileFieldRow

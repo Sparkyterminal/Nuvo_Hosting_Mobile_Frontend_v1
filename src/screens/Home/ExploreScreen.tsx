@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
 import CustomText from '../../components/CustomText';
 import { AppColors } from '../../theme/colors';
@@ -13,7 +13,6 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import { TouchableOpacity } from 'react-native';
 import AppButton from '../../components/AppButton';
-import { getThemes } from '../../services/api/themeService';
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -24,28 +23,6 @@ const { width, height } = Dimensions.get('window');
 
 const ExploreScreen = () => {
   const navigation = useNavigation<NavigationProp>();
-
-  const [themes, setThemes] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchThemes = async () => {
-    try {
-      const res = await getThemes();
-
-      console.log('res====', res);
-      setThemes(res.data);
-    } catch (error) {
-      console.log('Theme fetch error', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchThemes();
-  }, []);
-
-  console.log('themes===========', themes);
 
   const ThemeCard = ({ item }: any) => {
     return (
