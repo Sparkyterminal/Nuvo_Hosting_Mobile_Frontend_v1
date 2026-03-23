@@ -44,18 +44,18 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const RootNavigator = () => {
   // const isLoggedIn = false;
   // // const role = 'employee';
-  const role = 'STAFF';
+  // const role = '';
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // const [role, setRole] = useState('');
+  const [role, setRole] = useState('');
 
   useEffect(() => {
     const loadAuth = async () => {
       const login = await AsyncStorage.getItem('isLoggedIn');
-      // const storedRole = await AsyncStorage.getItem('role');
+      const storedRole = await AsyncStorage.getItem('role');
 
       setIsLoggedIn(login === 'true');
-      // setRole(storedRole || '');
+      setRole(storedRole || '');
     };
 
     loadAuth();

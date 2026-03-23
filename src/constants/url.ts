@@ -16,11 +16,4 @@ export const ENDPOINTS = {
     UPDATE_PROFILE: 'users/update-profile/',
     UPLOAD_STAFF_IMAGES: 'users/staff/upload-images/',
   },
-
-  MASTER: {
-    THEMES: 'master/themes/',
-    CREATE_THEME: 'master/themes/create/',
-    UPDATE_THEME: (id: string) => `master/themes/${id}/update/`,
-    DELETE_THEME: (id: string) => `master/themes/${id}/delete/`,
-  },
 };
