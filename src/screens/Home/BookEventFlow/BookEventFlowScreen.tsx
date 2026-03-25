@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -27,6 +27,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { Fonts } from '../../../theme/fonts';
 import { AppColors } from '../../../theme/colors';
 import FooterButton from '../../../components/FooterButton';
+import { getUniforms } from '../../../services/api/uniformService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
@@ -109,6 +110,30 @@ type ModelItem = {
 export default function BookEventFlowScreen({ navigation }: Props) {
   const [step, setStep] = useState(0);
   const themes: ThemeItem[] = themesJson.data;
+  const [uniformsdetails, setUniforms] = useState<any[]>([]);
+
+  //API request for get the uniform details
+  const fetchUniforms = async () => {
+    try {
+      // setUniformLoading(true);
+
+      const res = await getUniforms();
+
+      if (res.success) {
+        setUniforms(res.data);
+      }
+    } catch (error) {
+      console.log('Uniform fetch error:', error);
+    } finally {
+      // setUniformLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUniforms();
+  }, []);
+
+  console.log('uniformsdetails===', uniformsdetails);
 
   // Step 1 form state
   const [eventAbout, setEventAbout] = useState('');
