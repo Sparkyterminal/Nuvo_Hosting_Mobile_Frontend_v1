@@ -16,4 +16,9 @@ export const ENDPOINTS = {
     UPDATE_PROFILE: 'users/update-profile/',
     UPLOAD_STAFF_IMAGES: 'users/staff/upload-images/',
   },
+
+  MASTER: {
+    THEMES: 'master/themes/',
+    UNIFORMS: 'master/uniform/filter/',
+  },
 };
