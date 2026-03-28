@@ -5,15 +5,14 @@ import { AppColors } from '../../theme/colors';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import { BaseContainer } from '../../components/BaseContainer';
 import ScreenHeader from '../../components/ScreenHeader';
-import themesData from '../../services/themes.json';
 import { Image } from 'expo-image';
 import modalData from '../../services/modalData.json';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
-import { TouchableOpacity } from 'react-native';
 import AppButton from '../../components/AppButton';
 import { getThemes } from '../../services/api/themeService';
+import { getModalsList } from '../../services/api/modalsService';
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -27,9 +26,11 @@ const ExploreScreen = () => {
 
   const [themes, setThemes] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [modalsList, setmodalsList] = useState<any[]>([]);
 
   useEffect(() => {
     fetchThemes();
+    fetchModals();
   }, []);
 
   const fetchThemes = async () => {
@@ -48,7 +49,20 @@ const ExploreScreen = () => {
     }
   };
 
+  const fetchModals = async () => {
+    try {
+      const res = await getModalsList();
+
+      if (res.success) {
+        setmodalsList(res.data.results); // ✅ VERY IMPORTANT
+      }
+    } catch (error) {
+      console.log('Modals API Error:', error);
+    }
+  };
+
   console.log('themes===', themes);
+  console.log('modalsList===', modalsList);
 
   const ThemeCard = ({ item }: any) => {
     return (
@@ -58,10 +72,19 @@ const ExploreScreen = () => {
           weight="bold"
           color={AppColors.textPrimary}
         >
-          {item.title}
+          {item.theme_name}
         </CustomText>
 
-        <FlatList
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: item.cover_image + '?w=800&q=60' }}
+            style={styles.image}
+            contentFit="cover"
+            cachePolicy="memory-disk"
+          />
+        </View>
+
+        {/* <FlatList
           data={item.images}
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -79,7 +102,7 @@ const ExploreScreen = () => {
               />
             </View>
           )}
-        />
+        /> */}
 
         <CustomText
           variant="caption"
@@ -95,9 +118,10 @@ const ExploreScreen = () => {
             navigation.navigate('ThemeDetails', {
               data: {
                 id: item.id,
-                title: item.title,
+                title: item.theme_name,
                 description: item.description,
-                image: { uri: item.images[0]?.url },
+                // image: { uri: item.images[0]?.url },
+                image: { uri: item.cover_image },
                 color: AppColors.primary,
               },
             })
@@ -175,7 +199,8 @@ const ExploreScreen = () => {
       />
 
       <FlatList
-        data={themesData.data}
+        // data={themesData.data}
+        data={themes}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <ThemeCard item={item} />}
         contentContainerStyle={styles.listContainer}

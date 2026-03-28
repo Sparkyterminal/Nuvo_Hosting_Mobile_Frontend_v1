@@ -28,6 +28,7 @@ import { Fonts } from '../../../theme/fonts';
 import { AppColors } from '../../../theme/colors';
 import FooterButton from '../../../components/FooterButton';
 import { getUniforms } from '../../../services/api/uniformService';
+import { getThemes } from '../../../services/api/themeService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
@@ -111,29 +112,48 @@ export default function BookEventFlowScreen({ navigation }: Props) {
   const [step, setStep] = useState(0);
   const themes: ThemeItem[] = themesJson.data;
   const [uniformsdetails, setUniforms] = useState<any[]>([]);
+  const [getSetThemes, setThemes] = useState<any[]>([]);
 
   //API request for get the uniform details
   const fetchUniforms = async () => {
     try {
-      // setUniformLoading(true);
-
       const res = await getUniforms();
 
       if (res.success) {
+        console.log('data updated ??????');
         setUniforms(res.data);
       }
     } catch (error) {
       console.log('Uniform fetch error:', error);
     } finally {
-      // setUniformLoading(false);
+      ``;
+    }
+  };
+
+  const fetchThemes = async () => {
+    try {
+      // setLoading(true);
+
+      const res = await getThemes();
+
+      if (res.success) {
+        setThemes(res.data);
+      }
+    } catch (error) {
+      console.log('Themes API Error:', error);
+    } finally {
+      // setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchUniforms();
+    fetchThemes();
   }, []);
 
   console.log('uniformsdetails===', uniformsdetails);
+  console.log('getSetThemes===', getSetThemes);
+  // console.log("data === ",{ uniformsdetails, gertSetThemes });
 
   // Step 1 form state
   const [eventAbout, setEventAbout] = useState('');
