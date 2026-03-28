@@ -6,19 +6,18 @@ import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import { BaseContainer } from '../../components/BaseContainer';
 import ScreenHeader from '../../components/ScreenHeader';
 import { Image } from 'expo-image';
-import modalData from '../../services/modalData.json';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import AppButton from '../../components/AppButton';
 import { getThemes } from '../../services/api/themeService';
 import { getModalsList } from '../../services/api/modalsService';
+import Loader from '../../components/Loader';
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'ThemeDetails'
 >;
-
 const { width, height } = Dimensions.get('window');
 
 const ExploreScreen = () => {
@@ -54,15 +53,12 @@ const ExploreScreen = () => {
       const res = await getModalsList();
 
       if (res.success) {
-        setmodalsList(res.data.results); // ✅ VERY IMPORTANT
+        setmodalsList(res.data.results);
       }
     } catch (error) {
       console.log('Modals API Error:', error);
     }
   };
-
-  console.log('themes===', themes);
-  console.log('modalsList===', modalsList);
 
   const ThemeCard = ({ item }: any) => {
     return (
@@ -134,7 +130,7 @@ const ExploreScreen = () => {
   const TinderModalViewer = () => {
     const [index, setIndex] = useState(0);
 
-    const total = modalData.modalData.length;
+    const total = modalsList.length;
 
     const next = () => {
       if (index < total - 1) {
@@ -148,34 +144,40 @@ const ExploreScreen = () => {
       }
     };
 
-    const item = modalData.modalData[index];
+    const item = modalsList[index];
+
+    // Prevent crash when API not loaded yet
+    if (!item) return null;
 
     return (
       <View style={styles.tinderContainer}>
         <View style={styles.tinderCard}>
-          {/* Main Image */}
+          {/* Image */}
           <Image
-            source={{ uri: item.image }}
+            source={{
+              uri:
+                item.profile_picture ||
+                item.gallery_images?.[0] ||
+                'https://via.placeholder.com/300',
+            }}
             style={styles.fullImage}
             contentFit="cover"
           />
 
-          {/* Dark Gradient Overlay */}
+          {/* Overlay */}
           <View style={styles.overlay} />
 
-          {/* Bottom Info */}
+          {/* Info */}
           <View style={styles.bottomInfo}>
-            <View style={styles.onlineRow}></View>
-
             <CustomText
               weight="extraBold"
               style={styles.nameText}
             >
-              {item.name}, 25 ✔
+              {item.full_name}
             </CustomText>
           </View>
 
-          {/* Invisible Tap Areas */}
+          {/* Tap Areas */}
           <View style={styles.touchRow}>
             <View
               style={styles.leftTap}
@@ -197,9 +199,9 @@ const ExploreScreen = () => {
         title="Explore"
         showBackButton
       />
+      <Loader visible={loading} />
 
       <FlatList
-        // data={themesData.data}
         data={themes}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <ThemeCard item={item} />}
@@ -209,15 +211,17 @@ const ExploreScreen = () => {
         windowSize={3}
         removeClippedSubviews
         ListFooterComponent={
-          <>
-            <CustomText
-              weight="bold"
-              style={styles.header}
-            >
-              Our Crew
-            </CustomText>
-            <TinderModalViewer />
-          </>
+          !loading && themes.length > 0 ? (
+            <>
+              <CustomText
+                weight="bold"
+                style={styles.header}
+              >
+                Our Crew
+              </CustomText>
+              <TinderModalViewer />
+            </>
+          ) : null
         }
       />
     </BaseContainer>
