@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -12,35 +12,15 @@ import { BaseContainer } from '../../components/BaseContainer';
 import CustomText from '../../components/CustomText';
 import { HomeTabParamList } from '../../navigation/HomeTabsNavigator';
 import { AppColors } from '../../theme/colors';
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect } from 'react';
+
+import { useAppSelector } from '../../store/hooks';
 
 type Props = BottomTabScreenProps<HomeTabParamList, 'Profile'>;
 
-const ProfileScreen: React.FC<Props> = ({ navigation }) => {
-  const [users, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      const storedUser = await AsyncStorage.getItem('user');
-
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-    };
-
-    loadUser();
-  }, []);
-
-  const user = {
-    name: 'Stark',
-    location: 'CPT',
-    email: 'stark@gmail.com',
-    userId: '9999',
-    zipCode: '562108',
-  };
+const ProfileScreen: React.FC<Props> = ({}) => {
+  const users = useAppSelector((state) => state.auth.user);
 
   const handleEditField = (field: string) => {
     console.log('Edit field:', field);
@@ -90,14 +70,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             weight="extraBold"
             color={AppColors.primary}
           >
-            {user.name.toUpperCase()}
-          </CustomText>
-          <CustomText
-            variant="caption"
-            color={AppColors.textGrey}
-            style={{ marginTop: verticalScale(2) }}
-          >
-            {user.location.toUpperCase()}
+            {users?.full_name?.toUpperCase() || ''}
           </CustomText>
         </View>
 
@@ -105,30 +78,19 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.fieldsCard}>
           <ProfileFieldRow
             label="Name"
-            value={users?.full_name}
+            value={users?.full_name || ''}
             onEdit={() => handleEditField('name')}
           />
           <ProfileFieldRow
             label="Email"
-            value={users?.email}
+            value={users?.email || ''}
             onEdit={() => handleEditField('email')}
           />
-          {/* <ProfileFieldRow
-            label="Password"
-            value="********"
-            onEdit={() => handleEditField('password')}
-          /> */}
-          {/* <ProfileFieldRow
-            label="User ID"
-            value={user.userId}
-            onEdit={() => handleEditField('userId')}
-          /> */}
-          {/* <ProfileFieldRow
-            label="Zip Code"
-            value={user.zipCode}
-            onEdit={() => handleEditField('zipCode')}
-            isLast
-          /> */}
+          <ProfileFieldRow
+            label="Phone Number"
+            value={users?.phone_number || ''}
+            onEdit={() => handleEditField('email')}
+          />
         </View>
       </ScrollView>
     </BaseContainer>

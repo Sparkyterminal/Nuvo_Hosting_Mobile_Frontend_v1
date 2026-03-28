@@ -6,7 +6,6 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-  Pressable,
   Dimensions,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -16,28 +15,14 @@ import CustomText from '../../components/CustomText';
 import { AppColors } from '../../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
+import { useAppSelector } from '../../store/hooks';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      const storedUser = await AsyncStorage.getItem('user');
-
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-    };
-
-    loadUser();
-  }, []);
+  const user = useAppSelector((state) => state.auth.user);
 
   return (
     <BaseContainer>
