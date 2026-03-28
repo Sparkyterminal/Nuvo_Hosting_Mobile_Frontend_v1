@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
 import CustomText from '../../components/CustomText';
 import { AppColors } from '../../theme/colors';
@@ -10,9 +10,8 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import AppButton from '../../components/AppButton';
-import { getThemes } from '../../services/api/themeService';
-import { getModalsList } from '../../services/api/modalsService';
 import Loader from '../../components/Loader';
+import { useAppSelector } from '../../store/hooks';
 
 type NavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -23,42 +22,11 @@ const { width, height } = Dimensions.get('window');
 const ExploreScreen = () => {
   const navigation = useNavigation<NavigationProp>();
 
-  const [themes, setThemes] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [modalsList, setmodalsList] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetchThemes();
-    fetchModals();
-  }, []);
-
-  const fetchThemes = async () => {
-    try {
-      setLoading(true);
-
-      const res = await getThemes();
-
-      if (res.success) {
-        setThemes(res.data);
-      }
-    } catch (error) {
-      console.log('Themes API Error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchModals = async () => {
-    try {
-      const res = await getModalsList();
-
-      if (res.success) {
-        setmodalsList(res.data.results);
-      }
-    } catch (error) {
-      console.log('Modals API Error:', error);
-    }
-  };
+  const {
+    themes,
+    modals: modalsList,
+    loading,
+  } = useAppSelector((state) => state.explore);
 
   const ThemeCard = ({ item }: any) => {
     return (

@@ -4,7 +4,11 @@ import { Dropdown } from 'react-native-element-dropdown';
 import CustomText from '../../../components/CustomText';
 
 type Props = {
-  //   styles: any;
+  eventType: string | null;
+  setEventType: (val: string) => void;
+  eventTypeOptions: { label: string; value: string }[];
+
+  // existing props...
   stateOptions: any[];
   cityOptions: any[];
   selectedState: string | null;
@@ -50,7 +54,11 @@ export default function StepOneForm({
   formatDate,
   formatTime,
   showPicker,
+  eventType,
+  eventTypeOptions,
+  setEventType,
 }: Props) {
+  // const [eventType, setEventType] = useState<string | null>(null);
   return (
     <View style={styles.card}>
       {/* State Dropdown */}
@@ -87,6 +95,23 @@ export default function StepOneForm({
         value={selectedCity}
         disable={!selectedState}
         onChange={(item) => setSelectedCity(item.value)}
+      />
+
+      <CustomText
+        weight="bold"
+        style={styles.label}
+      >
+        Select Event Type
+      </CustomText>
+
+      <Dropdown
+        style={styles.dropdown}
+        data={eventTypeOptions}
+        labelField="label"
+        valueField="value"
+        value={eventType}
+        placeholder="Select Event Type"
+        onChange={(item) => setEventType(item.value)}
       />
 
       {/* Event */}

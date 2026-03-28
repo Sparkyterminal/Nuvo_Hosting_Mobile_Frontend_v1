@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -15,14 +15,50 @@ import CustomText from '../../components/CustomText';
 import { AppColors } from '../../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
-import { useAppSelector } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { getThemes } from '../../services/api/themeService';
+import { getModalsList } from '../../services/api/modalsService';
+import {
+  setLoading,
+  setModals,
+  setThemes,
+} from '../../features/explore/exploreSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const HomeScreen: React.FC<Props> = ({ navigation }) => {
+const HomeScreen: React.FC<Props> = ({}) => {
   const user = useAppSelector((state) => state.auth.user);
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      dispatch(setLoading(true));
+
+      const [themesRes, modalsRes] = await Promise.all([
+        getThemes(),
+        getModalsList(),
+      ]);
+
+      if (themesRes.success) {
+        dispatch(setThemes(themesRes.data));
+      }
+
+      if (modalsRes.success) {
+        dispatch(setModals(modalsRes.data.results));
+      }
+    } catch (error) {
+      console.log('Home API Error:', error);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
   return (
     <BaseContainer>

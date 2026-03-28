@@ -108,11 +108,20 @@ type ModelItem = {
   image: string;
 };
 
+const eventTypeOptions = [
+  { label: 'Wedding', value: 'Wedding' },
+  { label: 'Corporate', value: 'Corporate' },
+  { label: 'Birthday', value: 'Birthday' },
+  { label: 'Fashion Event', value: 'Fashion Event' },
+  { label: 'Others', value: 'Others' },
+];
+
 export default function BookEventFlowScreen({ navigation }: Props) {
   const [step, setStep] = useState(0);
   const themes: ThemeItem[] = themesJson.data;
   const [uniformsdetails, setUniforms] = useState<any[]>([]);
   const [getSetThemes, setThemes] = useState<any[]>([]);
+  const [eventType, setEventType] = useState<string | null>(null);
 
   //API request for get the uniform details
   const fetchUniforms = async () => {
@@ -343,7 +352,8 @@ export default function BookEventFlowScreen({ navigation }: Props) {
   };
 
   const onNext = () => {
-    if (step === 0 && (!eventAbout.trim() || !venue.trim())) return;
+    if (step === 0 && (!eventType || !eventAbout.trim() || !venue.trim()))
+      return;
     if (step === 1 && !selectedThemeId) return;
     if (step === 2 && !selectedUniformId) return;
     if (step === 3 && !selectedPackageId) return;
@@ -466,6 +476,9 @@ export default function BookEventFlowScreen({ navigation }: Props) {
             formatDate={formatDate}
             formatTime={formatTime}
             showPicker={showPicker}
+            eventType={eventType}
+            setEventType={setEventType}
+            eventTypeOptions={eventTypeOptions}
           />
         )}
 
