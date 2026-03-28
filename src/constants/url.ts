@@ -15,6 +15,7 @@ export const ENDPOINTS = {
     MY_PROFILE: 'users/my-profile/',
     UPDATE_PROFILE: 'users/update-profile/',
     UPLOAD_STAFF_IMAGES: 'users/staff/upload-images/',
+GET_MODALS_LIST: 'users/mobile/modals_list_filter/',
   },
 
   MASTER: {

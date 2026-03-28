@@ -99,7 +99,7 @@ const ThemeDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
         <FooterButton
           label="Book Now"
           onPress={() => {
-            console.log('Book Now pressed');
+            navigation.navigate('BookEventFlow');
           }}
           containerStyle={{ backgroundColor: AppColors.background }}
         />
