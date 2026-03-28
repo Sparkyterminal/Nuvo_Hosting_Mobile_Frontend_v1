@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
+import exploreReducer from '../features/explore/exploreSlice';
 
 export const store = configureStore({
   reducer: {
-    auth: authReducer, // 👈 connect slice here
+    auth: authReducer,
+    explore: exploreReducer,
   },
 });
 
