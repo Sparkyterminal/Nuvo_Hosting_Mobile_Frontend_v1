@@ -6,6 +6,7 @@
     "splash": {
       "backgroundColor": "#5B4C3A"
     },
+    "icon": "./assets/icon.png",
     "plugins": [
       [
         "expo-splash-screen",
@@ -24,7 +25,11 @@
       "expo-font"
     ],
     "android": {
-      "package": "com.rudreshac.novohosting"
+      "package": "com.rudreshac.novohosting",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#5B4C3A"
+      }
     },
     "ios": {
       "bundleIdentifier": "com.rudreshac.novohosting"
