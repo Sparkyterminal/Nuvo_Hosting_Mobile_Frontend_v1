@@ -23,6 +23,7 @@ import {
   setModals,
   setThemes,
 } from '../../features/explore/exploreSlice';
+import { fetchUniforms } from '../../features/uniform/uniformSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -53,6 +54,8 @@ const HomeScreen: React.FC<Props> = ({}) => {
       if (modalsRes.success) {
         dispatch(setModals(modalsRes.data.results));
       }
+
+      dispatch(fetchUniforms());
     } catch (error) {
       console.log('Home API Error:', error);
     } finally {

@@ -17,8 +17,7 @@ import FooterButton from '../../components/FooterButton';
 type Props = NativeStackScreenProps<RootStackParamList, 'ThemeDetails'>;
 
 const ThemeDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
-  // const { theme } = route.params;
-  const { data } = route.params;
+  const { data, from, type } = route.params;
 
   return (
     <BaseContainer>
@@ -66,6 +65,17 @@ const ThemeDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               {data.title}
             </CustomText>
 
+            {type === 'uniform' && data.price && (
+              <CustomText
+                variant="subtitle"
+                weight="bold"
+                color={AppColors.textInverse}
+                style={{ marginTop: 6 }}
+              >
+                ₹{data.price}
+              </CustomText>
+            )}
+
             <CustomText
               variant="body"
               color={AppColors.textInverse}
@@ -97,9 +107,41 @@ const ThemeDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
         </CustomText>
 
         <FooterButton
-          label="Book Now"
+          label={from === 'bookFlow' ? 'Select' : 'Book Now'}
+          // onPress={() => {
+          //   if (from === 'bookFlow') {
+          //     navigation.goBack();
+
+          //     setTimeout(() => {
+          //       navigation.navigate('BookEventFlow', {
+          //         selectedTheme: data,
+          //       });
+          //     }, 0);
+          //   } else {
+          //     navigation.navigate('BookEventFlow', {});
+          //   }
+          // }}
           onPress={() => {
-            navigation.navigate('BookEventFlow');
+            if (from === 'bookFlow') {
+              navigation.goBack();
+
+              setTimeout(() => {
+                if (type === 'uniform') {
+                  navigation.navigate('BookEventFlow', {
+                    selectedUniform: {
+                      ...data,
+                      price: Number(data.price),
+                    },
+                  });
+                } else {
+                  navigation.navigate('BookEventFlow', {
+                    selectedTheme: data,
+                  });
+                }
+              }, 0);
+            } else {
+              navigation.navigate('BookEventFlow', {});
+            }
           }}
           containerStyle={{ backgroundColor: AppColors.background }}
         />
