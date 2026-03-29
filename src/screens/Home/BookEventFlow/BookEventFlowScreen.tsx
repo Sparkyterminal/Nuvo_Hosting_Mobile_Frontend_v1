@@ -31,7 +31,6 @@ import { useAppSelector } from '../../../store/hooks';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
-type UniformItem = { id: string; title: string; price: string; image: any };
 type PackageItem = { id: string; title: string; icon: any };
 
 const PACKAGE_DETAILS: Record<string, { title: string; description: string }> =
@@ -115,9 +114,26 @@ const eventTypeOptions = [
   { label: 'Others', value: 'Others' },
 ];
 
+const PLAN_HIERARCHY: any = {
+  bronze: 1,
+  silver: 2,
+  gold: 3,
+  platinum: 4,
+  diamond: 5,
+};
+
+const PACKAGE_PLAN_MAP: any = {
+  p1: 'diamond',
+  p2: 'platinum',
+  p3: 'gold',
+  p4: 'silver',
+  p5: 'bronze',
+};
+
 export default function BookEventFlowScreen({ navigation, route }: Props) {
   const { themes: getSetThemes } = useAppSelector((state) => state.explore);
   const { uniforms } = useAppSelector((state) => state.uniform);
+  const user = useAppSelector((state) => state.auth.user);
   const [step, setStep] = useState(0);
   const [eventType, setEventType] = useState<string | null>(null);
   const [selectedThemeId, setSelectedThemeId] = useState<
@@ -126,6 +142,21 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
   const [selectedUniformId, setSelectedUniformId] = useState<
     number | string | null
   >(null);
+
+  const [activePackage, setActivePackage] = useState<PackageItem | null>(null);
+
+  const userPlanLevel =
+    PLAN_HIERARCHY[user?.subscription_plan?.toLowerCase?.() || ''] || 0;
+
+  const activePackagePlan = activePackage
+    ? PACKAGE_PLAN_MAP[activePackage.id]
+    : null;
+
+  const activePackageLevel = activePackagePlan
+    ? PLAN_HIERARCHY[activePackagePlan]
+    : 0;
+
+  const isActivePackageLocked = activePackageLevel > userPlanLevel;
 
   useEffect(() => {
     if (route?.params?.selectedTheme) {
@@ -158,7 +189,6 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
   const [isPackageInfoVisible, setIsPackageInfoVisible] = useState(false);
-  const [activePackage, setActivePackage] = useState<PackageItem | null>(null);
 
   const models: ModelItem[] = modelsJson.data;
 
@@ -526,26 +556,42 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
             >
               {packages.map((p) => {
                 const selected = p.id === selectedPackageId;
+
+                const packagePlan = PACKAGE_PLAN_MAP[p.id];
+                const packageLevel = PLAN_HIERARCHY[packagePlan];
+
+                const isLocked = packageLevel > userPlanLevel;
                 return (
                   <TouchableOpacity
                     key={p.id}
                     activeOpacity={0.9}
-                    onPress={() => setSelectedPackageId(p.id)}
+                    onPress={() => {
+                      if (!isLocked) {
+                        setSelectedPackageId(p.id);
+                      }
+                    }}
                     style={[
                       styles.packageRow,
                       {
                         borderColor: selected
                           ? AppColors.primary
                           : AppColors.border,
-                        backgroundColor: AppColors.card,
+                        backgroundColor: isLocked
+                          ? AppColors.surface // 🔒 faded look
+                          : AppColors.card,
+                        opacity: isLocked ? 0.5 : 1,
                       },
                     ]}
                   >
                     <MaterialCommunityIcons
-                      name={p.icon}
+                      name={isLocked ? 'lock' : p.icon}
                       size={22}
                       color={
-                        selected ? AppColors.primary : AppColors.textSecondary
+                        isLocked
+                          ? AppColors.textSecondary
+                          : selected
+                            ? AppColors.primary
+                            : AppColors.textSecondary
                       }
                     />
 
@@ -560,7 +606,16 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
                       {p.title}
                     </CustomText>
 
-                    {/* 👇 Add Info Icon */}
+                    {/* Lock label */}
+                    {isLocked && (
+                      <CustomText
+                        style={{ color: AppColors.error, fontSize: 12 }}
+                      >
+                        Locked
+                      </CustomText>
+                    )}
+
+                    {/* Info icon */}
                     <TouchableOpacity
                       onPress={() => {
                         setActivePackage(p);
@@ -930,10 +985,22 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
           </CustomText>
 
           <TouchableOpacity
-            onPress={() => setIsPackageInfoVisible(false)}
+            onPress={() => {
+              if (isActivePackageLocked) {
+                // 👉 Navigate to subscription or show alert
+                // navigation.navigate('Subscription');
+
+                alert('Please upgrade your plan to access this package');
+              } else {
+                setSelectedPackageId(activePackage?.id || null);
+                setIsPackageInfoVisible(false);
+              }
+            }}
             style={{
               marginTop: 'auto',
-              backgroundColor: AppColors.primary,
+              backgroundColor: isActivePackageLocked
+                ? AppColors.error
+                : AppColors.primary,
               paddingVertical: 14,
               borderRadius: 12,
               alignItems: 'center',
@@ -943,7 +1010,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
               weight="bold"
               style={{ color: AppColors.textInverse }}
             >
-              Close
+              {isActivePackageLocked ? 'Subscribe' : 'Select'}
             </CustomText>
           </TouchableOpacity>
         </View>
