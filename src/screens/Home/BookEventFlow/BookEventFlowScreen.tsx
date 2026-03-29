@@ -17,7 +17,6 @@ import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import { LOCATION_DATA } from '../../../constants/locationData';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import StepOneForm from './StepOneForm';
-import themesJson from '../../../services/themes.json';
 import SelectableCard from './SelectableCard';
 import Modal from 'react-native-modal';
 import FieldLabel from '../../../components/FieldLabel';
@@ -27,8 +26,8 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { Fonts } from '../../../theme/fonts';
 import { AppColors } from '../../../theme/colors';
 import FooterButton from '../../../components/FooterButton';
-import { getUniforms } from '../../../services/api/uniformService';
-import { getThemes } from '../../../services/api/themeService';
+
+import { useAppSelector } from '../../../store/hooks';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
@@ -116,53 +115,31 @@ const eventTypeOptions = [
   { label: 'Others', value: 'Others' },
 ];
 
-export default function BookEventFlowScreen({ navigation }: Props) {
+export default function BookEventFlowScreen({ navigation, route }: Props) {
+  const { themes: getSetThemes } = useAppSelector((state) => state.explore);
+  const { uniforms } = useAppSelector((state) => state.uniform);
   const [step, setStep] = useState(0);
-  const themes: ThemeItem[] = themesJson.data;
-  const [uniformsdetails, setUniforms] = useState<any[]>([]);
-  const [getSetThemes, setThemes] = useState<any[]>([]);
   const [eventType, setEventType] = useState<string | null>(null);
-
-  //API request for get the uniform details
-  const fetchUniforms = async () => {
-    try {
-      const res = await getUniforms();
-
-      if (res.success) {
-        console.log('data updated ??????');
-        setUniforms(res.data);
-      }
-    } catch (error) {
-      console.log('Uniform fetch error:', error);
-    } finally {
-      ``;
-    }
-  };
-
-  const fetchThemes = async () => {
-    try {
-      // setLoading(true);
-
-      const res = await getThemes();
-
-      if (res.success) {
-        setThemes(res.data);
-      }
-    } catch (error) {
-      console.log('Themes API Error:', error);
-    } finally {
-      // setLoading(false);
-    }
-  };
+  const [selectedThemeId, setSelectedThemeId] = useState<
+    string | number | null
+  >(null);
+  const [selectedUniformId, setSelectedUniformId] = useState<
+    number | string | null
+  >(null);
 
   useEffect(() => {
-    fetchUniforms();
-    fetchThemes();
-  }, []);
+    if (route?.params?.selectedTheme) {
+      setSelectedThemeId(route.params.selectedTheme.id);
+    }
+  }, [route?.params?.selectedTheme]);
 
-  console.log('uniformsdetails===', uniformsdetails);
-  console.log('getSetThemes===', getSetThemes);
-  // console.log("data === ",{ uniformsdetails, gertSetThemes });
+  useEffect(() => {
+    if (route?.params?.selectedUniform) {
+      setSelectedUniformId(route.params.selectedUniform.id);
+    }
+  }, [route?.params?.selectedUniform]);
+
+  //API request for get the uniform details
 
   // Step 1 form state
   const [eventAbout, setEventAbout] = useState('');
@@ -179,7 +156,6 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [selectedThemeId, setSelectedThemeId] = useState<number | null>(null);
 
   const [isPackageInfoVisible, setIsPackageInfoVisible] = useState(false);
   const [activePackage, setActivePackage] = useState<PackageItem | null>(null);
@@ -285,37 +261,6 @@ export default function BookEventFlowScreen({ navigation }: Props) {
       value: city,
     }));
   }, [selectedState]);
-
-  // Step 2 uniforms
-  const uniforms: UniformItem[] = [
-    {
-      id: 'u1',
-      title: 'Traditional Uniform',
-      price: '₹44,499',
-      image: require('../../../assets/images/home.jpg'),
-    },
-    {
-      id: 'u2',
-      title: 'Western',
-      price: '₹44,499',
-      image: require('../../../assets/images/home.jpg'),
-    },
-    {
-      id: 'u3',
-      title: 'Western',
-      price: '₹44,499',
-      image: require('../../../assets/images/home.jpg'),
-    },
-    {
-      id: 'u4',
-      title: 'Traditional Uniform',
-      price: '₹44,499',
-      image: require('../../../assets/images/home.jpg'),
-    },
-  ];
-  const [selectedUniformId, setSelectedUniformId] = useState<string | null>(
-    null,
-  );
 
   // Step 3 packages
   const packages: PackageItem[] = [
@@ -487,7 +432,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
             {/* <FieldLabel text="Select Your Mood" /> */}
 
             <FlatList
-              data={themes}
+              data={getSetThemes}
               keyExtractor={(item) => item.id.toString()}
               numColumns={2}
               scrollEnabled={false}
@@ -500,19 +445,21 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
                 return (
                   <SelectableCard
-                    image={{ uri: item.images[0]?.url }}
-                    title={item.title}
+                    image={{ uri: item.cover_image }}
+                    title={item.theme_name}
                     selected={selected}
                     onPress={() => setSelectedThemeId(item.id)}
                     onViewPress={() =>
                       navigation.navigate('ThemeDetails', {
                         data: {
                           id: item.id,
-                          title: item.title,
+                          title: item.theme_name,
                           description: item.description,
-                          image: { uri: item.images[0]?.url },
-                          color: AppColors.primary, // or your theme color
+                          image: { uri: item.cover_image },
+                          color: AppColors.primary,
                         },
+                        from: 'bookFlow',
+                        type: 'theme',
                       })
                     }
                     primaryColor={AppColors.primary}
@@ -543,8 +490,8 @@ export default function BookEventFlowScreen({ navigation }: Props) {
 
                 return (
                   <SelectableCard
-                    image={item.image}
-                    title={item.title}
+                    image={{ uri: item.images?.[0] }}
+                    title={item.category_name}
                     price={item.price}
                     selected={selected}
                     onPress={() => setSelectedUniformId(item.id)}
@@ -552,11 +499,13 @@ export default function BookEventFlowScreen({ navigation }: Props) {
                       navigation.navigate('ThemeDetails', {
                         data: {
                           id: item.id,
-                          title: item.title,
-                          description: `${item.title} includes premium fabric and professional styling.`,
-                          image: item.image,
-                          color: AppColors.primary, // optional different color for uniforms
+                          title: item.category_name,
+                          description: `${item.category_name} includes premium fabric and professional styling.`,
+                          image: { uri: item.images?.[0] },
+                          color: AppColors.primary,
                         },
+                        from: 'bookFlow',
+                        type: 'uniform',
                       })
                     }
                     primaryColor={AppColors.primary}
@@ -652,7 +601,7 @@ export default function BookEventFlowScreen({ navigation }: Props) {
             </View>
 
             <FlatList
-              key={modelViewMode} // 👈 IMPORTANT (forces re-render layout)
+              key={modelViewMode} //IMPORTANT (forces re-render layout)
               data={models}
               keyExtractor={(item) => item.id}
               numColumns={modelViewMode === '1' ? 1 : 2}

@@ -35,11 +35,30 @@ export type RootStackParamList = {
       title: string;
       description?: string;
       image: any;
+      price?: string | number;
       color?: string;
     };
+    from?: 'explore' | 'bookFlow';
+    type?: 'theme' | 'uniform';
   };
 
-  BookEventFlow: undefined;
+  BookEventFlow: {
+    selectedTheme?: {
+      id: string | number;
+      title: string;
+      description?: string;
+      image: any;
+    };
+
+    selectedUniform?: {
+      // ✅ ADD THIS
+      id: string | number;
+      title: string;
+      description?: string;
+      image: any;
+      price?: number;
+    };
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -53,53 +72,6 @@ const RootNavigator = () => {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState('');
-
-  // useEffect(() => {
-  //   const loadAuth = async () => {
-  //     const login = await AsyncStorage.getItem('isLoggedIn');
-  //     const storedRole = await AsyncStorage.getItem('role');
-
-  //     setIsLoggedIn(login === 'true');
-  //     setRole(storedRole || '');
-  //   };
-
-  //   loadAuth();
-  // }, []);
-
-  // useEffect(() => {
-  //   const loadAuth = async () => {
-  //     const login = await AsyncStorage.getItem('isLoggedIn');
-  //     const storedRole = await AsyncStorage.getItem('role');
-
-  //     setIsLoggedIn(login === 'true');
-  //     setRole(storedRole || '');
-
-  //     // ✅ if logged in → fetch profile
-  //     if (login === 'true') {
-  //       try {
-  //         const res = await getCurrentUser();
-
-  //         const userData = res?.data;
-
-  //         // 🔥 store in redux
-  //         dispatch(setUser(userData));
-
-  //         // 💾 store in async storage
-  //         await AsyncStorage.setItem('user', JSON.stringify(userData));
-
-  //         // optional: sync role
-  //         if (userData?.role) {
-  //           await AsyncStorage.setItem('role', userData.role);
-  //           setRole(userData.role);
-  //         }
-  //       } catch (error) {
-  //         console.log('Profile error:', error);
-  //       }
-  //     }
-  //   };
-
-  //   loadAuth();
-  // }, []);
 
   useEffect(() => {
     const loadAuth = async () => {
@@ -143,60 +115,6 @@ const RootNavigator = () => {
   }, []);
 
   return (
-    // <NavigationContainer>
-    //   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    //     <Stack.Screen
-    //       name="Splash"
-    //       component={SplashScreen}
-    //     />
-
-    //     {!isLoggedIn ? (
-    //       <>
-    //         <Stack.Screen
-    //           name="Onboarding"
-    //           component={OnboardingScreen}
-    //         />
-    //         <Stack.Screen
-    //           name="Login"
-    //           component={LooginScreen}
-    //         />
-    //         <Stack.Screen
-    //           name="Register"
-    //           component={RegisterScreen}
-    //         />
-    //         <Stack.Screen
-    //           name="OtpVerification"
-    //           component={OtpVerificationScreen}
-    //         />
-    //       </>
-    //     ) : (
-    //       <>
-    //         <Stack.Screen
-    //           name="Home"
-    //           component={
-    //             role === 'STAFF' || role === 'MAKEUP_ARTIST'
-    //               ? EmployeeTabsNavigator
-    //               : HomeTabsNavigator
-    //           }
-    //         />
-
-    //         <Stack.Screen
-    //           name="ThemeDetails"
-    //           component={ThemeDetailsScreen}
-    //         />
-    //         <Stack.Screen
-    //           name="BookEventFlow"
-    //           component={BookEventFlowScreen}
-    //         />
-    //         <Stack.Screen
-    //           name="EventHistory"
-    //           component={EventHistoryScreen}
-    //         />
-    //       </>
-    //     )}
-    //   </Stack.Navigator>
-    // </NavigationContainer>
-
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen

@@ -7,7 +7,7 @@ import { AppColors } from '../../../theme/colors';
 type Props = {
   image: any;
   title: string;
-  price?: string;
+  price?: string|number;
   selected: boolean;
   onPress: () => void;
   onViewPress?: () => void;
