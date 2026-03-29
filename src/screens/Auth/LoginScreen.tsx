@@ -5,6 +5,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Linking,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/RootNavigator';
@@ -33,20 +34,36 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
   const isValid = email.trim().length > 0 && privacyChecked && termsChecked;
 
-  const handlePrivacyPolicy = () => {
-    setSheetTitle('Privacy Policy');
-    setSheetContent(
-      'This is the Privacy Policy details. Here you can show long text or list related to privacy policy. You can also load this from API.',
-    );
-    setSheetVisible(true);
+  const handlePrivacyPolicy = async () => {
+    const url = 'https://nuvohosting.org/privacy-policy';
+
+    try {
+      const supported = await Linking.canOpenURL(url);
+
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert('Error', 'Unable to open Privacy Policy URL');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong while opening the link');
+    }
   };
 
-  const handleTerms = () => {
-    setSheetTitle('Terms of Use');
-    setSheetContent(
-      'This is the Terms of Use content. You can show all terms and conditions here in a scrollable view.',
-    );
-    setSheetVisible(true);
+  const handleTerms = async () => {
+    const url = 'https://nuvohosting.org/terms';
+
+    try {
+      const supported = await Linking.canOpenURL(url);
+
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert('Error', 'Unable to open Terms URL');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong while opening the link');
+    }
   };
 
   const handleSendOtp = async () => {
