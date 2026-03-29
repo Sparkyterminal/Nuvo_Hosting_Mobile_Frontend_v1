@@ -7,6 +7,7 @@ interface User {
   role?: string;
   profile_picture?: string;
   phone_number?: string;
+  subscription_plan?: string;
 }
 
 interface AuthState {
