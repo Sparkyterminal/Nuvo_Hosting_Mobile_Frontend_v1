@@ -6,6 +6,7 @@ import CustomText from '../../components/CustomText';
 import { AppColors } from '../../theme/colors';
 import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useAppSelector } from '../../store/hooks';
 
 const historyEvents = [
   {
@@ -28,12 +29,16 @@ const historyEvents = [
   },
 ];
 
-const EventHistoryScreen = ({ navigation }) => {
+const EventHistoryScreen = ({ navigation }: any) => {
+  const { upcoming, completed } = useAppSelector((state) => state.staff);
+
   const renderEvent = ({ item }: any) => {
     return (
       <View style={styles.eventCard}>
         <Image
-          source={{ uri: item.image }}
+          source={{
+            uri: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?q=80&w=800&auto=format&fit=crop',
+          }}
           style={styles.eventImage}
         />
 
@@ -44,7 +49,7 @@ const EventHistoryScreen = ({ navigation }) => {
               style={styles.eventTitle}
               numberOfLines={2}
             >
-              {item.title}
+              {item.event_name}
             </CustomText>
 
             <View style={styles.badge}>
@@ -65,7 +70,7 @@ const EventHistoryScreen = ({ navigation }) => {
               >
                 Date & Time
               </CustomText>
-              <CustomText>{item.date}</CustomText>
+              <CustomText>{item.event_end_datetime}</CustomText>
             </View>
           </View>
 
@@ -82,7 +87,7 @@ const EventHistoryScreen = ({ navigation }) => {
               >
                 Event Venue
               </CustomText>
-              <CustomText>{item.venue}</CustomText>
+              <CustomText>{item.venue.formatted_address}</CustomText>
             </View>
           </View>
         </View>
@@ -98,7 +103,7 @@ const EventHistoryScreen = ({ navigation }) => {
       />
 
       <FlatList
-        data={historyEvents}
+        data={completed}
         keyExtractor={(item) => item.id}
         renderItem={renderEvent}
         contentContainerStyle={{ paddingBottom: verticalScale(80) }}
