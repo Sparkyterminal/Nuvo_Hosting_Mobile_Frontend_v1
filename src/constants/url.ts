@@ -15,11 +15,18 @@ export const ENDPOINTS = {
     MY_PROFILE: 'users/my-profile/',
     UPDATE_PROFILE: 'users/update-profile/',
     UPLOAD_STAFF_IMAGES: 'users/staff/upload-images/',
-GET_MODALS_LIST: 'users/mobile/modals_list_filter/',
+    GET_MODALS_LIST: 'users/mobile/modals_list_filter/',
   },
 
   MASTER: {
     THEMES: 'master/themes/',
     UNIFORMS: 'master/uniform/filter/',
+  },
+
+  STAFF: {
+    UPCOMING: 'events/staff/upcoming-all/',
+    ASSIGNED: 'events/staff/assigned/',
+    COMPLETED: 'events/staff/completed/',
+    ONLINE_STATUS: 'events/staff/online-status/',
   },
 };

@@ -1,11 +1,15 @@
-import React, { useEffect } from 'react';
 import { View, StyleSheet, Image, ScrollView, FlatList } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BaseContainer } from '../../components/BaseContainer';
 import CustomText from '../../components/CustomText';
 import { AppColors } from '../../theme/colors';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
-// import { FlatList } from 'react-native/types_generated/index';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { useEffect, useState } from 'react';
+import {
+  fetchCompletedEvents,
+  fetchUpcomingEvents,
+} from '../../features/staff/staffSlice';
 
 const myEvents = [
   {
@@ -100,14 +104,19 @@ const myEvents = [
   },
 ];
 
-const EmployeeHomeScreen = ({ navigation }) => {
-  const loadEmployeeData = () => {
-    console.log('Employee Home Loaded');
-  };
+const EmployeeHomeScreen = ({ navigation }: any) => {
+  const users = useAppSelector((state) => state.auth.user);
+
+  const dispatch = useAppDispatch();
+
+  const { upcoming, completed } = useAppSelector((state) => state.staff);
 
   useEffect(() => {
-    loadEmployeeData();
+    dispatch(fetchUpcomingEvents());
+    dispatch(fetchCompletedEvents());
   }, []);
+
+  console.log('completed === ', completed);
 
   const renderEvent = ({ item }: any) => {
     return (
@@ -118,19 +127,6 @@ const EmployeeHomeScreen = ({ navigation }) => {
         />
 
         <View style={{ flex: 1 }}>
-          {/* <View style={styles.eventHeaderRow}>
-            <CustomText
-              weight="bold"
-              style={{ flex: 1 }}
-            >
-              {item.title}
-            </CustomText>
-
-            <View style={styles.badge}>
-              <CustomText variant="caption">{item.status}</CustomText>
-            </View>
-          </View> */}
-
           <View style={styles.eventHeaderRow}>
             <CustomText
               weight="bold"
@@ -202,7 +198,7 @@ const EmployeeHomeScreen = ({ navigation }) => {
                 weight="bold"
                 color={AppColors.textInverse}
               >
-                Sneha Rana
+                {users?.full_name}
               </CustomText>
             </View>
 
@@ -215,13 +211,6 @@ const EmployeeHomeScreen = ({ navigation }) => {
         </View>
 
         {/* MAP PREVIEW */}
-        {/* <Image
-          source={{
-            uri: 'https://maps.googleapis.com/maps/api/staticmap?center=Bangalore&zoom=13&size=600x300&maptype=roadmap',
-          }}
-          style={styles.map}
-        /> */}
-
         <Image
           source={{
             uri: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1200&auto=format&fit=crop',
@@ -337,7 +326,7 @@ const styles = StyleSheet.create({
   },
   eventTitle: {
     flex: 1,
-    marginRight: scale(8), // ⭐ prevents badge overlap
+    marginRight: scale(8),
   },
 
   sectionRow: {
