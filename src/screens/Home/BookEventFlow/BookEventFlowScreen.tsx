@@ -144,6 +144,9 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
   >(null);
 
   const [activePackage, setActivePackage] = useState<PackageItem | null>(null);
+  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(
+    null,
+  );
 
   const userPlanLevel =
     PLAN_HIERARCHY[user?.subscription_plan?.toLowerCase?.() || ''] || 0;
@@ -163,6 +166,14 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     modals: modalsList,
     loading,
   } = useAppSelector((state) => state.explore);
+
+  // helper to check package type
+  const isCrewSelectionRequired = useMemo(() => {
+    if (!selectedPackageId) return false;
+
+    const plan = PACKAGE_PLAN_MAP[selectedPackageId];
+    return plan === 'platinum' || plan === 'gold';
+  }, [selectedPackageId]);
 
   useEffect(() => {
     if (route?.params?.selectedTheme) {
@@ -304,10 +315,6 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     { id: 'p5', title: 'Bronze Edition', icon: 'hexagon-slice-2' },
   ];
 
-  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(
-    null,
-  );
-
   // Step 4 GST
   const [companyName, setCompanyName] = useState('');
   const [companyAddress, setCompanyAddress] = useState('');
@@ -324,10 +331,32 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
   const title = STEPS[step];
 
   const onBack = () => {
-    console.log('pressed ');
+    if (step === 5) {
+      // 👇 Coming back from GST
+      if (isCrewSelectionRequired) {
+        setStep(4); // go to Select Crew Members
+      } else {
+        setStep(3); // skip back to package selection
+      }
+      return;
+    }
+
+    // default behavior
     if (step > 0) setStep((s) => s - 1);
     else navigation.goBack();
   };
+
+  // const onNext = () => {
+  //   if (step === 0 && (!eventType || !eventAbout.trim() || !venue.trim()))
+  //     return;
+  //   if (step === 1 && !selectedThemeId) return;
+  //   if (step === 2 && !selectedUniformId) return;
+  //   if (step === 3 && !selectedPackageId) return;
+  //   if (step === 4 && selectedModelIds.length === 0) return;
+  //   if (step === 7 && !payment) return; // ✅ FIXED
+
+  //   if (step < STEPS.length - 1) setStep((s) => s + 1);
+  // };
 
   const onNext = () => {
     if (step === 0 && (!eventType || !eventAbout.trim() || !venue.trim()))
@@ -335,8 +364,18 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     if (step === 1 && !selectedThemeId) return;
     if (step === 2 && !selectedUniformId) return;
     if (step === 3 && !selectedPackageId) return;
-    if (step === 4 && selectedModelIds.length === 0) return;
-    if (step === 7 && !payment) return; // ✅ FIXED
+
+    // 👇 ONLY validate crew if required
+    if (step === 4 && isCrewSelectionRequired && selectedModelIds.length === 0)
+      return;
+
+    if (step === 7 && !payment) return;
+
+    // 👇 SKIP LOGIC
+    if (step === 3 && !isCrewSelectionRequired) {
+      setStep(5); // skip step 4
+      return;
+    }
 
     if (step < STEPS.length - 1) setStep((s) => s + 1);
   };
@@ -347,12 +386,20 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     navigation.navigate('Home');
   };
 
+  // const isDisabled =
+  //   (step === 0 && (!eventAbout.trim() || !venue.trim())) ||
+  //   (step === 1 && !selectedThemeId) ||
+  //   (step === 2 && !selectedUniformId) ||
+  //   (step === 3 && !selectedPackageId) ||
+  //   (step === 4 && selectedModelIds.length === 0) ||
+  //   (step === 7 && !payment);
+
   const isDisabled =
     (step === 0 && (!eventAbout.trim() || !venue.trim())) ||
     (step === 1 && !selectedThemeId) ||
     (step === 2 && !selectedUniformId) ||
     (step === 3 && !selectedPackageId) ||
-    (step === 4 && selectedModelIds.length === 0) ||
+    (step === 4 && isCrewSelectionRequired && selectedModelIds.length === 0) ||
     (step === 7 && !payment);
 
   const isLastStep = step === STEPS.length - 1;
