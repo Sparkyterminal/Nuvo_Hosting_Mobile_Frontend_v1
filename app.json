@@ -33,6 +33,11 @@
     },
     "ios": {
       "bundleIdentifier": "com.rudreshac.novohosting"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "807417d9-ee29-4c5f-83c9-c6c3b3520c5f"
+      }
     }
   }
 }
