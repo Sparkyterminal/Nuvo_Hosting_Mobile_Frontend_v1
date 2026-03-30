@@ -158,6 +158,12 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
 
   const isActivePackageLocked = activePackageLevel > userPlanLevel;
 
+  const {
+    themes,
+    modals: modalsList,
+    loading,
+  } = useAppSelector((state) => state.explore);
+
   useEffect(() => {
     if (route?.params?.selectedTheme) {
       setSelectedThemeId(route.params.selectedTheme.id);
@@ -190,9 +196,6 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
 
   const [isPackageInfoVisible, setIsPackageInfoVisible] = useState(false);
 
-  const models: ModelItem[] = modelsJson.data;
-
-  // const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
   const [selectedModelIds, setSelectedModelIds] = useState<string[]>([]);
 
   const [modelViewMode, setModelViewMode] = useState<'1' | '2'>('2');
@@ -657,7 +660,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
 
             <FlatList
               key={modelViewMode} //IMPORTANT (forces re-render layout)
-              data={models}
+              data={modalsList}
               keyExtractor={(item) => item.id}
               numColumns={modelViewMode === '1' ? 1 : 2}
               scrollEnabled={false}
@@ -683,8 +686,8 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
                     }}
                   >
                     <ModelCard
-                      image={item.image}
-                      name={item.name}
+                      image={item.gallery_images[0]}
+                      name={item.full_name}
                       height={item.height}
                       selected={selected}
                       onPress={() => toggleModel(item.id)}

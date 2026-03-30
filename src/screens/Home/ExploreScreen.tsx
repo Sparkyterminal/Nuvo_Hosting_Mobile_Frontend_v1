@@ -79,16 +79,7 @@ const ExploreScreen = () => {
           label="View Details"
           containerStyle={styles.viewBtn}
           onPress={() =>
-            // navigation.navigate('ThemeDetails', {
-            //   data: {
-            //     id: item.id,
-            //     title: item.theme_name,
-            //     description: item.description,
-            //     // image: { uri: item.images[0]?.url },
-            //     image: { uri: item.cover_image },
-            //     color: AppColors.primary,
-            //   },
-            // })
+           
             navigation.navigate('ThemeDetails', {
               data: {
                 id: item.id,
