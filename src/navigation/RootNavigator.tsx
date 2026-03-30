@@ -5,10 +5,8 @@ import OnboardingScreen from '../screens/Auth/OnboardingScreen';
 import LooginScreen from '../screens/Auth/LoginScreen';
 import RegisterScreen from '../screens/Auth/RegisterScreen';
 import OtpVerificationScreen from '../screens/Auth/OtpVerificationScreen';
-import HomeTabsNavigator from './HomeTabsNavigator';
 import ThemeDetailsScreen from '../screens/Home/ThemeDetailsScreen';
 import BookEventFlowScreen from '../screens/Home/BookEventFlow/BookEventFlowScreen';
-import EmployeeTabsNavigator from './EmployeeTabsNavigator';
 import EventHistoryScreen from '../screens/EmployeeScreen/EventHistoryScreen';
 
 import { useEffect, useState } from 'react';
@@ -16,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppDispatch } from '../store/hooks';
 import { getCurrentUser } from '../services/api/userService';
 import { setUser } from '../features/auth/authSlice';
+import HomeWrapper from '../screens/HomeWrapper';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -64,10 +63,6 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const RootNavigator = () => {
-  // const isLoggedIn = false;
-  // // const role = 'employee';
-  // const role = '';
-
   const dispatch = useAppDispatch();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -141,11 +136,7 @@ const RootNavigator = () => {
 
         <Stack.Screen
           name="Home"
-          component={
-            role === 'STAFF' || role === 'MAKEUP_ARTIST'
-              ? EmployeeTabsNavigator
-              : HomeTabsNavigator
-          }
+          component={HomeWrapper}
         />
 
         <Stack.Screen

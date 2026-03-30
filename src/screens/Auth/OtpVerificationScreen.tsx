@@ -19,6 +19,8 @@ import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import { resendOtp, verifyOtp } from '../../services/api/authService';
 import { handleApiError } from '../../utils/apiErrorHandler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppDispatch } from '../../store/hooks';
+import { setUser } from '../../features/auth/authSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'OtpVerification'>;
 
@@ -27,6 +29,7 @@ const OTP_LENGTH = 4;
 const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
   const { email } = route.params;
   const OTP_EXPIRY_SECONDS = 300;
+  const dispatch = useAppDispatch();
 
   const [otpValues, setOtpValues] = useState<string[]>(
     Array(OTP_LENGTH).fill(''),
@@ -113,24 +116,22 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
 
       const { access_token, refresh_token, user } = res.data;
 
-      // store tokens
       await AsyncStorage.setItem('access_token', access_token);
       await AsyncStorage.setItem('refresh_token', refresh_token);
-
-      // store user
       await AsyncStorage.setItem('user', JSON.stringify(user));
       await AsyncStorage.setItem('role', user.role);
+      await AsyncStorage.setItem('isLoggedIn', 'true');
 
       Alert.alert('Success', res.message || 'Login successful');
+
+      dispatch(setUser(user));
 
       if (!user.profile_completed) {
         navigation.replace('Register');
         return;
       }
 
-      await AsyncStorage.setItem('isLoggedIn', 'true');
-
-      navigation.replace('Splash');
+      navigation.replace('Home');
     } catch (error) {
       const message = handleApiError(error);
       Alert.alert('Error', message);
@@ -138,43 +139,6 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
       setLoading(false);
     }
   };
-
-  // const handleRegister = async () => {
-  //   const otp = otpValues.join('');
-
-  //   if (otp.length !== OTP_LENGTH) return;
-
-  //   try {
-  //     setLoading(true);
-
-  //     const res = await verifyOtp({
-  //       email,
-  //       otp,
-  //       role: 'CLIENT',
-  //     });
-
-  //     const user = res.data.user;
-
-  //     await AsyncStorage.setItem('user', JSON.stringify(user));
-  //     await AsyncStorage.setItem('role', user.role);
-
-  //     Alert.alert('Success', res.message || 'Login successful');
-
-  //     if (!user.profile_completed) {
-  //       navigation.replace('Register');
-  //       return;
-  //     }
-
-  //     await AsyncStorage.setItem('isLoggedIn', 'true');
-
-  //     navigation.replace('Splash');
-  //   } catch (error) {
-  //     const message = handleApiError(error);
-  //     Alert.alert('Error', message);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const isOtpComplete = otpValues.join('').length === OTP_LENGTH;
 
