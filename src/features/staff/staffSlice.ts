@@ -3,6 +3,7 @@ import {
   getUpcomingEvents,
   getAssignedEvents,
   getCompletedEvents,
+  updateOnlineStatus,
 } from '../../services/api/staffService';
 
 // 🔥 THUNKS
@@ -21,11 +22,20 @@ export const fetchCompletedEvents = createAsyncThunk(
   async () => await getCompletedEvents(),
 );
 
+export const setOnlineStatus = createAsyncThunk(
+  'staff/onlineStatus',
+  async (isOnline: boolean) => {
+    return await updateOnlineStatus(isOnline);
+  },
+);
+
 type StaffState = {
   upcoming: any[];
   assigned: any[];
   completed: any[];
   loading: boolean;
+  isOnline: boolean;
+  lastOnline: string | null;
 };
 
 const initialState: StaffState = {
@@ -33,6 +43,8 @@ const initialState: StaffState = {
   assigned: [],
   completed: [],
   loading: false,
+  isOnline: false,
+  lastOnline: null,
 };
 
 const staffSlice = createSlice({
@@ -54,6 +66,18 @@ const staffSlice = createSlice({
       .addCase(fetchCompletedEvents.fulfilled, (state, action) => {
         state.completed = action.payload.results;
       })
+
+      .addCase(setOnlineStatus.pending, (state, action) => {
+        state.isOnline = action.meta.arg;
+      })
+      .addCase(setOnlineStatus.fulfilled, (state, action) => {
+        state.isOnline = action.payload.data.is_online;
+        state.lastOnline = action.payload.data.last_online;
+      })
+      .addCase(setOnlineStatus.rejected, (state, action) => {
+        state.isOnline = !action.meta.arg;
+      })
+
       .addMatcher(
         (action) => action.type.endsWith('/rejected'),
         (state) => {

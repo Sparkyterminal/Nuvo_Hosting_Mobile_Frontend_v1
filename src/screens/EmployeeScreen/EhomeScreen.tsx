@@ -1,4 +1,11 @@
-import { View, StyleSheet, Image, ScrollView, FlatList } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Image,
+  ScrollView,
+  FlatList,
+  Switch,
+} from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BaseContainer } from '../../components/BaseContainer';
 import CustomText from '../../components/CustomText';
@@ -10,14 +17,17 @@ import {
   fetchAssignedEvents,
   fetchCompletedEvents,
   fetchUpcomingEvents,
+  setOnlineStatus,
 } from '../../features/staff/staffSlice';
 
 const EmployeeHomeScreen = ({ navigation }: any) => {
   const users = useAppSelector((state) => state.auth.user);
+  const { assigned, isOnline } = useAppSelector((state) => state.staff);
+
+  const [loadingStatus, setLoadingStatus] = useState(false);
+  const [localStatus, setLocalStatus] = useState(isOnline);
 
   const dispatch = useAppDispatch();
-
-  const { assigned } = useAppSelector((state) => state.staff);
 
   useEffect(() => {
     dispatch(fetchUpcomingEvents());
@@ -88,6 +98,22 @@ const EmployeeHomeScreen = ({ navigation }: any) => {
     );
   };
 
+  const handleToggle = (value: boolean) => {
+    if (loadingStatus) return;
+
+    setLocalStatus(value);
+
+    setLoadingStatus(true);
+
+    dispatch(setOnlineStatus(value))
+      .unwrap()
+      .finally(() => setLoadingStatus(false));
+  };
+
+  useEffect(() => {
+    setLocalStatus(isOnline);
+  }, [isOnline]);
+
   return (
     <BaseContainer>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -109,6 +135,21 @@ const EmployeeHomeScreen = ({ navigation }: any) => {
               >
                 {users?.full_name}
               </CustomText>
+            </View>
+
+            <View style={styles.statusRow}>
+              <CustomText
+                variant="caption"
+                color={AppColors.textInverse}
+              >
+                {isOnline ? 'Online' : 'Offline'}
+              </CustomText>
+
+              <Switch
+                value={isOnline}
+                onValueChange={handleToggle}
+                disabled={loadingStatus}
+              />
             </View>
 
             <Ionicons
@@ -248,5 +289,10 @@ const styles = StyleSheet.create({
 
   historyLink: {
     color: AppColors.primary,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: verticalScale(6),
   },
 });

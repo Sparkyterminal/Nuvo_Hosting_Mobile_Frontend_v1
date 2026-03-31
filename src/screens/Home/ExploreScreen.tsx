@@ -79,7 +79,6 @@ const ExploreScreen = () => {
           label="View Details"
           containerStyle={styles.viewBtn}
           onPress={() =>
-           
             navigation.navigate('ThemeDetails', {
               data: {
                 id: item.id,
@@ -216,14 +215,14 @@ const styles = StyleSheet.create({
   },
 
   imageContainer: {
-    width: width - scale(24),
+    width: '100%',
     marginTop: verticalScale(10),
   },
 
   image: {
     width: '100%',
     height: verticalScale(200),
-    borderRadius: moderateScale(10),
+    borderRadius: moderateScale(12),
   },
 
   description: {
