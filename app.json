@@ -2,7 +2,7 @@
   "expo": {
     "name": "NovoHosting",
     "slug": "novohosting",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "splash": {
       "backgroundColor": "#5B4C3A"
     },
@@ -25,6 +25,7 @@
       "expo-font"
     ],
     "android": {
+       "versionCode": 1,
       "package": "com.rudreshac.novohosting",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
