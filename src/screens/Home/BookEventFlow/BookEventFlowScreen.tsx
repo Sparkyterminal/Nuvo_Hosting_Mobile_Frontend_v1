@@ -346,18 +346,6 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     else navigation.goBack();
   };
 
-  // const onNext = () => {
-  //   if (step === 0 && (!eventType || !eventAbout.trim() || !venue.trim()))
-  //     return;
-  //   if (step === 1 && !selectedThemeId) return;
-  //   if (step === 2 && !selectedUniformId) return;
-  //   if (step === 3 && !selectedPackageId) return;
-  //   if (step === 4 && selectedModelIds.length === 0) return;
-  //   if (step === 7 && !payment) return; // ✅ FIXED
-
-  //   if (step < STEPS.length - 1) setStep((s) => s + 1);
-  // };
-
   const onNext = () => {
     if (step === 0 && (!eventType || !eventAbout.trim() || !venue.trim()))
       return;
@@ -365,13 +353,11 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     if (step === 2 && !selectedUniformId) return;
     if (step === 3 && !selectedPackageId) return;
 
-    // 👇 ONLY validate crew if required
     if (step === 4 && isCrewSelectionRequired && selectedModelIds.length === 0)
       return;
 
     if (step === 7 && !payment) return;
 
-    // 👇 SKIP LOGIC
     if (step === 3 && !isCrewSelectionRequired) {
       setStep(5); // skip step 4
       return;
@@ -385,14 +371,6 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     navigation.popToTop();
     navigation.navigate('Home');
   };
-
-  // const isDisabled =
-  //   (step === 0 && (!eventAbout.trim() || !venue.trim())) ||
-  //   (step === 1 && !selectedThemeId) ||
-  //   (step === 2 && !selectedUniformId) ||
-  //   (step === 3 && !selectedPackageId) ||
-  //   (step === 4 && selectedModelIds.length === 0) ||
-  //   (step === 7 && !payment);
 
   const isDisabled =
     (step === 0 && (!eventAbout.trim() || !venue.trim())) ||

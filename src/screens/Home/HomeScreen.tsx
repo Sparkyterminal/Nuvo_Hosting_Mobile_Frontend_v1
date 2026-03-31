@@ -162,12 +162,19 @@ const HomeScreen: React.FC<Props> = ({}) => {
             Founder Spotlight
           </CustomText>
 
-          <ImageBackground
-            source={require('../../assets/images/founder.jpeg')}
-            style={styles.cofounderBanner}
-            imageStyle={styles.cofounderBannerImage}
-            resizeMode="contain"
-          />
+          <View style={styles.founderRow}>
+            <Image
+              source={require('../../assets/images/founder_2.jpg')}
+              style={styles.founderImage}
+              resizeMode="cover"
+            />
+
+            <Image
+              source={require('../../assets/images/founder_1.jpg')}
+              style={styles.founderImage}
+              resizeMode="cover"
+            />
+          </View>
 
           <View style={styles.cofounderContent}>
             <CustomText style={styles.cofounderDescription}>
@@ -418,6 +425,19 @@ const styles = StyleSheet.create({
     lineHeight: verticalScale(22),
     opacity: 0.92,
     marginBottom: verticalScale(14),
+  },
+
+  founderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: scale(10),
+    marginBottom: verticalScale(18),
+  },
+
+  founderImage: {
+    width: '48%',
+    aspectRatio: 0.75, // adjust based on your image
+    borderRadius: moderateScale(16),
   },
 });
 
