@@ -148,6 +148,8 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     null,
   );
 
+  console.log('user === ', user);
+
   const userPlanLevel =
     PLAN_HIERARCHY[user?.subscription_plan?.toLowerCase?.() || ''] || 0;
 
