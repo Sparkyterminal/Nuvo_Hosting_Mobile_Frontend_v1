@@ -29,4 +29,9 @@ export const ENDPOINTS = {
     COMPLETED: 'events/staff/completed/',
     ONLINE_STATUS: 'events/staff/online-status/',
   },
+
+  EVENTS: {
+    CREATE: 'events/create/',
+    GET_MY_EVENTS: 'events/get-my-events/',
+  },
 };
