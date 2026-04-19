@@ -31,6 +31,7 @@ type Props = {
     field: 'startDate' | 'startTime' | 'endDate' | 'endTime',
     mode: 'date' | 'time',
   ) => void;
+  setVenueDetails: any;
 };
 
 export default function StepOneForm({
@@ -57,6 +58,7 @@ export default function StepOneForm({
   eventType,
   eventTypeOptions,
   setEventType,
+  setVenueDetails,
 }: Props) {
   // const [eventType, setEventType] = useState<string | null>(null);
   return (
@@ -136,13 +138,81 @@ export default function StepOneForm({
       >
         Select a Venue
       </CustomText>
-      <TextInput
-        value={venue}
-        onChangeText={setVenue}
-        style={styles.input}
-        placeholder="Enter your event Address"
-        placeholderTextColor={AppColors.textGrey}
-      />
+      <View style={{ zIndex: 10 }}>
+        <GooglePlacesAutocomplete
+          placeholder="Search venue"
+          fetchDetails={true}
+          onFail={(error) => {
+            console.log('❌ GOOGLE ERROR:', error);
+          }}
+          onNotFound={() => {
+            console.log('⚠️ NO RESULTS FOUND');
+          }}
+          onPress={(data, details = null) => {
+            console.log('✅ DATA:', data);
+            console.log('✅ DETAILS:', details);
+          }}
+          debounce={300}
+          minLength={2}
+          enablePoweredByContainer={false}
+          keyboardShouldPersistTaps="handled"
+          query={{
+            key:GOOGLE_MAPS_API_KEY,
+            language: 'en',
+            components: 'country:in',
+          }}
+          textInputProps={{
+            returnKeyType: 'search',
+          }}
+          onPress={(data, details = null) => {
+            if (!details) {
+              console.log('No details found');
+              return;
+            }
+
+            const location = details?.geometry?.location;
+            if (!location) return;
+
+            const components = details.address_components;
+
+            const city =
+              components.find((c) => c.types.includes('locality'))?.long_name ||
+              components.find((c) =>
+                c.types.includes('administrative_area_level_2'),
+              )?.long_name;
+
+            const state = components.find((c) =>
+              c.types.includes('administrative_area_level_1'),
+            )?.long_name;
+
+            setSelectedCity(city);
+            setSelectedState(state);
+            setVenue(details.formatted_address);
+
+            setVenueDetails({
+              venue_name: data.structured_formatting.main_text,
+              formatted_address: details.formatted_address,
+              latitude: location.lat,
+              longitude: location.lng,
+              place_id: data.place_id,
+            });
+          }}
+          styles={{
+            container: { flex: 0 },
+            textInput: {
+              borderWidth: 1,
+              borderRadius: 10,
+              paddingHorizontal: 12,
+              paddingVertical: 10,
+              backgroundColor: '#fff',
+            },
+            listView: {
+              backgroundColor: '#fff',
+              zIndex: 20,
+            },
+          }}
+        />
+      </View>
 
       {/* Staff & Days */}
       <CustomText
@@ -241,6 +311,8 @@ export default function StepOneForm({
 import { StyleSheet } from 'react-native';
 import { Fonts } from '../../../theme/fonts';
 import { AppColors } from '../../../theme/colors';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { GOOGLE_MAPS_API_KEY } from '../../../app/config/api';
 
 const styles = StyleSheet.create({
   card: {

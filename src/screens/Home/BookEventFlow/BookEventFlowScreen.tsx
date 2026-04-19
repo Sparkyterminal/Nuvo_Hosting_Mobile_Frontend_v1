@@ -147,8 +147,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(
     null,
   );
-
-  console.log('user === ', user);
+  const [venueDetails, setVenueDetails] = useState(null);
 
   const userPlanLevel =
     PLAN_HIERARCHY[user?.subscription_plan?.toLowerCase?.() || ''] || 0;
@@ -459,6 +458,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
           { backgroundColor: AppColors.background },
         ]}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         {step === 0 && (
           <StepOneForm
@@ -484,6 +484,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
             eventType={eventType}
             setEventType={setEventType}
             eventTypeOptions={eventTypeOptions}
+            setVenueDetails={setVenueDetails}
           />
         )}
 

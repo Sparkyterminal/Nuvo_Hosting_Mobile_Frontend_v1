@@ -27,6 +27,7 @@
     "react": "19.1.0",
     "react-native": "0.81.5",
     "react-native-element-dropdown": "^2.12.4",
+    "react-native-google-places-autocomplete": "^2.6.4",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-modal": "^14.0.0-rc.1",
     "react-native-modal-datetime-picker": "^18.0.0",
@@ -36,7 +37,7 @@
     "react-redux": "^9.2.0"
   },
   "devDependencies": {
-   "@types/react": "~19.1.10",
+    "@types/react": "~19.1.10",
     "typescript": "~5.9.2"
   },
   "private": true
