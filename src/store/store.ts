@@ -3,7 +3,7 @@ import authReducer from '../features/auth/authSlice';
 import exploreReducer from '../features/explore/exploreSlice';
 import uniformReducer from '../features/uniform/uniformSlice';
 import staffReducer from '../features/staff/staffSlice';
-// import eventReducer from '../features/event/eventSlice';
+import eventReducer from '../features/events/eventSlice';
 
 export const store = configureStore({
   reducer: {

@@ -13,8 +13,8 @@ type Props = {
   cityOptions: any[];
   selectedState: string | null;
   selectedCity: string | null;
-  setSelectedState: (val: string) => void;
-  setSelectedCity: (val: string) => void;
+  setSelectedState: (val: string | null) => void;
+  setSelectedCity: (val: string | null) => void;
   eventAbout: string;
   setEventAbout: (val: string) => void;
   venue: string;
@@ -31,6 +31,8 @@ type Props = {
     field: 'startDate' | 'startTime' | 'endDate' | 'endTime',
     mode: 'date' | 'time',
   ) => void;
+  setVenueDetails: any;
+  selectedCityCoords: any;
 };
 
 export default function StepOneForm({
@@ -57,8 +59,13 @@ export default function StepOneForm({
   eventType,
   eventTypeOptions,
   setEventType,
+  setVenueDetails,
+  selectedCityCoords,
 }: Props) {
   // const [eventType, setEventType] = useState<string | null>(null);
+
+  // const selectedCityCoords = useMemo(() => {
+
   return (
     <View style={styles.card}>
       {/* State Dropdown */}
@@ -97,6 +104,95 @@ export default function StepOneForm({
         onChange={(item) => setSelectedCity(item.value)}
       />
 
+      {/* Venue */}
+      <CustomText
+        weight="bold"
+        style={styles.label}
+      >
+        Select a Venue
+      </CustomText>
+      <View style={{ zIndex: 10 }}>
+        <GooglePlacesAutocomplete
+          placeholder="Search venue"
+          fetchDetails={true}
+          onFail={(error) => {
+            console.log('❌ GOOGLE ERROR:', error);
+          }}
+          onNotFound={() => {
+            console.log('⚠️ NO RESULTS FOUND');
+          }}
+          debounce={300}
+          minLength={2}
+          enablePoweredByContainer={false}
+          keyboardShouldPersistTaps="handled"
+          query={{
+            key: GOOGLE_MAPS_API_KEY,
+            language: 'en',
+            components: 'country:in',
+            location: selectedCityCoords
+              ? `${selectedCityCoords.lat},${selectedCityCoords.lng}`
+              : undefined,
+            radius: selectedCityCoords ? 50000 : undefined,
+          }}
+          textInputProps={{
+            returnKeyType: 'search',
+          }}
+          onPress={(data, details = null) => {
+            if (!details) {
+              console.log('No details found');
+              return;
+            }
+
+            const location = details?.geometry?.location;
+            if (!location) return;
+
+            setVenue(details.formatted_address);
+
+            setVenueDetails({
+              venue_name: data.structured_formatting.main_text,
+              formatted_address: details.formatted_address,
+              latitude: location.lat,
+              longitude: location.lng,
+              place_id: data.place_id,
+            });
+          }}
+          styles={{
+            container: {
+              flex: 0,
+            },
+            textInput: {
+              borderWidth: 1,
+              borderColor: AppColors.border,
+              backgroundColor: AppColors.surface,
+              borderRadius: 10,
+              paddingHorizontal: 12,
+              paddingVertical: 10,
+              color: AppColors.textPrimary,
+              fontFamily: Fonts.medium,
+            },
+            listView: {
+              backgroundColor: AppColors.card,
+              borderRadius: 10,
+              marginTop: 5,
+              borderWidth: 1,
+              borderColor: AppColors.border,
+            },
+            row: {
+              paddingVertical: 12,
+              paddingHorizontal: 12,
+            },
+            description: {
+              color: AppColors.textPrimary,
+              fontFamily: Fonts.medium,
+            },
+            separator: {
+              height: 1,
+              backgroundColor: AppColors.divider,
+            },
+          }}
+        />
+      </View>
+
       <CustomText
         weight="bold"
         style={styles.label}
@@ -126,21 +222,6 @@ export default function StepOneForm({
         onChangeText={setEventAbout}
         style={styles.input}
         placeholder="Enter your event "
-        placeholderTextColor={AppColors.textGrey}
-      />
-
-      {/* Venue */}
-      <CustomText
-        weight="bold"
-        style={styles.label}
-      >
-        Select a Venue
-      </CustomText>
-      <TextInput
-        value={venue}
-        onChangeText={setVenue}
-        style={styles.input}
-        placeholder="Enter your event Address"
         placeholderTextColor={AppColors.textGrey}
       />
 
@@ -241,6 +322,8 @@ export default function StepOneForm({
 import { StyleSheet } from 'react-native';
 import { Fonts } from '../../../theme/fonts';
 import { AppColors } from '../../../theme/colors';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { GOOGLE_MAPS_API_KEY } from '../../../app/config/api';
 
 const styles = StyleSheet.create({
   card: {
@@ -263,6 +346,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: moderateScale(12),
     paddingVertical: verticalScale(12),
   },
+  // input: {
+  //   borderWidth: scale(1),
+  //   borderColor: AppColors.border,
+  //   backgroundColor: AppColors.surface,
+  //   borderRadius: scale(10),
+  //   paddingHorizontal: moderateScale(12),
+  //   paddingVertical: verticalScale(10),
+  //   color: AppColors.textPrimary,
+  //   fontFamily: Fonts.medium,
+  // },
+
   input: {
     borderWidth: scale(1),
     borderColor: AppColors.border,
@@ -270,7 +364,5 @@ const styles = StyleSheet.create({
     borderRadius: scale(10),
     paddingHorizontal: moderateScale(12),
     paddingVertical: verticalScale(10),
-    color: AppColors.textPrimary,
-    fontFamily: Fonts.medium,
   },
 });

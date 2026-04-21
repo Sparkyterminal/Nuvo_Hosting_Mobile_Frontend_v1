@@ -8,6 +8,8 @@ interface User {
   profile_picture?: string;
   phone_number?: string;
   subscription_plan?: string;
+
+  profile_id?: string;
 }
 
 interface AuthState {

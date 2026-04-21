@@ -24,6 +24,7 @@ import {
   setThemes,
 } from '../../features/explore/exploreSlice';
 import { fetchUniforms } from '../../features/uniform/uniformSlice';
+import { getMyEvents } from '../../features/events/eventSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -56,6 +57,8 @@ const HomeScreen: React.FC<Props> = ({}) => {
       }
 
       dispatch(fetchUniforms());
+
+      dispatch(getMyEvents());
     } catch (error) {
       console.log('Home API Error:', error);
     } finally {

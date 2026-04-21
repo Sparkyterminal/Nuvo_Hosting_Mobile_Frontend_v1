@@ -20,18 +20,26 @@ import StepOneForm from './StepOneForm';
 import SelectableCard from './SelectableCard';
 import Modal from 'react-native-modal';
 import FieldLabel from '../../../components/FieldLabel';
-import modelsJson from '../../../services/models.json';
 import ModelCard from '../../../components/ModelCard';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Fonts } from '../../../theme/fonts';
 import { AppColors } from '../../../theme/colors';
 import FooterButton from '../../../components/FooterButton';
 
-import { useAppSelector } from '../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { createEvent, getMyEvents } from '../../../features/events/eventSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
 type PackageItem = { id: string; title: string; icon: any };
+
+type VenueDetails = {
+  venue_name: string;
+  formatted_address: string;
+  latitude: number;
+  longitude: number;
+  place_id: string;
+};
 
 const PACKAGE_DETAILS: Record<string, { title: string; description: string }> =
   {
@@ -106,6 +114,8 @@ type ModelItem = {
   image: string;
 };
 
+const DEFAULT_DURATION_HOURS = 6;
+
 const eventTypeOptions = [
   { label: 'Wedding', value: 'Wedding' },
   { label: 'Corporate', value: 'Corporate' },
@@ -131,9 +141,12 @@ const PACKAGE_PLAN_MAP: any = {
 };
 
 export default function BookEventFlowScreen({ navigation, route }: Props) {
+  const dispatch = useAppDispatch();
   const { themes: getSetThemes } = useAppSelector((state) => state.explore);
   const { uniforms } = useAppSelector((state) => state.uniform);
   const user = useAppSelector((state) => state.auth.user);
+
+  console.log('USER =====', user);
   const [step, setStep] = useState(0);
   const [eventType, setEventType] = useState<string | null>(null);
   const [selectedThemeId, setSelectedThemeId] = useState<
@@ -147,8 +160,8 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(
     null,
   );
-
-  console.log('user === ', user);
+  // const [venueDetails, setVenueDetails] = useState(null);
+  const [venueDetails, setVenueDetails] = useState<VenueDetails | null>(null);
 
   const userPlanLevel =
     PLAN_HIERARCHY[user?.subscription_plan?.toLowerCase?.() || ''] || 0;
@@ -189,7 +202,68 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     }
   }, [route?.params?.selectedUniform]);
 
-  //API request for get the uniform details
+  const formatToISOWithoutMs = (date: Date) => {
+    const pad = (n: number) => n.toString().padStart(2, '0');
+
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+  };
+
+  const handleCreateEvent = async () => {
+    if (!venueDetails) {
+      alert('Please select venue');
+      return;
+    }
+
+    const stateObj = LOCATION_DATA.find((s) => s.id === selectedState);
+
+    const payload = {
+      event_name: eventAbout,
+      event_type: eventType,
+      city: selectedCity,
+      state: stateObj?.state,
+      venue: {
+        ...(venueDetails as VenueDetails),
+        google_maps_url: `https://www.google.com/maps/place/?q=place_id:${venueDetails.place_id}`,
+      },
+
+      event_start_datetime: formatToISOWithoutMs(startDate),
+      event_end_datetime: formatToISOWithoutMs(endDate),
+
+      no_of_days: Number(days),
+      working_hours: Number(days), // ⚠️ you may want separate state later
+      crew_count: Number(staff),
+
+      // client_id: user?.id,
+      client_id: user?.profile_id,
+
+      theme_id: selectedThemeId,
+      uniform_id: selectedUniformId,
+      package_id: selectedPackageId,
+
+      gst_details: companyName
+        ? {
+            company_name: companyName,
+            address: companyAddress,
+            gst_number: gstNumber,
+          }
+        : undefined,
+    };
+
+    console.log('Payload ========', payload);
+
+    try {
+      const res = await dispatch(createEvent(payload)).unwrap();
+
+      console.log('✅ EVENT CREATED:', res);
+      dispatch(getMyEvents());
+
+      // move to success step
+      setStep(8);
+    } catch (err: any) {
+      console.log('❌ ERROR:', err);
+      alert(err || 'Failed to create event');
+    }
+  };
 
   // Step 1 form state
   const [eventAbout, setEventAbout] = useState('');
@@ -231,43 +305,106 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     setPickerVisible(false);
   };
 
+  const DEFAULT_DURATION_HOURS = 6;
+
   const handleConfirm = (selected: Date) => {
     if (!activeField) return;
 
+    let updatedStart = new Date(startDate);
+    let updatedEnd = new Date(endDate);
+
+    // ✅ START DATE
     if (activeField === 'startDate') {
-      const updated = new Date(startDate);
-      updated.setFullYear(
+      updatedStart.setFullYear(
         selected.getFullYear(),
         selected.getMonth(),
         selected.getDate(),
       );
-      setStartDate(updated);
+
+      setStartDate(updatedStart);
+
+      // auto adjust end
+      updatedEnd = new Date(updatedStart);
+      updatedEnd.setHours(updatedStart.getHours() + DEFAULT_DURATION_HOURS);
+      setEndDate(updatedEnd);
     }
 
+    // ✅ START TIME (MOST IMPORTANT 🔥)
     if (activeField === 'startTime') {
-      const updated = new Date(startDate);
-      updated.setHours(selected.getHours(), selected.getMinutes());
-      setStartDate(updated);
+      updatedStart.setHours(selected.getHours(), selected.getMinutes());
+      setStartDate(updatedStart);
+
+      // auto adjust end
+      updatedEnd = new Date(updatedStart);
+      updatedEnd.setHours(updatedStart.getHours() + DEFAULT_DURATION_HOURS);
+      setEndDate(updatedEnd);
     }
 
+    // ✅ END DATE (manual override allowed)
     if (activeField === 'endDate') {
-      const updated = new Date(endDate);
-      updated.setFullYear(
+      updatedEnd.setFullYear(
         selected.getFullYear(),
         selected.getMonth(),
         selected.getDate(),
       );
-      setEndDate(updated);
+      setEndDate(updatedEnd);
     }
 
+    // ✅ END TIME (manual override allowed)
     if (activeField === 'endTime') {
-      const updated = new Date(endDate);
-      updated.setHours(selected.getHours(), selected.getMinutes());
-      setEndDate(updated);
+      updatedEnd.setHours(selected.getHours(), selected.getMinutes());
+      setEndDate(updatedEnd);
     }
 
     hidePicker();
   };
+
+  // const handleConfirm = (selected: Date) => {
+  //   if (!activeField) return;
+
+  //   // if (activeField === 'startDate') {
+  //   //   const updated = new Date(startDate);
+  //   //   updated.setFullYear(
+  //   //     selected.getFullYear(),
+  //   //     selected.getMonth(),
+  //   //     selected.getDate(),
+  //   //   );
+  //   //   setStartDate(updated);
+  //   // }
+
+  //   if (activeField === 'startDate') {
+  //     const updated = new Date(startDate);
+  //     updated.setFullYear(
+  //       selected.getFullYear(),
+  //       selected.getMonth(),
+  //       selected.getDate(),
+  //     );
+  //     setStartDate(updated);
+
+  //     const newEnd = new Date(updated);
+  //     newEnd.setHours(updated.getHours() + 6);
+
+  //     setEndDate(newEnd);
+  //   }
+
+  //   if (activeField === 'endDate') {
+  //     const updated = new Date(endDate);
+  //     updated.setFullYear(
+  //       selected.getFullYear(),
+  //       selected.getMonth(),
+  //       selected.getDate(),
+  //     );
+  //     setEndDate(updated);
+  //   }
+
+  //   if (activeField === 'endTime') {
+  //     const updated = new Date(endDate);
+  //     updated.setHours(selected.getHours(), selected.getMinutes());
+  //     setEndDate(updated);
+  //   }
+
+  //   hidePicker();
+  // };
 
   const formatDate = (date: Date) =>
     date.toLocaleDateString('en-IN', {
@@ -303,10 +440,16 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     if (!found) return [];
 
     return found.cities.map((city) => ({
-      label: city,
-      value: city,
+      label: city.name,
+      value: city.name,
     }));
   }, [selectedState]);
+
+  const selectedCityCoords = useMemo(() => {
+    const state = LOCATION_DATA.find((s) => s.id === selectedState);
+    const city = state?.cities.find((c) => c.name === selectedCity);
+    return city ? { lat: city.lat, lng: city.lng } : null;
+  }, [selectedState, selectedCity]);
 
   // Step 3 packages
   const packages: PackageItem[] = [
@@ -390,7 +533,9 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
       ? payLabel
       : 'Proceed to Next Step';
 
-  const footerAction = isLastStep ? onGoHome : onNext;
+  // const footerAction = isLastStep ? onGoHome : onNext;
+  const footerAction =
+    step === 7 ? handleCreateEvent : isLastStep ? onGoHome : onNext;
 
   const progressPct = ((step + 1) / STEPS.length) * 100;
 
@@ -459,6 +604,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
           { backgroundColor: AppColors.background },
         ]}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         {step === 0 && (
           <StepOneForm
@@ -484,6 +630,8 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
             eventType={eventType}
             setEventType={setEventType}
             eventTypeOptions={eventTypeOptions}
+            setVenueDetails={setVenueDetails}
+            selectedCityCoords={selectedCityCoords}
           />
         )}
 
@@ -958,11 +1106,16 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
         <View style={{ height: verticalScale(16) }} />
       </ScrollView>
 
-      <FooterButton
+      {/* <FooterButton
         label={footerLabel}
         onPress={footerAction}
         disabled={isDisabled}
         containerStyle={{ backgroundColor: AppColors.background }}
+      /> */}
+      <FooterButton
+        label={loading ? 'Creating Event...' : footerLabel}
+        onPress={footerAction}
+        disabled={isDisabled || loading}
       />
 
       <DateTimePickerModal
