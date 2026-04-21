@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -14,6 +14,8 @@ import { HomeTabParamList } from '../../navigation/HomeTabsNavigator';
 import ScreenHeader from '../../components/ScreenHeader';
 import { AppColors } from '../../theme/colors';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { getMyEvents } from '../../features/events/eventSlice';
 
 type Props = NativeStackScreenProps<HomeTabParamList, 'Events'>;
 
@@ -27,6 +29,17 @@ type EventItem = {
   imageUrl: string;
   steps: number;
   completedSteps: number; // 0..steps
+};
+
+const mapStatus = (status: string): EventItem['status'] => {
+  switch (status) {
+    case 'created':
+      return 'Booked';
+    case 'completed':
+      return 'Completed';
+    default:
+      return 'Pending';
+  }
 };
 
 const EventsScreen: React.FC<Props> = ({ navigation }) => {
@@ -43,12 +56,28 @@ const EventsScreen: React.FC<Props> = ({ navigation }) => {
     completedSteps: 3, // first 3 filled, last grey like screenshot
   };
 
+  const dispatch = useAppDispatch();
+  const { events, loading } = useAppSelector((state) => state.event);
+
   const onPressBookEvents = () => {
     navigation.navigate('BookEventFlow');
   };
 
   const onPressTrackStatus = () => {
     // navigation.navigate("EventStatus" as never, { orderId: demoEvent.orderId } as never);
+  };
+
+  const getProgress = (status: string) => {
+    switch (status) {
+      case 'created':
+        return 1;
+      case 'staff_allocated':
+        return 2;
+      case 'completed':
+        return 4;
+      default:
+        return 1;
+    }
   };
 
   return (
@@ -93,11 +122,32 @@ const EventsScreen: React.FC<Props> = ({ navigation }) => {
             Track what’s booked — effortlessly.
           </CustomText>
 
-          <EventCard
-            item={demoEvent}
-            // colors={COLORS}
-            onPressTrack={onPressTrackStatus}
-          />
+          {events.length === 0 ? (
+            <CustomText style={{ textAlign: 'center', marginTop: 20 }}>
+              No events found
+            </CustomText>
+          ) : (
+            events.map((item) => (
+              <EventCard
+                key={item.event_id}
+                item={{
+                  id: item.event_id,
+                  titleLine1: item.event_name,
+                  titleLine2: item.event_theme_name,
+                  priceText: `₹ ${item.payment_details?.total_amount || 0}`,
+                  orderId: item.event_id,
+                  status: mapStatus(item.status),
+                  imageUrl:
+                    'https://images.unsplash.com/photo-1523438097201-512ae7d59c10',
+                  steps: 4,
+                  completedSteps: getProgress(item.status),
+                }}
+                onPressTrack={() => {
+                  console.log('Track:', item.event_id);
+                }}
+              />
+            ))
+          )}
         </View>
 
         <View style={{ height: 24 }} />
@@ -199,13 +249,14 @@ function EventCard({
       </View>
 
       {/* Progress */}
-      <ProgressTracker
+      {/* <ProgressTracker
         steps={item.steps}
         completedSteps={item.completedSteps}
         primary={AppColors.primary}
         ring={AppColors.surface}
         line={AppColors.border}
-      />
+      /> */}
+      <StatusTracker status={item.status} />
 
       {/* Track status button */}
       <TouchableOpacity
@@ -224,51 +275,107 @@ function EventCard({
   );
 }
 
-function ProgressTracker({
-  steps,
-  completedSteps,
-  primary,
-  ring,
-  line,
-}: {
-  steps: number;
-  completedSteps: number;
-  primary: string;
-  ring: string;
-  line: string;
-}) {
-  const dots = new Array(steps).fill(0);
+// function ProgressTracker({
+//   steps,
+//   completedSteps,
+//   primary,
+//   ring,
+//   line,
+// }: {
+//   steps: number;
+//   completedSteps: number;
+//   primary: string;
+//   ring: string;
+//   line: string;
+// }) {
+//   const dots = new Array(steps).fill(0);
+
+//   return (
+//     <View style={styles.progressWrap}>
+//       {/* Dashed line behind dots */}
+//       <View
+//         style={[
+//           styles.progressLine,
+//           {
+//             borderColor: line,
+//           },
+//         ]}
+//       />
+
+//       <View style={styles.progressRow}>
+//         {dots.map((_, idx) => {
+//           const isDone = idx < completedSteps;
+//           const isLastUndone = idx >= completedSteps;
+
+//           return (
+//             <View
+//               key={idx}
+//               style={styles.dotSlot}
+//             >
+//               <View style={[styles.dotOuter, { backgroundColor: ring }]}>
+//                 <View
+//                   style={[
+//                     styles.dotInner,
+//                     { backgroundColor: isDone ? primary : AppColors.divider },
+//                   ]}
+//                 />
+//               </View>
+//             </View>
+//           );
+//         })}
+//       </View>
+//     </View>
+//   );
+// }
+
+function StatusTracker({ status }: { status: string }) {
+  const steps = ['Pending', 'In Progress', 'Completed'];
+
+  const getActiveIndex = () => {
+    switch (status) {
+      case 'created':
+        return 0;
+      case 'staff_allocated':
+        return 1;
+      case 'completed':
+        return 2;
+      default:
+        return 0;
+    }
+  };
+
+  const activeIndex = getActiveIndex();
 
   return (
-    <View style={styles.progressWrap}>
-      {/* Dashed line behind dots */}
-      <View
-        style={[
-          styles.progressLine,
-          {
-            borderColor: line,
-          },
-        ]}
-      />
-
-      <View style={styles.progressRow}>
-        {dots.map((_, idx) => {
-          const isDone = idx < completedSteps;
-          const isLastUndone = idx >= completedSteps;
+    <View style={{ marginTop: 12 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        {steps.map((step, index) => {
+          const isActive = index <= activeIndex;
 
           return (
             <View
-              key={idx}
-              style={styles.dotSlot}
+              key={index}
+              style={{ alignItems: 'center', flex: 1 }}
             >
-              <View style={[styles.dotOuter, { backgroundColor: ring }]}>
-                <View
-                  style={[
-                    styles.dotInner,
-                    { backgroundColor: isDone ? primary : AppColors.divider },
-                  ]}
-                />
-              </View>
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: 6,
+                  backgroundColor: isActive
+                    ? AppColors.primary
+                    : AppColors.divider,
+                  marginBottom: 6,
+                }}
+              />
+              <CustomText
+                style={{
+                  fontSize: 12,
+                  color: isActive ? AppColors.primary : AppColors.textGrey,
+                }}
+              >
+                {step}
+              </CustomText>
             </View>
           );
         })}
@@ -371,12 +478,12 @@ const styles = StyleSheet.create({
   progressWrap: {
     marginTop: verticalScale(12),
     paddingHorizontal: moderateScale(6),
-    paddingVertical:verticalScale(10),
+    paddingVertical: verticalScale(10),
     position: 'relative',
   },
   progressLine: {
     position: 'absolute',
-    left:scale(18),
+    left: scale(18),
     right: scale(18),
     top: scale(24),
     borderTopWidth: moderateScale(2),
@@ -406,7 +513,7 @@ const styles = StyleSheet.create({
   trackBtn: {
     marginTop: verticalScale(6),
     height: verticalScale(56),
-    borderRadius:moderateScale(8) ,
+    borderRadius: moderateScale(8),
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -1,5 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createEventAPI } from '../../services/api/eventService';
+import {
+  createEventAPI,
+  getMyEventsAPI,
+} from '../../services/api/eventService';
 
 interface EventState {
   loading: boolean;
@@ -7,11 +10,12 @@ interface EventState {
   error: string | null;
 }
 
-const initialState: EventState = {
-  loading: false,
-  event: null,
-  error: null,
-};
+interface EventState {
+  loading: boolean;
+  event: any; // for create
+  events: any[]; // 🔥 for list
+  error: string | null;
+}
 
 export const createEvent = createAsyncThunk(
   'event/createEvent',
@@ -24,6 +28,24 @@ export const createEvent = createAsyncThunk(
     }
   },
 );
+
+export const getMyEvents = createAsyncThunk(
+  'event/getMyEvents',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getMyEventsAPI();
+      return response.data.results;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || 'Something went wrong');
+    }
+  },
+);
+const initialState: EventState = {
+  loading: false,
+  event: null,
+  events: [],
+  error: null,
+};
 
 const eventSlice = createSlice({
   name: 'event',
@@ -40,6 +62,17 @@ const eventSlice = createSlice({
         state.event = action.payload;
       })
       .addCase(createEvent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(getMyEvents.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getMyEvents.fulfilled, (state, action) => {
+        state.loading = false;
+        state.events = action.payload;
+      })
+      .addCase(getMyEvents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
