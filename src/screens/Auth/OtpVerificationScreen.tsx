@@ -21,6 +21,7 @@ import { handleApiError } from '../../utils/apiErrorHandler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppDispatch } from '../../store/hooks';
 import { setUser } from '../../features/auth/authSlice';
+import { getCurrentUser } from '../../services/api/userService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'OtpVerification'>;
 
@@ -114,15 +115,19 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
         role: 'CLIENT',
       });
 
-      const { access_token, refresh_token, user } = res.data;
+      console.log('VERIFY OTP RESPONSE:', res); // ✅ debug
 
-      await AsyncStorage.setItem('access_token', access_token);
-      await AsyncStorage.setItem('refresh_token', refresh_token);
-      await AsyncStorage.setItem('user', JSON.stringify(user));
-      await AsyncStorage.setItem('role', user.role);
+      // ❌ REMOVE THIS (causing crash)
+      // const { access_token, refresh_token } = res.data.data;
+
+      // ❌ REMOVE duplicate storage
+      // await AsyncStorage.setItem('access_token', access_token);
+      // await AsyncStorage.setItem('refresh_token', refresh_token);
+
       await AsyncStorage.setItem('isLoggedIn', 'true');
 
-      Alert.alert('Success', res.message || 'Login successful');
+      // 🔥 FETCH USER
+      const user = await getCurrentUser();
 
       dispatch(setUser(user));
 
@@ -139,6 +144,46 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
       setLoading(false);
     }
   };
+
+  // const handleRegister = async () => {
+  //   const otp = otpValues.join('');
+
+  //   if (otp.length !== OTP_LENGTH) return;
+
+  //   try {
+  //     setLoading(true);
+
+  //     const res = await verifyOtp({
+  //       email,
+  //       otp,
+  //       role: 'CLIENT',
+  //     });
+
+  //     const { access_token, refresh_token, user } = res.data;
+
+  //     await AsyncStorage.setItem('access_token', access_token);
+  //     await AsyncStorage.setItem('refresh_token', refresh_token);
+  //     await AsyncStorage.setItem('user', JSON.stringify(user));
+  //     await AsyncStorage.setItem('role', user.role);
+  //     await AsyncStorage.setItem('isLoggedIn', 'true');
+
+  //     Alert.alert('Success', res.message || 'Login successful');
+
+  //     dispatch(setUser(user));
+
+  //     if (!user.profile_completed) {
+  //       navigation.replace('Register');
+  //       return;
+  //     }
+
+  //     navigation.replace('Home');
+  //   } catch (error) {
+  //     const message = handleApiError(error);
+  //     Alert.alert('Error', message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const isOtpComplete = otpValues.join('').length === OTP_LENGTH;
 

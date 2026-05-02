@@ -141,7 +141,7 @@ const ExploreScreen = () => {
               weight="extraBold"
               style={styles.nameText}
             >
-              {item.full_name}
+              {item.stage_name}
             </CustomText>
           </View>
 

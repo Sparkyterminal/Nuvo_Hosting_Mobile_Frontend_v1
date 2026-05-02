@@ -10,9 +10,11 @@ import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import ScreenHeader from '../../components/ScreenHeader';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Fonts } from '../../theme/fonts';
-import { completeClientProfile } from '../../services/api/userService';
+import { completeClientProfile, getCurrentUser } from '../../services/api/userService';
 import { handleApiError } from '../../utils/apiErrorHandler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppDispatch } from '../../store/hooks';
+import { setUser } from '../../features/auth/authSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
@@ -20,12 +22,13 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const [name, setName] = useState('');
   const [phnNumber, setPhnNumber] = useState('');
   const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
 
   const handleRegister = async () => {
     try {
       setLoading(true);
 
-      const res = await completeClientProfile({
+      await completeClientProfile({
         full_name: name,
         phone_number: phnNumber,
         city: 'Bangalore',
@@ -34,20 +37,14 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         subscription_plan: 'SILVER',
       });
 
-      Alert.alert('Success', res.message || 'Profile completed');
+      // 🔥 FETCH UPDATED USER
+      const user = await getCurrentUser();
 
-      // Now user is fully onboarded
+      dispatch(setUser(user)); // IMPORTANT
+
       await AsyncStorage.setItem('isLoggedIn', 'true');
 
-      const storedUser = await AsyncStorage.getItem('user');
-
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        parsedUser.profile_completed = true;
-        await AsyncStorage.setItem('user', JSON.stringify(parsedUser));
-      }
-
-      navigation.replace('Splash');
+      navigation.replace('Home');
     } catch (error) {
       const message = handleApiError(error);
       Alert.alert('Error', message);
@@ -55,6 +52,41 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       setLoading(false);
     }
   };
+
+  // const handleRegister = async () => {
+  //   try {
+  //     setLoading(true);
+
+  //     const res = await completeClientProfile({
+  //       full_name: name,
+  //       phone_number: phnNumber,
+  //       city: 'Bangalore',
+  //       state: 'Karnataka',
+  //       country: 'India',
+  //       subscription_plan: 'SILVER',
+  //     });
+
+  //     Alert.alert('Success', res.message || 'Profile completed');
+
+  //     // Now user is fully onboarded
+  //     await AsyncStorage.setItem('isLoggedIn', 'true');
+
+  //     const storedUser = await AsyncStorage.getItem('user');
+
+  //     if (storedUser) {
+  //       const parsedUser = JSON.parse(storedUser);
+  //       parsedUser.profile_completed = true;
+  //       await AsyncStorage.setItem('user', JSON.stringify(parsedUser));
+  //     }
+
+  //     navigation.replace('Splash');
+  //   } catch (error) {
+  //     const message = handleApiError(error);
+  //     Alert.alert('Error', message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <BaseContainer>

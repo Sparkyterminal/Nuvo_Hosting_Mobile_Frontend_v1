@@ -4,7 +4,8 @@ import apiClient from '../apiClient';
 export const getCurrentUser = async () => {
   const response = await apiClient.get(ENDPOINTS.AUTH.ME);
 
-  return response.data;
+  // return response.data;
+  return response.data.data;
 };
 
 export const completeClientProfile = async (data: {

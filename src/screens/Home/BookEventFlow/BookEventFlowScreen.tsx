@@ -146,7 +146,6 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
   const { uniforms } = useAppSelector((state) => state.uniform);
   const user = useAppSelector((state) => state.auth.user);
 
-  console.log('USER =====', user);
   const [step, setStep] = useState(0);
   const [eventType, setEventType] = useState<string | null>(null);
   const [selectedThemeId, setSelectedThemeId] = useState<
@@ -160,7 +159,6 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(
     null,
   );
-  // const [venueDetails, setVenueDetails] = useState(null);
   const [venueDetails, setVenueDetails] = useState<VenueDetails | null>(null);
 
   const userPlanLevel =
@@ -248,8 +246,6 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
           }
         : undefined,
     };
-
-    console.log('Payload ========', payload);
 
     try {
       const res = await dispatch(createEvent(payload)).unwrap();

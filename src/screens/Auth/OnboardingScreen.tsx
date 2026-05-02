@@ -27,7 +27,7 @@ type OnboardingSlide = {
   image: any;
 };
 
-const LOGO = require('../../assets/images/novo.jpg');
+const LOGO = require('../../assets/images/logo.png');
 
 const SLIDES: OnboardingSlide[] = [
   {

@@ -25,6 +25,8 @@ import {
 } from '../../features/explore/exploreSlice';
 import { fetchUniforms } from '../../features/uniform/uniformSlice';
 import { getMyEvents } from '../../features/events/eventSlice';
+import { getCurrentUser } from '../../services/api/userService';
+import { setUser } from '../../features/auth/authSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -43,10 +45,18 @@ const HomeScreen: React.FC<Props> = ({}) => {
     try {
       dispatch(setLoading(true));
 
-      const [themesRes, modalsRes] = await Promise.all([
+      const [userRes, themesRes, modalsRes] = await Promise.all([
+        getCurrentUser(),
         getThemes(),
         getModalsList(),
       ]);
+
+      console.log('USER API RESPONSE:', userRes);
+
+      // 🔥 FIXED HERE
+      if (userRes?.data?.data) {
+        dispatch(setUser(userRes.data.data));
+      }
 
       if (themesRes.success) {
         dispatch(setThemes(themesRes.data));
@@ -57,7 +67,6 @@ const HomeScreen: React.FC<Props> = ({}) => {
       }
 
       dispatch(fetchUniforms());
-
       dispatch(getMyEvents());
     } catch (error) {
       console.log('Home API Error:', error);
@@ -65,6 +74,33 @@ const HomeScreen: React.FC<Props> = ({}) => {
       dispatch(setLoading(false));
     }
   };
+
+  // const fetchData = async () => {
+  //   try {
+  //     dispatch(setLoading(true));
+
+  //     const [themesRes, modalsRes] = await Promise.all([
+  //       getThemes(),
+  //       getModalsList(),
+  //     ]);
+
+  //     if (themesRes.success) {
+  //       dispatch(setThemes(themesRes.data));
+  //     }
+
+  //     if (modalsRes.success) {
+  //       dispatch(setModals(modalsRes.data.results));
+  //     }
+
+  //     dispatch(fetchUniforms());
+
+  //     dispatch(getMyEvents());
+  //   } catch (error) {
+  //     console.log('Home API Error:', error);
+  //   } finally {
+  //     dispatch(setLoading(false));
+  //   }
+  // };
 
   return (
     <BaseContainer>
