@@ -166,6 +166,7 @@ const ExploreScreen = () => {
       <ScreenHeader
         title="Explore"
         showBackButton
+        onBackPress={() => navigation.goBack()}
       />
       <Loader visible={loading} />
 

@@ -16,50 +16,52 @@ import { Feather } from '@expo/vector-icons';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
 import { useAppSelector } from '../../store/hooks';
+import ScreenHeader from '../../components/ScreenHeader';
 
 type Props = BottomTabScreenProps<HomeTabParamList, 'Profile'>;
 
-const ProfileScreen: React.FC<Props> = ({}) => {
+const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const users = useAppSelector((state) => state.auth.user);
 
   const handleEditField = (field: string) => {
     console.log('Edit field:', field);
   };
 
+  const firstLetter = users?.full_name
+    ? users.full_name.charAt(0).toUpperCase()
+    : '?';
+
   return (
     <BaseContainer>
+      <ScreenHeader
+        title="Profile"
+        showBackButton
+        onBackPress={() => navigation.goBack()}
+      />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* Cover */}
         <View style={styles.coverWrapper}>
-          <ImageBackground
-            source={require('../../assets/images/Tony_Stark.jpg')}
-            style={styles.coverImage}
-            imageStyle={styles.coverImageStyle}
-          >
-            <View style={styles.coverOverlay}>
-              <View style={styles.coverTopRow}>
-                <TouchableOpacity
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                >
-                  <Feather
-                    name="camera"
-                    size={22}
-                    color={AppColors.textInverse}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </ImageBackground>
+          <View style={styles.coverTopRow}>
+            <TouchableOpacity
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            ></TouchableOpacity>
+          </View>
 
           {/* avatar */}
           <View style={styles.avatarWrapper}>
-            <Image
-              source={require('../../assets/images/Tony_Stark.jpg')}
-              style={styles.avatar}
-            />
+            <View style={styles.avatar}>
+              <CustomText
+                variant="title"
+                weight="bold"
+                style={styles.avatarText}
+                color={AppColors.primary}
+              >
+                {firstLetter}
+              </CustomText>
+            </View>
           </View>
         </View>
 
@@ -129,17 +131,6 @@ const ProfileFieldRow: React.FC<ProfileFieldRowProps> = ({
           {value}
         </CustomText>
       </View>
-
-      {/* <TouchableOpacity
-        onPress={onEdit}
-        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-      >
-        <Ionicons
-          name="pencil-outline"
-          size={20}
-          color={AppColors.primary}
-        />
-      </TouchableOpacity> */}
     </View>
   );
 };
@@ -151,7 +142,7 @@ const styles = StyleSheet.create({
   },
 
   coverWrapper: {
-    height: verticalScale(180),
+    height: verticalScale(80),
     marginBottom: verticalScale(50),
   },
   coverImage: {
@@ -188,10 +179,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: AppColors.textInverse,
   },
-  avatar: {
-    width: '100%',
-    height: '100%',
-  },
 
   nameBlock: {
     alignItems: 'center',
@@ -218,6 +205,17 @@ const styles = StyleSheet.create({
   fieldRowBorder: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: AppColors.border,
+  },
+  avatar: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: AppColors.border, // or any soft color
+  },
+
+  avatarText: {
+    fontSize: moderateScale(28),
   },
 });
 

@@ -75,6 +75,10 @@ const HomeScreen: React.FC<Props> = ({}) => {
     }
   };
 
+  const firstLetter = user?.full_name
+    ? user.full_name.charAt(0).toUpperCase()
+    : '?';
+
   // const fetchData = async () => {
   //   try {
   //     dispatch(setLoading(true));
@@ -119,10 +123,15 @@ const HomeScreen: React.FC<Props> = ({}) => {
 
               <View style={styles.heroTopRow}>
                 <View style={styles.heroUserRow}>
-                  <Image
-                    source={require('../../assets/images/Tony_Stark.jpg')}
-                    style={styles.avatar}
-                  />
+                  <View style={styles.avatar}>
+                    <CustomText
+                      weight="bold"
+                      color={AppColors.textInverse}
+                      style={styles.avatarText}
+                    >
+                      {firstLetter}
+                    </CustomText>
+                  </View>
                   <View style={styles.heroUserText}>
                     <CustomText color={AppColors.textInverse}>
                       Welcome,
@@ -288,13 +297,13 @@ const styles = StyleSheet.create({
     marginLeft: scale(10),
   },
 
-  avatar: {
-    width: scale(42),
-    height: scale(42),
-    borderRadius: scale(21),
-    borderWidth: 1.5,
-    borderColor: AppColors.textInverse,
-  },
+  // avatar: {
+  //   width: scale(42),
+  //   height: scale(42),
+  //   borderRadius: scale(21),
+  //   borderWidth: 1.5,
+  //   borderColor: AppColors.textInverse,
+  // },
 
   iconButton: {
     padding: scale(6),
@@ -477,6 +486,22 @@ const styles = StyleSheet.create({
     width: '48%',
     aspectRatio: 0.75, // adjust based on your image
     borderRadius: moderateScale(16),
+  },
+
+  avatar: {
+    width: scale(42),
+    height: scale(42),
+    borderRadius: scale(21),
+    borderWidth: 1.5,
+    borderColor: AppColors.textInverse,
+
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: AppColors.primary, // looks good on hero
+  },
+
+  avatarText: {
+    fontSize: moderateScale(18),
   },
 });
 

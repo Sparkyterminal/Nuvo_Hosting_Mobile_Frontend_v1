@@ -11,6 +11,9 @@ import { RootStackParamList } from '../../navigation/RootNavigator';
 import { AppColors } from '../../theme/colors';
 import { scale, verticalScale } from 'react-native-size-matters';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getCurrentUser } from '../../services/api/userService';
+import { useAppDispatch } from '../../store/hooks';
+import { setUser } from '../../features/auth/authSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
@@ -18,61 +21,43 @@ const { height } = Dimensions.get('window');
 const LOGO = require('../../assets/images/novoLogo.png');
 
 const SplashScreen: React.FC<Props> = ({ navigation }) => {
-  // const checkAuth = async () => {
-  //   try {
-  //     const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
-  //     const user = await AsyncStorage.getItem('user');
+  const dispatch = useAppDispatch();
 
-  //     const parsedUser = user ? JSON.parse(user) : null;
-
-  //     setTimeout(() => {
-  //       if (!isLoggedIn) {
-  //         navigation.replace('Onboarding');
-  //         return;
-  //       }
-
-  //       if (!parsedUser?.profile_completed) {
-  //         navigation.replace('Register');
-  //         return;
-  //       }
-
-  //       navigation.replace('Home');
-  //     }, 2000);
-  //   } catch (error) {
-  //     navigation.replace('Onboarding');
-  //   }
-  // };
+ 
 
   const checkAuth = async () => {
     try {
       const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
-      const user = await AsyncStorage.getItem('user');
 
-      const parsedUser = user ? JSON.parse(user) : null;
-
-      setTimeout(() => {
-        if (!parsedUser) {
+      setTimeout(async () => {
+        if (isLoggedIn !== 'true') {
           navigation.replace('Onboarding');
           return;
         }
 
-        if (!parsedUser.profile_completed) {
-          navigation.replace('Register');
-          return;
-        }
+        try {
+          const user = await getCurrentUser();
 
-        if (isLoggedIn === 'true') {
+          console.log('SPLASH USER:', user);
+
+          // 🔥 THIS WAS MISSING
+          dispatch(setUser(user));
+
+          if (!user?.profile_completed) {
+            navigation.replace('Register');
+            return;
+          }
+
           navigation.replace('Home');
-          return;
+        } catch (error) {
+          console.log('User fetch failed:', error);
+          navigation.replace('Onboarding');
         }
-
-        navigation.replace('Onboarding');
-      }, 2000);
+      }, 1500);
     } catch {
       navigation.replace('Onboarding');
     }
   };
-
   useEffect(() => {
     checkAuth();
   }, []);
