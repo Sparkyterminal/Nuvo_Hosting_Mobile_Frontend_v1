@@ -200,7 +200,7 @@ function EventCard({
       {/* Top row */}
       <View style={styles.cardTopRow}>
         <Image
-          source={{ uri: item.imageUrl }}
+          source={require('../../assets/images/event.jpg')}
           style={styles.cardImage}
         />
         <View style={styles.cardInfo}>
@@ -259,7 +259,7 @@ function EventCard({
       <StatusTracker status={item.status} />
 
       {/* Track status button */}
-      <TouchableOpacity
+      {/* <TouchableOpacity
         activeOpacity={0.9}
         onPress={onPressTrack}
         style={[styles.trackBtn, { backgroundColor: AppColors.primary }]}
@@ -270,7 +270,7 @@ function EventCard({
         >
           Track Status
         </CustomText>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 }

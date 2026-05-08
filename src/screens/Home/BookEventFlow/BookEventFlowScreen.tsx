@@ -160,6 +160,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     null,
   );
   const [venueDetails, setVenueDetails] = useState<VenueDetails | null>(null);
+  const [workingHours, setWorkingHours] = useState('6'); // default
 
   const userPlanLevel =
     PLAN_HIERARCHY[user?.subscription_plan?.toLowerCase?.() || ''] || 0;
@@ -228,7 +229,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
       event_end_datetime: formatToISOWithoutMs(endDate),
 
       no_of_days: Number(days),
-      working_hours: Number(days), // ⚠️ you may want separate state later
+      working_hours: Number(workingHours),
       crew_count: Number(staff),
 
       // client_id: user?.id,
@@ -628,6 +629,8 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
             eventTypeOptions={eventTypeOptions}
             setVenueDetails={setVenueDetails}
             selectedCityCoords={selectedCityCoords}
+            workingHours={workingHours}
+            setWorkingHours={setWorkingHours}
           />
         )}
 

@@ -261,18 +261,27 @@ const styles = StyleSheet.create({
 
   // modal 2.0
   tinderContainer: {
-    width: width,
-    height: height * 0.8,
+    // width: width,
+    // height: height * 0.8,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    // marginHorizontal: 2
+    paddingHorizontal: scale(16),
+    marginTop: verticalScale(12),
   },
 
   tinderCard: {
-    width: width,
-    height: height * 0.75,
+    // width: width,
+    width: width - scale(32),
+    height: height * 0.65,
     backgroundColor: AppColors.surface,
     alignItems: 'center',
     justifyContent: 'center',
+    // marginHorizontal: 20,
+    marginVertical: verticalScale(12),
+    marginTop: verticalScale(10),
+    overflow: 'hidden',
+    borderRadius: moderateScale(16),
   },
 
   touchRow: {
@@ -304,7 +313,7 @@ const styles = StyleSheet.create({
   fullImage: {
     width: '100%',
     height: '100%',
-    borderRadius: moderateScale(16),
+    // borderRadius: moderateScale(16),
   },
 
   overlay: {

@@ -33,6 +33,8 @@ type Props = {
   ) => void;
   setVenueDetails: any;
   selectedCityCoords: any;
+  workingHours: string;
+  setWorkingHours: (val: string) => void;
 };
 
 export default function StepOneForm({
@@ -61,6 +63,8 @@ export default function StepOneForm({
   setEventType,
   setVenueDetails,
   selectedCityCoords,
+  workingHours,
+  setWorkingHours,
 }: Props) {
   // const [eventType, setEventType] = useState<string | null>(null);
 
@@ -114,6 +118,10 @@ export default function StepOneForm({
       <View style={{ zIndex: 10 }}>
         <GooglePlacesAutocomplete
           placeholder="Search venue"
+          textInputProps={{
+            returnKeyType: 'search',
+            placeholderTextColor: '#6B5E4A',
+          }}
           fetchDetails={true}
           onFail={(error) => {
             console.log('❌ GOOGLE ERROR:', error);
@@ -134,9 +142,9 @@ export default function StepOneForm({
               : undefined,
             radius: selectedCityCoords ? 50000 : undefined,
           }}
-          textInputProps={{
-            returnKeyType: 'search',
-          }}
+          // textInputProps={{
+          //   returnKeyType: 'search',
+          // }}
           onPress={(data, details = null) => {
             if (!details) {
               console.log('No details found');
@@ -160,6 +168,18 @@ export default function StepOneForm({
             container: {
               flex: 0,
             },
+            // textInput: {
+            //   borderWidth: 1,
+            //   borderColor: AppColors.border,
+            //   backgroundColor: AppColors.surface,
+            //   borderRadius: 10,
+            //   paddingHorizontal: 12,
+            //   paddingVertical: 10,
+            //   color: AppColors.textPrimary,
+            //   fontFamily: Fonts.medium,
+            //   // placeholderTextColor: AppColors.textGrey,
+            //   placeholderTextColor: '#000',
+            // },
             textInput: {
               borderWidth: 1,
               borderColor: AppColors.border,
@@ -169,6 +189,7 @@ export default function StepOneForm({
               paddingVertical: 10,
               color: AppColors.textPrimary,
               fontFamily: Fonts.medium,
+              opacity: 1, // ensure no dim effect
             },
             listView: {
               backgroundColor: AppColors.card,
@@ -250,8 +271,8 @@ export default function StepOneForm({
       </CustomText>
       <View style={{ flexDirection: 'row', gap: scale(10) }}>
         <TextInput
-          value={staff}
-          onChangeText={setStaff}
+          value={days}
+          onChangeText={setDays}
           keyboardType="number-pad"
           style={[styles.input, { flex: 1 }]}
           placeholderTextColor={AppColors.textGrey}
@@ -308,8 +329,8 @@ export default function StepOneForm({
       </CustomText>
       <View style={{ flexDirection: 'row', gap: scale(10) }}>
         <TextInput
-          value={staff}
-          onChangeText={setStaff}
+          value={workingHours}
+          onChangeText={setWorkingHours}
           keyboardType="number-pad"
           style={[styles.input, { flex: 1 }]}
           placeholderTextColor={AppColors.textGrey}
