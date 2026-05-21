@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "NovoHosting",
-    "slug": "novohosting",
-    "version": "1.0.2",
+    "name": "NuvoHostingAgency",
+    "slug": "nuvohostingagency",
+    "version": "1.0.0",
     "splash": {
       "backgroundColor": "#5B4C3A"
     },
-    "icon": "./assets/icon.png",
+    "icon": "./assets/newLogo.png",
     "plugins": [
       [
         "expo-splash-screen",
@@ -25,10 +25,10 @@
       "expo-font"
     ],
     "android": {
-       "versionCode": 1,
+      "versionCode": 1,
       "package": "com.rudreshac.novohosting",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
+        "foregroundImage": "./assets/newLogo.png",
         "backgroundColor": "#5B4C3A"
       }
     },
