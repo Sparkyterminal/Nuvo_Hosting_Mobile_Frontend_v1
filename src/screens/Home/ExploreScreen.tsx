@@ -98,7 +98,7 @@ const ExploreScreen = () => {
   const TinderModalViewer = () => {
     const [index, setIndex] = useState(0);
 
-    const total = modalsList.length;
+    const total = modalsList?.length || 0;
 
     const next = () => {
       if (index < total - 1) {
@@ -112,40 +112,33 @@ const ExploreScreen = () => {
       }
     };
 
-    const item = modalsList[index];
+    const item = modalsList?.[index];
 
     // Prevent crash when API not loaded yet
-    if (!item) return null;
+    if (!item || total === 0) return null;
 
     return (
       <View style={styles.tinderContainer}>
         <View style={styles.tinderCard}>
-          {/* Image */}
           <Image
             source={{
-              uri:
-                item.profile_picture ||
-                item.gallery_images?.[0] ||
-                'https://via.placeholder.com/300',
+              uri: item.image || 'https://via.placeholder.com/300',
             }}
             style={styles.fullImage}
             contentFit="cover"
           />
 
-          {/* Overlay */}
           <View style={styles.overlay} />
 
-          {/* Info */}
           <View style={styles.bottomInfo}>
             <CustomText
               weight="extraBold"
               style={styles.nameText}
             >
-              {item.stage_name}
+              {item.name}
             </CustomText>
           </View>
 
-          {/* Tap Areas */}
           <View style={styles.touchRow}>
             <View
               style={styles.leftTap}
@@ -160,6 +153,72 @@ const ExploreScreen = () => {
       </View>
     );
   };
+
+  // const TinderModalViewer = () => {
+  //   const [index, setIndex] = useState(0);
+
+  //   const total = modalsList?.length || 0;
+
+  //   const next = () => {
+  //     if (index < total - 1) {
+  //       setIndex(index + 1);
+  //     }
+  //   };
+
+  //   const prev = () => {
+  //     if (index > 0) {
+  //       setIndex(index - 1);
+  //     }
+  //   };
+
+  //   const item = modalsList?.[index];
+
+  //   // Prevent crash when API not loaded yet
+  //   if (!item) return null;
+
+  //   return (
+  //     <View style={styles.tinderContainer}>
+  //       <View style={styles.tinderCard}>
+  //         {/* Image */}
+  //         <Image
+  //           source={{
+  //             uri:
+  //               item.profile_picture ||
+  //               item.gallery_images?.[0] ||
+  //               'https://via.placeholder.com/300',
+  //           }}
+  //           style={styles.fullImage}
+  //           contentFit="cover"
+  //         />
+
+  //         {/* Overlay */}
+  //         <View style={styles.overlay} />
+
+  //         {/* Info */}
+  //         <View style={styles.bottomInfo}>
+  //           <CustomText
+  //             weight="extraBold"
+  //             style={styles.nameText}
+  //           >
+  //             {item.stage_name}
+  //           </CustomText>
+  //         </View>
+
+  //         {/* Tap Areas */}
+  //         <View style={styles.touchRow}>
+  //           <View
+  //             style={styles.leftTap}
+  //             onTouchEnd={prev}
+  //           />
+  //           <View
+  //             style={styles.rightTap}
+  //             onTouchEnd={next}
+  //           />
+  //         </View>
+  //       </View>
+  //     </View>
+  //   );
+  // };
 
   return (
     <BaseContainer>

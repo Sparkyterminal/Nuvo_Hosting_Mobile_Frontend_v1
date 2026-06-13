@@ -28,6 +28,7 @@ import FooterButton from '../../../components/FooterButton';
 
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { createEvent, getMyEvents } from '../../../features/events/eventSlice';
+import { validateCoupon } from '../../../services/api/validateCoupon';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
@@ -40,6 +41,15 @@ type VenueDetails = {
   longitude: number;
   place_id: string;
 };
+
+export interface Coupon {
+  code: string;
+  description: string;
+  discount_type: 'PERCENTAGE' | 'FLAT';
+  discount_value: number;
+  usage_limit: number;
+  is_active: boolean;
+}
 
 const PACKAGE_DETAILS: Record<string, { title: string; description: string }> =
   {
@@ -180,6 +190,11 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     modals: modalsList,
     loading,
   } = useAppSelector((state) => state.explore);
+
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [discountAmount, setDiscountAmount] = useState(0);
 
   // helper to check package type
   const isCrewSelectionRequired = useMemo(() => {
@@ -467,8 +482,11 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     'Paytm' | 'PhonePe' | 'GPay' | 'Card' | 'Cash' | null
   >(null);
 
-  const totalAmount = '₹ 75,000,00.00';
-  const payLabel = `Pay ${totalAmount}`;
+  const baseAmount = 75000;
+
+  const finalAmount = Math.max(0, baseAmount - discountAmount);
+
+  const totalAmount = `₹ ${finalAmount.toLocaleString('en-IN')}`;
 
   const title = STEPS[step];
 
@@ -527,7 +545,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
   const footerLabel = isLastStep
     ? 'Go to Home'
     : step === 7
-      ? payLabel
+      ? totalAmount
       : 'Proceed to Next Step';
 
   // const footerAction = isLastStep ? onGoHome : onNext;
@@ -537,6 +555,47 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
   const progressPct = ((step + 1) / STEPS.length) * 100;
 
   const details = activePackage ? PACKAGE_DETAILS[activePackage.id] : null;
+
+  const handleApplyCoupon = async () => {
+    const code = couponCode.trim().toUpperCase();
+
+    if (!code) {
+      alert('Please enter coupon code');
+      return;
+    }
+
+    try {
+      setCouponLoading(true);
+
+      const response = await validateCoupon(code);
+
+      if (!response.success) {
+        alert(response.message);
+        return;
+      }
+
+      const coupon = response.data;
+
+      let discount = 0;
+
+      if (coupon.discount_type === 'PERCENTAGE') {
+        discount = (coupon.discount_value / 100) * baseAmount;
+      } else {
+        discount = coupon.discount_value;
+      }
+
+      discount = Math.min(discount, baseAmount);
+
+      setAppliedCoupon(coupon);
+      setDiscountAmount(discount);
+
+      alert('Coupon Applied Successfully');
+    } catch (error: any) {
+      alert(error?.response?.data?.message || 'Failed to validate coupon');
+    } finally {
+      setCouponLoading(false);
+    }
+  };
 
   return (
     <BaseContainer>
@@ -979,11 +1038,81 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
                 k="Remaining"
                 v="₹10,000.00"
               />
+
+              <RowKV
+                k="Subtotal"
+                v={`₹${baseAmount.toLocaleString('en-IN')}`}
+              />
+
+              {discountAmount > 0 && (
+                <RowKV
+                  k="Coupon Discount"
+                  v={`- ₹${discountAmount.toLocaleString('en-IN')}`}
+                />
+              )}
+
               <RowKV
                 k="Grand Total"
-                v="₹75,000.00"
+                v={`₹${finalAmount.toLocaleString('en-IN')}`}
                 bold
               />
+            </View>
+            <View
+              style={{
+                marginTop: verticalScale(14),
+              }}
+            >
+              <CustomText
+                weight="bold"
+                style={{
+                  marginBottom: verticalScale(8),
+                  color: AppColors.textPrimary,
+                }}
+              >
+                Apply Coupon
+              </CustomText>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: scale(10),
+                }}
+              >
+                <TextInput
+                  value={couponCode}
+                  onChangeText={setCouponCode}
+                  placeholder="Enter Coupon Code"
+                  placeholderTextColor={AppColors.textGrey}
+                  style={{
+                    flex: 1,
+                    borderWidth: 1,
+                    borderColor: AppColors.border,
+                    backgroundColor: AppColors.surface,
+                    borderRadius: moderateScale(10),
+                    paddingHorizontal: scale(12),
+                    paddingVertical: verticalScale(12),
+                    color: AppColors.textPrimary,
+                  }}
+                />
+
+                <TouchableOpacity
+                  onPress={handleApplyCoupon}
+                  style={{
+                    backgroundColor: AppColors.primary,
+                    paddingHorizontal: scale(18),
+                    paddingVertical: verticalScale(12),
+                    borderRadius: moderateScale(10),
+                  }}
+                >
+                  <CustomText
+                    weight="bold"
+                    style={{ color: AppColors.textInverse }}
+                  >
+                    Apply
+                  </CustomText>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         )}

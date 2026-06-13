@@ -62,8 +62,11 @@ const HomeScreen: React.FC<Props> = ({}) => {
         dispatch(setThemes(themesRes.data));
       }
 
+      // if (modalsRes.success) {
+      //   dispatch(setModals(modalsRes.data.results));
+      // }
       if (modalsRes.success) {
-        dispatch(setModals(modalsRes.data.results));
+        dispatch(setModals(modalsRes.data));
       }
 
       dispatch(fetchUniforms());
@@ -296,14 +299,6 @@ const styles = StyleSheet.create({
   heroUserText: {
     marginLeft: scale(10),
   },
-
-  // avatar: {
-  //   width: scale(42),
-  //   height: scale(42),
-  //   borderRadius: scale(21),
-  //   borderWidth: 1.5,
-  //   borderColor: AppColors.textInverse,
-  // },
 
   iconButton: {
     padding: scale(6),

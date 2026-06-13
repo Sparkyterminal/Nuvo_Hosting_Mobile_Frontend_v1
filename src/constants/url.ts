@@ -21,6 +21,9 @@ export const ENDPOINTS = {
   MASTER: {
     THEMES: 'master/themes/',
     UNIFORMS: 'master/uniform/filter/',
+    CREW: 'master/crew/public/',
+    PAYMENT_CONFIG: 'master/payment/config/',
+    VALIDATE_COUPON: 'master/coupons/validate/',
   },
 
   STAFF: {
