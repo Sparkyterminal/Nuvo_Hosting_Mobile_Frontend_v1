@@ -13,12 +13,20 @@ import { AppColors } from '../../theme/colors';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   fetchAssignedEvents,
   fetchCompletedEvents,
   fetchUpcomingEvents,
+  restoreOnlineStatus,
   setOnlineStatus,
+  STAFF_ONLINE_KEY,
 } from '../../features/staff/staffSlice';
+import {
+  startLocationTracking,
+  stopLocationTracking,
+  isLocationTracking,
+} from '../../services/locationService';
 
 const EmployeeHomeScreen = ({ navigation }: any) => {
   const users = useAppSelector((state) => state.auth.user);
@@ -33,6 +41,16 @@ const EmployeeHomeScreen = ({ navigation }: any) => {
     dispatch(fetchUpcomingEvents());
     dispatch(fetchCompletedEvents());
     dispatch(fetchAssignedEvents());
+
+    // Restore persisted online status and resume location tracking if needed.
+    AsyncStorage.getItem(STAFF_ONLINE_KEY).then((saved) => {
+      if (saved === 'true') {
+        dispatch(restoreOnlineStatus(true));
+        isLocationTracking().then((running) => {
+          if (!running) startLocationTracking();
+        });
+      }
+    });
   }, []);
 
   const renderEvent = ({ item }: any) => {
@@ -102,11 +120,21 @@ const EmployeeHomeScreen = ({ navigation }: any) => {
     if (loadingStatus) return;
 
     setLocalStatus(value);
-
     setLoadingStatus(true);
 
     dispatch(setOnlineStatus(value))
       .unwrap()
+      .then(() => {
+        if (value) {
+          startLocationTracking();
+        } else {
+          stopLocationTracking();
+        }
+      })
+      .catch(() => {
+        // API rejected — revert local status, don't change tracking
+        setLocalStatus(!value);
+      })
       .finally(() => setLoadingStatus(false));
   };
 

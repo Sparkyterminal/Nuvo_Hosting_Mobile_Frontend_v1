@@ -21,6 +21,16 @@
           }
         }
       ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Nuvo Hosting needs your location to track your attendance for assigned events.",
+          "locationAlwaysPermission": "Nuvo Hosting needs your location in the background to track your attendance for assigned events.",
+          "locationWhenInUsePermission": "Nuvo Hosting needs your location to track your attendance for assigned events.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
+        }
+      ],
       "@react-native-community/datetimepicker",
       "expo-font"
     ],
@@ -33,7 +43,13 @@
       }
     },
     "ios": {
-      "bundleIdentifier": "com.rudreshac.novohosting"
+      "bundleIdentifier": "com.rudreshac.novohosting",
+      "infoPlist": {
+        "UIBackgroundModes": ["location", "fetch"],
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Nuvo Hosting needs your location to track your attendance for assigned events.",
+        "NSLocationAlwaysUsageDescription": "Nuvo Hosting needs your location in the background to track your attendance for assigned events.",
+        "NSLocationWhenInUseUsageDescription": "Nuvo Hosting needs your location to track your attendance for assigned events."
+      }
     },
     "extra": {
       "eas": {

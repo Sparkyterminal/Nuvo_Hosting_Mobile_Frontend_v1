@@ -248,6 +248,7 @@ EVENTS: create, get-my-events
 
 # Native Integrations
 
+- **Background Location Tracking** — `expo-location` + `expo-task-manager`. Task defined in `src/tasks/locationTask.ts`, imported in `index.ts`. On Android, a foreground service keeps the process alive even when the app is killed. On iOS, the system controls background wake-ups (best-effort). POSTs to `https://nuvo-c-backend.onrender.com/api/location/update` every 5 minutes for STAFF/MAKEUP_ARTIST users while online.
 - **Google Places Autocomplete** — used in `StepOneForm` for venue selection. API key hardcoded in `src/app/config/api.ts`.
 - **iOS:** `NuvoHostingAgency` Xcode project, entitlements file present, Swift AppDelegate.
 - **Android:** Standard Expo bare Android project, debug keystore committed.
@@ -450,3 +451,4 @@ Based on git status (branch: `main`):
 | Date | Summary |
 |---|---|
 | 2026-06-13 | Initial CLAUDE.md created from codebase audit. Identified hardcoded payment, Order Summary placeholder data, missing auth redirect, API endpoint migration in modalsService, and new validateCoupon service file. |
+| 2026-06-13 | Implemented background location tracking for staff. Added expo-location + expo-task-manager. Task fires every 5 min, POSTs to nuvo-c-backend.onrender.com. Starts/stops with online toggle. Android: foreground service (survives app kill). iOS: best-effort background. |
