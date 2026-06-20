@@ -131,6 +131,15 @@ const OtpVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
 
       dispatch(setUser(user));
 
+      // Persist to AsyncStorage so background tasks can read without Redux.
+      await AsyncStorage.setItem('user', JSON.stringify(user));
+      if (user?.profile_id) {
+        await AsyncStorage.setItem('profile_id', String(user.profile_id));
+      }
+      if (user?.role) {
+        await AsyncStorage.setItem('role', user.role);
+      }
+
       if (!user.profile_completed) {
         navigation.replace('Register');
         return;

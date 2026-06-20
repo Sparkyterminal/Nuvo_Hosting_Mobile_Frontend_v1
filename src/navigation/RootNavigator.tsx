@@ -86,16 +86,18 @@ const RootNavigator = () => {
       // ✅ STEP 2: Then refresh from API (latest data)
       if (login === 'true') {
         try {
-          const res = await getCurrentUser();
-          const userData = res?.data;
+          // getCurrentUser() returns response.data.data directly — the user object.
+          const userData = await getCurrentUser();
 
-          // update redux
           dispatch(setUser(userData));
 
-          // update storage
           await AsyncStorage.setItem('user', JSON.stringify(userData));
 
-          // update role if needed
+          // Save profile_id separately so background tasks can read it directly.
+          if (userData?.profile_id) {
+            await AsyncStorage.setItem('profile_id', String(userData.profile_id));
+          }
+
           if (userData?.role) {
             await AsyncStorage.setItem('role', userData.role);
             setRole(userData.role);

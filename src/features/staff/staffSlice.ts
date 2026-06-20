@@ -1,10 +1,13 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   getUpcomingEvents,
   getAssignedEvents,
   getCompletedEvents,
   updateOnlineStatus,
 } from '../../services/api/staffService';
+
+export const STAFF_ONLINE_KEY = 'staff_is_online';
 
 // 🔥 THUNKS
 export const fetchUpcomingEvents = createAsyncThunk(
@@ -25,7 +28,10 @@ export const fetchCompletedEvents = createAsyncThunk(
 export const setOnlineStatus = createAsyncThunk(
   'staff/onlineStatus',
   async (isOnline: boolean) => {
-    return await updateOnlineStatus(isOnline);
+    const result = await updateOnlineStatus(isOnline);
+    // Persist so the status survives app restarts.
+    await AsyncStorage.setItem(STAFF_ONLINE_KEY, isOnline ? 'true' : 'false');
+    return result;
   },
 );
 
@@ -50,7 +56,12 @@ const initialState: StaffState = {
 const staffSlice = createSlice({
   name: 'staff',
   initialState,
-  reducers: {},
+  reducers: {
+    // Restores persisted online status without making an API call.
+    restoreOnlineStatus: (state, action: PayloadAction<boolean>) => {
+      state.isOnline = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUpcomingEvents.pending, (state) => {
@@ -87,4 +98,5 @@ const staffSlice = createSlice({
   },
 });
 
+export const { restoreOnlineStatus } = staffSlice.actions;
 export default staffSlice.reducer;
