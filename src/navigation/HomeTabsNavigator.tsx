@@ -6,7 +6,6 @@ import { AppColors } from '../theme/colors';
 import HomeScreen from '../screens/Home/HomeScreen';
 import ProfileScreen from '../screens/Home/ProfileScreen';
 import EventsScreen from '../screens/Home/EventsScreen';
-import ExploreScreen from '../screens/Home/ExploreScreen';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
 export type HomeTabParamList = {
@@ -14,7 +13,6 @@ export type HomeTabParamList = {
   Events: undefined;
   MyEvents: undefined;
   Profile: undefined;
-  Explore: undefined;
 };
 
 const Tab = createBottomTabNavigator<HomeTabParamList>();
@@ -46,9 +44,6 @@ const HomeTabsNavigator = () => {
           if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
             IconComponent = Ionicons;
-          } else if (route.name === 'Explore') {
-            iconName = focused ? 'compass' : 'compass-outline';
-            IconComponent = Ionicons;
           } else if (route.name === 'Events') {
             iconName = focused ? 'party-popper' : 'party-popper';
             IconComponent = MaterialCommunityIcons;
@@ -73,10 +68,6 @@ const HomeTabsNavigator = () => {
       <Tab.Screen
         name="Home"
         component={HomeScreen}
-      />
-      <Tab.Screen
-        name="Explore"
-        component={ExploreScreen}
       />
 
       <Tab.Screen

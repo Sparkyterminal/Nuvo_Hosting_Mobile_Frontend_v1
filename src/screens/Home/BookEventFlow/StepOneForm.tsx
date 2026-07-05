@@ -3,6 +3,33 @@ import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import { Dropdown } from 'react-native-element-dropdown';
 import CustomText from '../../../components/CustomText';
 
+// TEMPORARY: Google Places Autocomplete fails until billing is enabled on the
+// GCP project (console.cloud.google.com/project/_/billing/enable). These
+// hardcoded venues let venue selection be tested without it. Remove once billing is enabled.
+const DUMMY_VENUES = [
+  {
+    venue_name: 'Taj Palace',
+    formatted_address: 'Taj Palace, Sardar Patel Marg, New Delhi, Delhi, India',
+    latitude: 28.6024,
+    longitude: 77.1877,
+    place_id: 'dummy_place_id_1',
+  },
+  {
+    venue_name: 'The Leela Palace',
+    formatted_address: 'The Leela Palace, Old Airport Road, Bengaluru, Karnataka, India',
+    latitude: 12.9634,
+    longitude: 77.6484,
+    place_id: 'dummy_place_id_2',
+  },
+  {
+    venue_name: 'ITC Grand Central',
+    formatted_address: 'ITC Grand Central, Parel, Mumbai, Maharashtra, India',
+    latitude: 19.0016,
+    longitude: 72.8347,
+    place_id: 'dummy_place_id_3',
+  },
+];
+
 type Props = {
   eventType: string | null;
   setEventType: (val: string) => void;
@@ -19,8 +46,6 @@ type Props = {
   setEventAbout: (val: string) => void;
   venue: string;
   setVenue: (val: string) => void;
-  staff: string;
-  setStaff: (val: string) => void;
   days: string;
   setDays: (val: string) => void;
   startDate: Date;
@@ -33,8 +58,6 @@ type Props = {
   ) => void;
   setVenueDetails: any;
   selectedCityCoords: any;
-  workingHours: string;
-  setWorkingHours: (val: string) => void;
 };
 
 export default function StepOneForm({
@@ -49,8 +72,6 @@ export default function StepOneForm({
   setEventAbout,
   venue,
   setVenue,
-  staff,
-  setStaff,
   days,
   setDays,
   startDate,
@@ -63,8 +84,6 @@ export default function StepOneForm({
   setEventType,
   setVenueDetails,
   selectedCityCoords,
-  workingHours,
-  setWorkingHours,
 }: Props) {
   // const [eventType, setEventType] = useState<string | null>(null);
 
@@ -214,6 +233,38 @@ export default function StepOneForm({
         />
       </View>
 
+      {/* TEMPORARY dev-only fallback while Google Places billing is disabled */}
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: scale(8),
+          marginTop: verticalScale(8),
+        }}
+      >
+        {DUMMY_VENUES.map((v) => (
+          <TouchableOpacity
+            key={v.place_id}
+            onPress={() => {
+              setVenue(v.formatted_address);
+              setVenueDetails(v);
+            }}
+            style={{
+              borderWidth: 1,
+              borderColor: AppColors.border,
+              backgroundColor: AppColors.surface,
+              borderRadius: scale(999),
+              paddingHorizontal: scale(10),
+              paddingVertical: verticalScale(6),
+            }}
+          >
+            <CustomText style={{ fontSize: 12, color: AppColors.textSecondary }}>
+              {v.venue_name}
+            </CustomText>
+          </TouchableOpacity>
+        ))}
+      </View>
+
       <CustomText
         weight="bold"
         style={styles.label}
@@ -245,23 +296,6 @@ export default function StepOneForm({
         placeholder="Enter your event "
         placeholderTextColor={AppColors.textGrey}
       />
-
-      {/* Staff & Days */}
-      <CustomText
-        weight="bold"
-        style={styles.label}
-      >
-        Crew Count
-      </CustomText>
-      <View style={{ flexDirection: 'row', gap: scale(10) }}>
-        <TextInput
-          value={staff}
-          onChangeText={setStaff}
-          keyboardType="number-pad"
-          style={[styles.input, { flex: 1 }]}
-          placeholderTextColor={AppColors.textGrey}
-        />
-      </View>
 
       <CustomText
         weight="bold"
@@ -319,22 +353,6 @@ export default function StepOneForm({
             <CustomText>{formatTime(endDate)}</CustomText>
           </TouchableOpacity>
         </View>
-      </View>
-
-      <CustomText
-        weight="bold"
-        style={styles.label}
-      >
-        Working Hours
-      </CustomText>
-      <View style={{ flexDirection: 'row', gap: scale(10) }}>
-        <TextInput
-          value={workingHours}
-          onChangeText={setWorkingHours}
-          keyboardType="number-pad"
-          style={[styles.input, { flex: 1 }]}
-          placeholderTextColor={AppColors.textGrey}
-        />
       </View>
     </View>
   );

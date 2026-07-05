@@ -56,7 +56,7 @@ export default function SelectableCard({
         {title}
       </CustomText>
 
-      {price && (
+      {!!price && (
         <CustomText
           weight="medium"
           style={styles.price}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   TextInput,
   Image,
   FlatList,
+  Animated,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../navigation/RootNavigator';
@@ -18,10 +19,7 @@ import { LOCATION_DATA } from '../../../constants/locationData';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import StepOneForm from './StepOneForm';
 import SelectableCard from './SelectableCard';
-import Modal from 'react-native-modal';
 import FieldLabel from '../../../components/FieldLabel';
-import ModelCard from '../../../components/ModelCard';
-import { Dropdown } from 'react-native-element-dropdown';
 import { Fonts } from '../../../theme/fonts';
 import { AppColors } from '../../../theme/colors';
 import FooterButton from '../../../components/FooterButton';
@@ -31,8 +29,6 @@ import { createEvent, getMyEvents } from '../../../features/events/eventSlice';
 import { validateCoupon } from '../../../services/api/validateCoupon';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
-
-type PackageItem = { id: string; title: string; icon: any };
 
 type VenueDetails = {
   venue_name: string;
@@ -51,80 +47,23 @@ export interface Coupon {
   is_active: boolean;
 }
 
-const PACKAGE_DETAILS: Record<string, { title: string; description: string }> =
-  {
-    p1: {
-      title: 'Diamond Edition',
-      description:
-        'Diamond personnel are curated on a bespoke basis and priced exclusively upon consultation.',
-    },
-
-    p2: {
-      title: 'Platinum Edition',
-      description: `Profile:
-• Exceptionally groomed
-• Fluent English, etiquette & protocol trained
-• Luxury weddings / HNI / international brand exposure
-• Calm, confident, high-presence individuals`,
-    },
-
-    p3: {
-      title: 'Gold Edition',
-      description: `Profile:
-• Strong grooming & communication
-• Experienced in premium weddings & curated events
-• Graceful, polished presence`,
-    },
-
-    p4: {
-      title: 'Silver Edition',
-      description: `Profile:
-• Well-trained & presentable
-• Functional multi-lingual
-• Professional hospitality behaviour`,
-    },
-
-    p5: {
-      title: 'Bronze Edition',
-      description: `Profile:
-• Basic grooming & training
-• Task-oriented roles
-• Reliable manpower`,
-    },
-  };
-
 const STEPS = [
   'What Can we Do For You ?', // 0
-  'Select Your Mood', // 1
+  'Select Crew Package', // 1
   'Curate Your Look', // 2
-  'Curate Your Crew', // 3
-  'Select Crew Members',
-  'GST Details', // 5
-  'Order Summary', // 6
-  'Payment', // 7
-  'Success', // 8
+  'GST Details', // 3
+  'Invoice Summary', // 4
+  'Payment', // 5
+  'Success', // 6
 ] as const;
 
-type ThemeItem = {
-  id: number;
-  title: string;
-  description: string;
-
-  images: {
-    id: number;
-    url: string;
-    description: string;
-  }[];
-};
-
-type ModelItem = {
-  id: string;
-  name: string;
-  height: string;
-  image: string;
-};
-
 const DEFAULT_DURATION_HOURS = 6;
+
+const LUXURY_RATE_PER_PERSON = 20000;
+const PREMIUM_RATE_PER_PERSON = 10000;
+const STANDARD_SHIFT_HOURS = 8;
+const LUXURY_HOURLY_RATE = LUXURY_RATE_PER_PERSON / STANDARD_SHIFT_HOURS;
+const PREMIUM_HOURLY_RATE = PREMIUM_RATE_PER_PERSON / STANDARD_SHIFT_HOURS;
 
 const eventTypeOptions = [
   { label: 'Wedding', value: 'Wedding' },
@@ -134,25 +73,8 @@ const eventTypeOptions = [
   { label: 'Others', value: 'Others' },
 ];
 
-const PLAN_HIERARCHY: any = {
-  bronze: 1,
-  silver: 2,
-  gold: 3,
-  platinum: 4,
-  diamond: 5,
-};
-
-const PACKAGE_PLAN_MAP: any = {
-  p1: 'diamond',
-  p2: 'platinum',
-  p3: 'gold',
-  p4: 'silver',
-  p5: 'bronze',
-};
-
 export default function BookEventFlowScreen({ navigation, route }: Props) {
   const dispatch = useAppDispatch();
-  const { themes: getSetThemes } = useAppSelector((state) => state.explore);
   const { uniforms } = useAppSelector((state) => state.uniform);
   const user = useAppSelector((state) => state.auth.user);
 
@@ -161,48 +83,67 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
   const [selectedThemeId, setSelectedThemeId] = useState<
     string | number | null
   >(null);
-  const [selectedUniformId, setSelectedUniformId] = useState<
+  // Uniform for the Luxury-crew slice of the booking (Luxury-only or Both package).
+  const [selectedLuxuryUniformId, setSelectedLuxuryUniformId] = useState<
     number | string | null
   >(null);
+  // Uniform for the Premium-crew slice of the booking (Premium-only or Both package).
+  const [selectedPremiumUniformId, setSelectedPremiumUniformId] = useState<
+    number | string | null
+  >(null);
+  // Luxury crew only: toggling this hides the standard uniform grid and shows a
+  // "team will contact you" notice instead of picking a predefined uniform.
+  const [isLuxuryCustomUniform, setIsLuxuryCustomUniform] = useState(false);
 
-  const [activePackage, setActivePackage] = useState<PackageItem | null>(null);
-  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(
-    null,
-  );
+  const [selectedCrewPackage, setSelectedCrewPackage] = useState<
+    'luxury' | 'premium' | 'both' | null
+  >(null);
+  const [luxuryCount, setLuxuryCount] = useState('');
+  const [premiumCount, setPremiumCount] = useState('');
+
   const [venueDetails, setVenueDetails] = useState<VenueDetails | null>(null);
-  const [workingHours, setWorkingHours] = useState('6'); // default
+  const [workingHours, setWorkingHours] = useState('8'); // standard shift is 8 hours
 
-  const userPlanLevel =
-    PLAN_HIERARCHY[user?.subscription_plan?.toLowerCase?.() || ''] || 0;
-
-  const activePackagePlan = activePackage
-    ? PACKAGE_PLAN_MAP[activePackage.id]
-    : null;
-
-  const activePackageLevel = activePackagePlan
-    ? PLAN_HIERARCHY[activePackagePlan]
-    : 0;
-
-  const isActivePackageLocked = activePackageLevel > userPlanLevel;
-
-  const {
-    themes,
-    modals: modalsList,
-    loading,
-  } = useAppSelector((state) => state.explore);
+  const { loading } = useAppSelector((state) => state.explore);
 
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
   const [couponLoading, setCouponLoading] = useState(false);
   const [discountAmount, setDiscountAmount] = useState(0);
 
-  // helper to check package type
-  const isCrewSelectionRequired = useMemo(() => {
-    if (!selectedPackageId) return false;
+  const pricingBreakdown = useMemo(() => {
+    const luxuryQty =
+      selectedCrewPackage !== 'premium' ? Number(luxuryCount) || 0 : 0;
+    const premiumQty =
+      selectedCrewPackage !== 'luxury' ? Number(premiumCount) || 0 : 0;
+    const extraHours = Math.max(0, Number(workingHours) - STANDARD_SHIFT_HOURS);
 
-    const plan = PACKAGE_PLAN_MAP[selectedPackageId];
-    return plan === 'platinum' || plan === 'gold';
-  }, [selectedPackageId]);
+    const luxuryBase = luxuryQty * LUXURY_RATE_PER_PERSON;
+    const premiumBase = premiumQty * PREMIUM_RATE_PER_PERSON;
+    const luxuryExtra = luxuryQty * extraHours * LUXURY_HOURLY_RATE;
+    const premiumExtra = premiumQty * extraHours * PREMIUM_HOURLY_RATE;
+    const subtotal = luxuryBase + premiumBase + luxuryExtra + premiumExtra;
+
+    return {
+      luxuryQty,
+      premiumQty,
+      extraHours,
+      luxuryBase,
+      premiumBase,
+      luxuryExtra,
+      premiumExtra,
+      subtotal,
+    };
+  }, [selectedCrewPackage, luxuryCount, premiumCount, workingHours]);
+
+  // "Custom Uniform" is now its own toggle (see isLuxuryCustomUniform), not a grid item, so
+  // any backend catalog entry named "custom" is excluded from the normal uniform grid here.
+  const predefinedUniforms = useMemo(() => {
+    if (!uniforms) return [];
+    const isCustom = (u: any) =>
+      (u.category_name || '').toLowerCase().includes('custom');
+    return uniforms.filter((u: any) => !isCustom(u));
+  }, [uniforms]);
 
   useEffect(() => {
     if (route?.params?.selectedTheme) {
@@ -211,8 +152,10 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
   }, [route?.params?.selectedTheme]);
 
   useEffect(() => {
+    // Pre-selection from ThemeDetailsScreen's "Book Now" flow always applies to the
+    // Luxury slot, since that list is the superset (custom + all predefined uniforms).
     if (route?.params?.selectedUniform) {
-      setSelectedUniformId(route.params.selectedUniform.id);
+      setSelectedLuxuryUniformId(route.params.selectedUniform.id);
     }
   }, [route?.params?.selectedUniform]);
 
@@ -245,14 +188,36 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
 
       no_of_days: Number(days),
       working_hours: Number(workingHours),
-      crew_count: Number(staff),
 
       // client_id: user?.id,
       client_id: user?.profile_id,
 
       theme_id: selectedThemeId,
-      uniform_id: selectedUniformId,
-      package_id: selectedPackageId,
+      luxury_uniform_type: isLuxuryUniformApplicable
+        ? isLuxuryCustomUniform
+          ? 'custom'
+          : 'predefined'
+        : undefined,
+      luxury_uniform_id:
+        isLuxuryUniformApplicable && !isLuxuryCustomUniform
+          ? selectedLuxuryUniformId
+          : undefined,
+      premium_uniform_id: isPremiumUniformApplicable
+        ? selectedPremiumUniformId
+        : undefined,
+
+      crew_package: selectedCrewPackage,
+      luxury_crew_count: pricingBreakdown.luxuryQty,
+      premium_crew_count: pricingBreakdown.premiumQty,
+      total_crew_count: pricingBreakdown.luxuryQty + pricingBreakdown.premiumQty,
+      pricing: {
+        subtotal: pricingBreakdown.subtotal,
+        discount: discountAmount,
+        total: finalAmount,
+      },
+      payment_method: paymentMethod,
+      payment_plan: paymentPlan,
+      message: message || undefined,
 
       gst_details: companyName
         ? {
@@ -270,7 +235,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
       dispatch(getMyEvents());
 
       // move to success step
-      setStep(8);
+      setStep(STEPS.length - 1);
     } catch (err: any) {
       console.log('❌ ERROR:', err);
       alert(err || 'Failed to create event');
@@ -280,7 +245,6 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
   // Step 1 form state
   const [eventAbout, setEventAbout] = useState('');
   const [venue, setVenue] = useState('');
-  const [staff, setStaff] = useState('2');
   const [days, setDays] = useState('1');
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
@@ -292,16 +256,6 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
 
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
-
-  const [isPackageInfoVisible, setIsPackageInfoVisible] = useState(false);
-
-  const [selectedModelIds, setSelectedModelIds] = useState<string[]>([]);
-
-  const [modelViewMode, setModelViewMode] = useState<'1' | '2'>('2');
-  const modelViewOptions = [
-    { label: '1 View', value: '1' },
-    { label: '2 View', value: '2' },
-  ];
 
   // date and time picker
   const showPicker = (
@@ -439,13 +393,6 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     value: item.id,
   }));
 
-  // multi modelSelect code
-  const toggleModel = (id: string) => {
-    setSelectedModelIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
-  };
-
   const cityOptions = useMemo(() => {
     const found = LOCATION_DATA.find((item) => item.id === selectedState);
 
@@ -463,64 +410,95 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
     return city ? { lat: city.lat, lng: city.lng } : null;
   }, [selectedState, selectedCity]);
 
-  // Step 3 packages
-  const packages: PackageItem[] = [
-    { id: 'p1', title: 'Diamond Edition', icon: 'diamond-stone' },
-    { id: 'p2', title: 'Platinum Edition', icon: 'crown' },
-    { id: 'p3', title: 'Gold Edition', icon: 'hexagon-slice-6' },
-    { id: 'p4', title: 'Silver Edition', icon: 'hexagon-slice-4' },
-    { id: 'p5', title: 'Bronze Edition', icon: 'hexagon-slice-2' },
-  ];
-
-  // Step 4 GST
+  // Step 3 GST + Message
   const [companyName, setCompanyName] = useState('');
   const [companyAddress, setCompanyAddress] = useState('');
   const [gstNumber, setGstNumber] = useState('');
+  const [message, setMessage] = useState('');
 
-  // Step 6 payment
-  const [payment, setPayment] = useState<
-    'Paytm' | 'PhonePe' | 'GPay' | 'Card' | 'Cash' | null
-  >(null);
+  // Step 5 payment
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'online' | null>(
+    null,
+  );
+  const [paymentPlan, setPaymentPlan] = useState<'full' | 'advance' | null>(
+    null,
+  );
 
-  const baseAmount = 75000;
+  const daysUntilEvent = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const eventDay = new Date(startDate);
+    eventDay.setHours(0, 0, 0, 0);
+    const diffMs = eventDay.getTime() - today.getTime();
+    return Math.round(diffMs / (1000 * 60 * 60 * 24));
+  }, [startDate]);
 
-  const finalAmount = Math.max(0, baseAmount - discountAmount);
+  // Doc only specifies rules for <=7 days (full only) and >12 days (flexible).
+  // 8-12 days is unspecified — defaulting to the more permissive "flexible" behavior.
+  const paymentTiming = daysUntilEvent <= 7 ? 'full-only' : 'flexible';
 
-  const totalAmount = `₹ ${finalAmount.toLocaleString('en-IN')}`;
+  useEffect(() => {
+    if (paymentTiming === 'full-only' && paymentPlan !== 'full') {
+      setPaymentPlan('full');
+    }
+  }, [paymentTiming]);
+
+  const finalAmount = Math.max(0, pricingBreakdown.subtotal - discountAmount);
+
+  const payableNowAmount =
+    paymentPlan === 'advance' ? Math.round(finalAmount / 2) : finalAmount;
+
+  const totalAmount = `₹ ${payableNowAmount.toLocaleString('en-IN')}`;
 
   const title = STEPS[step];
 
   const onBack = () => {
-    if (step === 5) {
-      // 👇 Coming back from GST
-      if (isCrewSelectionRequired) {
-        setStep(4); // go to Select Crew Members
-      } else {
-        setStep(3); // skip back to package selection
-      }
-      return;
-    }
-
-    // default behavior
     if (step > 0) setStep((s) => s - 1);
     else navigation.goBack();
   };
 
+  const isLuxuryUniformApplicable =
+    selectedCrewPackage === 'luxury' || selectedCrewPackage === 'both';
+  const isPremiumUniformApplicable =
+    selectedCrewPackage === 'premium' || selectedCrewPackage === 'both';
+
+  // Custom Uniform toggle satisfies the Luxury requirement on its own — the "team
+  // will contact you" flow doesn't need a predefined uniform picked.
+  const isLuxuryUniformSatisfied =
+    !isLuxuryUniformApplicable ||
+    isLuxuryCustomUniform ||
+    !!selectedLuxuryUniformId;
+  const isPremiumUniformSatisfied =
+    !isPremiumUniformApplicable || !!selectedPremiumUniformId;
+
+  const isUniformStepValid =
+    !!selectedCrewPackage &&
+    isLuxuryUniformSatisfied &&
+    isPremiumUniformSatisfied;
+
   const onNext = () => {
     if (step === 0 && (!eventType || !eventAbout.trim() || !venue.trim()))
       return;
-    if (step === 1 && !selectedThemeId) return;
-    if (step === 2 && !selectedUniformId) return;
-    if (step === 3 && !selectedPackageId) return;
 
-    if (step === 4 && isCrewSelectionRequired && selectedModelIds.length === 0)
-      return;
+    if (step === 1) {
+      if (!selectedCrewPackage) return;
+      if (
+        (selectedCrewPackage === 'luxury' || selectedCrewPackage === 'both') &&
+        pricingBreakdown.luxuryQty <= 0
+      )
+        return;
+      if (
+        (selectedCrewPackage === 'premium' || selectedCrewPackage === 'both') &&
+        pricingBreakdown.premiumQty <= 0
+      )
+        return;
+    }
 
-    if (step === 7 && !payment) return;
+    if (step === 2 && !isUniformStepValid) return;
 
-    if (step === 3 && !isCrewSelectionRequired) {
-      setStep(5); // skip step 4
-      return;
+    if (step === 5) {
+      if (!paymentMethod) return;
+      if (paymentTiming === 'flexible' && !paymentPlan) return;
     }
 
     if (step < STEPS.length - 1) setStep((s) => s + 1);
@@ -534,27 +512,80 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
 
   const isDisabled =
     (step === 0 && (!eventAbout.trim() || !venue.trim())) ||
-    (step === 1 && !selectedThemeId) ||
-    (step === 2 && !selectedUniformId) ||
-    (step === 3 && !selectedPackageId) ||
-    (step === 4 && isCrewSelectionRequired && selectedModelIds.length === 0) ||
-    (step === 7 && !payment);
+    (step === 1 &&
+      (!selectedCrewPackage ||
+        ((selectedCrewPackage === 'luxury' || selectedCrewPackage === 'both') &&
+          pricingBreakdown.luxuryQty <= 0) ||
+        ((selectedCrewPackage === 'premium' ||
+          selectedCrewPackage === 'both') &&
+          pricingBreakdown.premiumQty <= 0))) ||
+    (step === 2 && !isUniformStepValid) ||
+    (step === 5 &&
+      (!paymentMethod || (paymentTiming === 'flexible' && !paymentPlan)));
 
   const isLastStep = step === STEPS.length - 1;
 
   const footerLabel = isLastStep
     ? 'Go to Home'
-    : step === 7
+    : step === 5
       ? totalAmount
       : 'Proceed to Next Step';
 
   // const footerAction = isLastStep ? onGoHome : onNext;
   const footerAction =
-    step === 7 ? handleCreateEvent : isLastStep ? onGoHome : onNext;
+    step === 5 ? handleCreateEvent : isLastStep ? onGoHome : onNext;
 
   const progressPct = ((step + 1) / STEPS.length) * 100;
 
-  const details = activePackage ? PACKAGE_DETAILS[activePackage.id] : null;
+  // Animated progress bar fill — grows/shrinks smoothly instead of snapping to the new width.
+  const progressAnim = useRef(new Animated.Value(progressPct)).current;
+  useEffect(() => {
+    Animated.timing(progressAnim, {
+      toValue: progressPct,
+      duration: 350,
+      useNativeDriver: false, // width isn't supported by the native driver
+    }).start();
+  }, [progressPct]);
+
+  // Step transition animation — fades/slides the step content in on every step change,
+  // sliding from the right when moving forward and from the left when moving back.
+  const prevStepRef = useRef(step);
+  const contentOpacity = useRef(new Animated.Value(1)).current;
+  const contentTranslateX = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const direction =
+      step > prevStepRef.current ? 1 : step < prevStepRef.current ? -1 : 0;
+    prevStepRef.current = step;
+
+    contentOpacity.setValue(0);
+    contentTranslateX.setValue(direction * 24);
+
+    Animated.parallel([
+      Animated.timing(contentOpacity, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+      Animated.timing(contentTranslateX, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [step]);
+
+  const openUniformDetails = (item: any) =>
+    navigation.navigate('ThemeDetails', {
+      data: {
+        id: item.id,
+        title: item.category_name,
+        description: `${item.category_name} includes premium fabric and professional styling.`,
+        image: { uri: item.images?.[0] },
+        color: AppColors.primary,
+      },
+      from: 'bookFlow',
+      type: 'uniform',
+    });
 
   const handleApplyCoupon = async () => {
     const code = couponCode.trim().toUpperCase();
@@ -579,12 +610,12 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
       let discount = 0;
 
       if (coupon.discount_type === 'PERCENTAGE') {
-        discount = (coupon.discount_value / 100) * baseAmount;
+        discount = (coupon.discount_value / 100) * pricingBreakdown.subtotal;
       } else {
         discount = coupon.discount_value;
       }
 
-      discount = Math.min(discount, baseAmount);
+      discount = Math.min(discount, pricingBreakdown.subtotal);
 
       setAppliedCoupon(coupon);
       setDiscountAmount(discount);
@@ -633,11 +664,14 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
           <View
             style={[styles.progressTrack, { backgroundColor: AppColors.track }]}
           >
-            <View
+            <Animated.View
               style={[
                 styles.progressFill,
                 {
-                  width: `${progressPct}%`,
+                  width: progressAnim.interpolate({
+                    inputRange: [0, 100],
+                    outputRange: ['0%', '100%'],
+                  }),
                   backgroundColor: AppColors.primary,
                 },
               ]}
@@ -662,6 +696,12 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+        <Animated.View
+          style={{
+            opacity: contentOpacity,
+            transform: [{ translateX: contentTranslateX }],
+          }}
+        >
         {step === 0 && (
           <StepOneForm
             stateOptions={stateOptions}
@@ -674,8 +714,6 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
             setEventAbout={setEventAbout}
             venue={venue}
             setVenue={setVenue}
-            staff={staff}
-            setStaff={setStaff}
             days={days}
             setDays={setDays}
             startDate={startDate}
@@ -688,122 +726,38 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
             eventTypeOptions={eventTypeOptions}
             setVenueDetails={setVenueDetails}
             selectedCityCoords={selectedCityCoords}
-            workingHours={workingHours}
-            setWorkingHours={setWorkingHours}
           />
         )}
 
         {step === 1 && (
-          <View style={styles.themCard}>
-            {/* <FieldLabel text="Select Your Mood" /> */}
-
-            <FlatList
-              data={getSetThemes}
-              keyExtractor={(item) => item.id.toString()}
-              numColumns={2}
-              scrollEnabled={false}
-              columnWrapperStyle={{
-                justifyContent: 'space-between',
-                marginBottom: verticalScale(12),
-              }}
-              renderItem={({ item }) => {
-                const selected = item.id === selectedThemeId;
-
-                return (
-                  <SelectableCard
-                    image={{ uri: item.cover_image }}
-                    title={item.theme_name}
-                    selected={selected}
-                    onPress={() => setSelectedThemeId(item.id)}
-                    onViewPress={() =>
-                      navigation.navigate('ThemeDetails', {
-                        data: {
-                          id: item.id,
-                          title: item.theme_name,
-                          description: item.description,
-                          image: { uri: item.cover_image },
-                          color: AppColors.primary,
-                        },
-                        from: 'bookFlow',
-                        type: 'theme',
-                      })
-                    }
-                    primaryColor={AppColors.primary}
-                    borderColor={AppColors.border}
-                    backgroundColor={AppColors.card}
-                  />
-                );
-              }}
-            />
-          </View>
-        )}
-
-        {step === 2 && (
-          <View style={styles.themCard}>
-            {/* <FieldLabel text="Curate Your Look" /> */}
-            <FlatList
-              data={uniforms}
-              keyExtractor={(i) => i.id}
-              numColumns={2}
-              scrollEnabled={false}
-              columnWrapperStyle={{ gap: scale(12) }}
-              contentContainerStyle={{
-                gap: scale(12),
-                paddingTop: verticalScale(6),
-              }}
-              renderItem={({ item }) => {
-                const selected = item.id === selectedUniformId;
-
-                return (
-                  <SelectableCard
-                    image={{ uri: item.images?.[0] }}
-                    title={item.category_name}
-                    price={item.price}
-                    selected={selected}
-                    onPress={() => setSelectedUniformId(item.id)}
-                    onViewPress={() =>
-                      navigation.navigate('ThemeDetails', {
-                        data: {
-                          id: item.id,
-                          title: item.category_name,
-                          description: `${item.category_name} includes premium fabric and professional styling.`,
-                          image: { uri: item.images?.[0] },
-                          color: AppColors.primary,
-                        },
-                        from: 'bookFlow',
-                        type: 'uniform',
-                      })
-                    }
-                    primaryColor={AppColors.primary}
-                    borderColor={AppColors.border}
-                    backgroundColor={AppColors.card}
-                  />
-                );
-              }}
-            />
-          </View>
-        )}
-
-        {step === 3 && (
           <View style={styles.card}>
-            {/* <FieldLabel text="Curate your crew" /> */}
+            <FieldLabel text="Select Crew Package" />
+
             <View
               style={{ gap: verticalScale(10), marginTop: verticalScale(8) }}
             >
-              {packages.map((p) => {
-                const selected = p.id === selectedPackageId;
-
-                const packagePlan = PACKAGE_PLAN_MAP[p.id];
-                const packageLevel = PLAN_HIERARCHY[packagePlan];
-
-                const isLocked = packageLevel > userPlanLevel;
+              {(
+                [
+                  { id: 'luxury', title: 'Luxury' },
+                  { id: 'premium', title: 'Premium' },
+                  { id: 'both', title: 'Both (Luxury + Premium)' },
+                ] as const
+              ).map((p) => {
+                const selected = selectedCrewPackage === p.id;
                 return (
                   <TouchableOpacity
                     key={p.id}
                     activeOpacity={0.9}
                     onPress={() => {
-                      if (!isLocked) {
-                        setSelectedPackageId(p.id);
+                      setSelectedCrewPackage(p.id);
+                      if (p.id === 'premium') {
+                        setLuxuryCount('');
+                        setSelectedLuxuryUniformId(null);
+                        setIsLuxuryCustomUniform(false);
+                      }
+                      if (p.id === 'luxury') {
+                        setPremiumCount('');
+                        setSelectedPremiumUniformId(null);
                       }
                     }}
                     style={[
@@ -812,25 +766,23 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
                         borderColor: selected
                           ? AppColors.primary
                           : AppColors.border,
-                        backgroundColor: isLocked
-                          ? AppColors.surface // 🔒 faded look
-                          : AppColors.card,
-                        opacity: isLocked ? 0.5 : 1,
+                        backgroundColor: AppColors.card,
                       },
                     ]}
                   >
                     <MaterialCommunityIcons
-                      name={isLocked ? 'lock' : p.icon}
+                      name={
+                        p.id === 'luxury'
+                          ? 'diamond-stone'
+                          : p.id === 'premium'
+                            ? 'crown'
+                            : 'star-circle'
+                      }
                       size={22}
                       color={
-                        isLocked
-                          ? AppColors.textSecondary
-                          : selected
-                            ? AppColors.primary
-                            : AppColors.textSecondary
+                        selected ? AppColors.primary : AppColors.textSecondary
                       }
                     />
-
                     <CustomText
                       weight="bold"
                       style={{
@@ -841,102 +793,172 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
                     >
                       {p.title}
                     </CustomText>
-
-                    {/* Lock label */}
-                    {isLocked && (
-                      <CustomText
-                        style={{ color: AppColors.error, fontSize: 12 }}
-                      >
-                        Locked
-                      </CustomText>
-                    )}
-
-                    {/* Info icon */}
-                    <TouchableOpacity
-                      onPress={() => {
-                        setActivePackage(p);
-                        setIsPackageInfoVisible(true);
-                      }}
-                    >
-                      <Ionicons
-                        name="information-circle-outline"
-                        size={22}
-                        color={AppColors.textSecondary}
-                      />
-                    </TouchableOpacity>
                   </TouchableOpacity>
                 );
               })}
             </View>
-          </View>
-        )}
 
-        {step === 4 && (
-          <View style={styles.card}>
-            {/* Header Row */}
-            <View style={styles.modelHeaderRow}>
-              {/* <FieldLabel text="Select Model" /> */}
-
-              {/* Use your existing dropdown component */}
-              <View style={{ width: 110 }}>
-                <Dropdown
-                  data={modelViewOptions}
-                  labelField="label"
-                  valueField="value"
-                  value={modelViewMode}
-                  onChange={(item) => setModelViewMode(item.value)}
-                  placeholder="View"
-                  style={styles.dropdown}
+            {(selectedCrewPackage === 'luxury' ||
+              selectedCrewPackage === 'both') && (
+              <View style={{ marginTop: verticalScale(12) }}>
+                <CustomText
+                  weight="bold"
+                  style={{ marginBottom: verticalScale(6) }}
+                >
+                  Luxury Crew Count
+                </CustomText>
+                <TextInput
+                  value={luxuryCount}
+                  onChangeText={setLuxuryCount}
+                  keyboardType="number-pad"
+                  placeholder="e.g. 5"
+                  placeholderTextColor={AppColors.textGrey}
+                  style={styles.input}
                 />
               </View>
-            </View>
+            )}
 
-            <FlatList
-              key={modelViewMode} //IMPORTANT (forces re-render layout)
-              data={modalsList}
-              keyExtractor={(item) => item.id}
-              numColumns={modelViewMode === '1' ? 1 : 2}
-              scrollEnabled={false}
-              columnWrapperStyle={
-                modelViewMode === '2'
-                  ? {
-                      justifyContent: 'space-between',
-                      marginBottom: verticalScale(12),
-                    }
-                  : undefined
-              }
-              contentContainerStyle={{
-                marginTop: verticalScale(10),
-              }}
-              renderItem={({ item }) => {
-                const selected = selectedModelIds.includes(item.id);
+            {(selectedCrewPackage === 'premium' ||
+              selectedCrewPackage === 'both') && (
+              <View style={{ marginTop: verticalScale(12) }}>
+                <CustomText
+                  weight="bold"
+                  style={{ marginBottom: verticalScale(6) }}
+                >
+                  Premium Crew Count
+                </CustomText>
+                <TextInput
+                  value={premiumCount}
+                  onChangeText={setPremiumCount}
+                  keyboardType="number-pad"
+                  placeholder="e.g. 5"
+                  placeholderTextColor={AppColors.textGrey}
+                  style={styles.input}
+                />
+              </View>
+            )}
 
-                return (
-                  <View
+            {selectedCrewPackage && (
+              <View style={{ marginTop: verticalScale(12) }}>
+                <CustomText
+                  weight="bold"
+                  style={{ marginBottom: verticalScale(6) }}
+                >
+                  Working Hours
+                </CustomText>
+                <TextInput
+                  value={workingHours}
+                  onChangeText={setWorkingHours}
+                  keyboardType="number-pad"
+                  placeholder="Standard shift is 8 hours"
+                  placeholderTextColor={AppColors.textGrey}
+                  style={styles.input}
+                />
+                {pricingBreakdown.extraHours > 0 && (
+                  <CustomText
                     style={{
-                      width: modelViewMode === '1' ? '100%' : '48%',
-                      marginBottom: verticalScale(12),
+                      marginTop: verticalScale(6),
+                      color: AppColors.textSecondary,
+                      fontSize: moderateScale(12),
                     }}
                   >
-                    <ModelCard
-                      image={item.gallery_images[0]}
-                      name={item.full_name}
-                      height={item.height}
-                      selected={selected}
-                      onPress={() => toggleModel(item.id)}
-                      primaryColor={AppColors.primary}
-                      borderColor={AppColors.border}
-                      textColor={AppColors.textPrimary}
-                      mutedColor={AppColors.textSecondary}
-                    />
-                  </View>
-                );
-              }}
-            />
+                    {`${pricingBreakdown.extraHours} extra hour${pricingBreakdown.extraHours === 1 ? '' : 's'} beyond the standard 8-hour shift will be charged`}
+                    {selectedCrewPackage === 'luxury' &&
+                      ` at ₹${LUXURY_HOURLY_RATE.toLocaleString('en-IN')}/hr per Luxury crew member.`}
+                    {selectedCrewPackage === 'premium' &&
+                      ` at ₹${PREMIUM_HOURLY_RATE.toLocaleString('en-IN')}/hr per Premium crew member.`}
+                    {selectedCrewPackage === 'both' &&
+                      ` at ₹${LUXURY_HOURLY_RATE.toLocaleString('en-IN')}/hr per Luxury crew member and ₹${PREMIUM_HOURLY_RATE.toLocaleString('en-IN')}/hr per Premium crew member.`}
+                  </CustomText>
+                )}
+              </View>
+            )}
+
+            {selectedCrewPackage && (
+              <View style={{ marginTop: verticalScale(14) }}>
+                <CustomText
+                  weight="bold"
+                  style={{ color: AppColors.textPrimary }}
+                >
+                  Price Preview
+                </CustomText>
+                {pricingBreakdown.luxuryQty > 0 && (
+                  <RowKV
+                    k={`Luxury × ${pricingBreakdown.luxuryQty}`}
+                    v={`₹${pricingBreakdown.luxuryBase.toLocaleString('en-IN')}`}
+                  />
+                )}
+                {pricingBreakdown.premiumQty > 0 && (
+                  <RowKV
+                    k={`Premium × ${pricingBreakdown.premiumQty}`}
+                    v={`₹${pricingBreakdown.premiumBase.toLocaleString('en-IN')}`}
+                  />
+                )}
+                {pricingBreakdown.extraHours > 0 && (
+                  <RowKV
+                    k={`Extra Hours (${pricingBreakdown.extraHours} hrs)`}
+                    v={`₹${(
+                      pricingBreakdown.luxuryExtra +
+                      pricingBreakdown.premiumExtra
+                    ).toLocaleString('en-IN')}`}
+                  />
+                )}
+                <RowKV
+                  k="Running Total"
+                  v={`₹${pricingBreakdown.subtotal.toLocaleString('en-IN')}`}
+                  bold
+                />
+              </View>
+            )}
           </View>
         )}
 
-        {step === 5 && (
+        {step === 2 && (
+          <View style={{ gap: verticalScale(16) }}>
+            {isLuxuryUniformApplicable && (
+              <View style={styles.themCard}>
+                <FieldLabel text="Uniform for Luxury Crew" />
+
+                <View style={{ marginTop: verticalScale(8) }}>
+                  <RadioRow
+                    label="Custom Uniform"
+                    selected={isLuxuryCustomUniform}
+                    onPress={() => {
+                      const next = !isLuxuryCustomUniform;
+                      setIsLuxuryCustomUniform(next);
+                      if (next) setSelectedLuxuryUniformId(null);
+                    }}
+                  />
+                </View>
+
+                {isLuxuryCustomUniform ? (
+                  <CustomUniformNotice />
+                ) : (
+                  <UniformGrid
+                    data={predefinedUniforms}
+                    selectedId={selectedLuxuryUniformId}
+                    onSelect={setSelectedLuxuryUniformId}
+                    onViewPress={openUniformDetails}
+                  />
+                )}
+              </View>
+            )}
+
+            {isPremiumUniformApplicable && (
+              <View style={styles.themCard}>
+                <FieldLabel text="Uniform for Premium Crew" />
+                <UniformGrid
+                  data={predefinedUniforms}
+                  selectedId={selectedPremiumUniformId}
+                  onSelect={setSelectedPremiumUniformId}
+                  onViewPress={openUniformDetails}
+                />
+              </View>
+            )}
+          </View>
+        )}
+
+        {step === 3 && (
           <View style={styles.gstCard}>
             <FieldLabel text="GST Details for Corporate Events (optional)" />
             <TextInput
@@ -964,16 +986,27 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
               placeholderTextColor={AppColors.textGrey}
               style={styles.input}
             />
+            <TextInput
+              value={message}
+              onChangeText={setMessage}
+              placeholder="Message (optional)"
+              placeholderTextColor={AppColors.textGrey}
+              style={[
+                styles.input,
+                { height: verticalScale(80), textAlignVertical: 'top' },
+              ]}
+              multiline
+            />
           </View>
         )}
 
-        {step === 6 && (
+        {step === 4 && (
           <View style={styles.card}>
             <CustomText
               weight="extraBold"
               style={[styles.summaryTitle, { color: AppColors.textPrimary }]}
             >
-              Order Summary
+              Invoice Summary
             </CustomText>
 
             <View
@@ -998,23 +1031,27 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
                     weight="extraBold"
                     style={{ color: AppColors.textPrimary }}
                   >
-                    South Indian Style Wedding
+                    {eventAbout || 'Untitled Event'}
                   </CustomText>
                 </View>
                 <CustomText
                   style={{ marginTop: 6, color: AppColors.textSecondary }}
                 >
-                  Date & Time: 24 April, 2023, 10:00 PM
+                  Date & Time: {formatDate(startDate)}, {formatTime(startDate)}
                 </CustomText>
                 <CustomText
                   style={{ marginTop: 4, color: AppColors.textSecondary }}
                 >
-                  Event Venue: Lock Stock & Barrel, Dubai
+                  Event Venue: {venueDetails?.formatted_address || venue || '-'}
                 </CustomText>
                 <CustomText
                   style={{ marginTop: 4, color: AppColors.textSecondary }}
                 >
-                  Total Staff: {staff}
+                  Package:{' '}
+                  {selectedCrewPackage
+                    ? selectedCrewPackage.charAt(0).toUpperCase() +
+                      selectedCrewPackage.slice(1)
+                    : '-'}
                 </CustomText>
               </View>
             </View>
@@ -1026,22 +1063,31 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
                 Billing Details
               </CustomText>
 
-              <RowKV
-                k="Total Price"
-                v="₹65,555.99"
-              />
-              <RowKV
-                k="Payable Price now:"
-                v="₹10,000.00"
-              />
-              <RowKV
-                k="Remaining"
-                v="₹10,000.00"
-              />
+              {pricingBreakdown.luxuryQty > 0 && (
+                <RowKV
+                  k={`Luxury Crew (${pricingBreakdown.luxuryQty} × ₹${LUXURY_RATE_PER_PERSON.toLocaleString('en-IN')})`}
+                  v={`₹${pricingBreakdown.luxuryBase.toLocaleString('en-IN')}`}
+                />
+              )}
+              {pricingBreakdown.premiumQty > 0 && (
+                <RowKV
+                  k={`Premium Crew (${pricingBreakdown.premiumQty} × ₹${PREMIUM_RATE_PER_PERSON.toLocaleString('en-IN')})`}
+                  v={`₹${pricingBreakdown.premiumBase.toLocaleString('en-IN')}`}
+                />
+              )}
+              {pricingBreakdown.extraHours > 0 && (
+                <RowKV
+                  k={`Extra Hours Surcharge (${pricingBreakdown.extraHours} hrs)`}
+                  v={`₹${(
+                    pricingBreakdown.luxuryExtra +
+                    pricingBreakdown.premiumExtra
+                  ).toLocaleString('en-IN')}`}
+                />
+              )}
 
               <RowKV
                 k="Subtotal"
-                v={`₹${baseAmount.toLocaleString('en-IN')}`}
+                v={`₹${pricingBreakdown.subtotal.toLocaleString('en-IN')}`}
               />
 
               {discountAmount > 0 && (
@@ -1050,6 +1096,14 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
                   v={`- ₹${discountAmount.toLocaleString('en-IN')}`}
                 />
               )}
+
+              {companyName ? (
+                <RowKV
+                  k="GST"
+                  // TODO: GST rate not specified in requirements doc — shown informationally only, not included in Grand Total.
+                  v="TBD"
+                />
+              ) : null}
 
               <RowKV
                 k="Grand Total"
@@ -1117,7 +1171,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
           </View>
         )}
 
-        {step === 7 && (
+        {step === 5 && (
           <View style={styles.card}>
             <CustomText
               style={[styles.summaryTitle, { color: AppColors.textPrimary }]}
@@ -1128,35 +1182,69 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
               style={{ marginTop: verticalScale(10), gap: verticalScale(10) }}
             >
               <RadioRow
-                label="Paytm UPI"
-                selected={payment === 'Paytm'}
-                onPress={() => setPayment('Paytm')}
+                label="Cash Payment"
+                selected={paymentMethod === 'cash'}
+                onPress={() => setPaymentMethod('cash')}
               />
               <RadioRow
-                label="PhonePe"
-                selected={payment === 'PhonePe'}
-                onPress={() => setPayment('PhonePe')}
-              />
-              <RadioRow
-                label="GPay"
-                selected={payment === 'GPay'}
-                onPress={() => setPayment('GPay')}
-              />
-              <RadioRow
-                label="Cards"
-                selected={payment === 'Card'}
-                onPress={() => setPayment('Card')}
-              />
-              <RadioRow
-                label="Cash"
-                selected={payment === 'Cash'}
-                onPress={() => setPayment('Cash')}
+                label="Online Payment"
+                selected={paymentMethod === 'online'}
+                onPress={() => setPaymentMethod('online')}
               />
             </View>
+
+            {paymentTiming === 'flexible' ? (
+              <View style={{ marginTop: verticalScale(18) }}>
+                <CustomText
+                  style={[
+                    styles.summaryTitle,
+                    { color: AppColors.textPrimary },
+                  ]}
+                >
+                  Payment Plan
+                </CustomText>
+                <View
+                  style={{
+                    marginTop: verticalScale(10),
+                    gap: verticalScale(10),
+                  }}
+                >
+                  <RadioRow
+                    label="50% Advance"
+                    selected={paymentPlan === 'advance'}
+                    onPress={() => setPaymentPlan('advance')}
+                  />
+                  <RadioRow
+                    label="Full Amount"
+                    selected={paymentPlan === 'full'}
+                    onPress={() => setPaymentPlan('full')}
+                  />
+                </View>
+                {paymentPlan === 'advance' && (
+                  <CustomText
+                    style={{
+                      marginTop: verticalScale(8),
+                      color: AppColors.textSecondary,
+                    }}
+                  >
+                    Remaining 50% is due 7 days before the event.
+                  </CustomText>
+                )}
+              </View>
+            ) : (
+              <CustomText
+                style={{
+                  marginTop: verticalScale(14),
+                  color: AppColors.textSecondary,
+                }}
+              >
+                Full payment required — event is within 7 days.
+              </CustomText>
+            )}
           </View>
         )}
 
-        {step === 8 && (
+        {step === 6 && (
           <View style={styles.card}>
             <View
               style={{
@@ -1164,15 +1252,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
                 paddingVertical: verticalScale(14),
               }}
             >
-              <View
-                style={[styles.checkCircle, { borderColor: AppColors.primary }]}
-              >
-                <Ionicons
-                  name="checkmark"
-                  size={26}
-                  color={AppColors.primary}
-                />
-              </View>
+              <SuccessCheckmark />
               <CustomText
                 weight="extraBold"
                 style={{
@@ -1197,19 +1277,33 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
             <View style={{ marginTop: verticalScale(10) }}>
               <RowKV
                 k="Payment Mode"
-                v={payment ?? '-'}
+                v={
+                  paymentMethod === 'cash'
+                    ? 'Cash Payment'
+                    : paymentMethod === 'online'
+                      ? 'Online Payment'
+                      : '-'
+                }
               />
               <RowKV
-                k="Total Amount"
-                v="₹749"
+                k="Payment Plan"
+                v={
+                  paymentPlan === 'advance'
+                    ? '50% Advance — remaining due 7 days before event'
+                    : 'Full Payment'
+                }
+              />
+              <RowKV
+                k="Amount Paid"
+                v={`₹${payableNowAmount.toLocaleString('en-IN')}`}
               />
               <RowKV
                 k="Pay Date"
-                v="Apr 10, 2022"
+                v={formatDate(new Date())}
               />
               <RowKV
                 k="Pay Time"
-                v="10:45 AM"
+                v={formatTime(new Date())}
               />
               <View style={{ height: verticalScale(10) }} />
               <CustomText
@@ -1227,9 +1321,44 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
               >
                 {totalAmount}
               </CustomText>
+
+              <View
+                style={{
+                  marginTop: verticalScale(16),
+                  alignItems: 'center',
+                }}
+              >
+                <CustomText
+                  style={{
+                    textAlign: 'center',
+                    color: AppColors.textSecondary,
+                  }}
+                >
+                  Invoice will be sent to your email.
+                </CustomText>
+                <TouchableOpacity
+                  onPress={() => alert('Invoice download coming soon')}
+                  style={{
+                    marginTop: verticalScale(10),
+                    borderWidth: 1,
+                    borderColor: AppColors.border,
+                    borderRadius: moderateScale(10),
+                    paddingHorizontal: scale(16),
+                    paddingVertical: verticalScale(10),
+                  }}
+                >
+                  <CustomText
+                    weight="bold"
+                    style={{ color: AppColors.primary }}
+                  >
+                    View / Download Invoice
+                  </CustomText>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         )}
+        </Animated.View>
 
         <View style={{ height: verticalScale(16) }} />
       </ScrollView>
@@ -1252,81 +1381,122 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
         onConfirm={handleConfirm}
         onCancel={hidePicker}
       />
-
-      <Modal
-        isVisible={isPackageInfoVisible}
-        onBackdropPress={() => setIsPackageInfoVisible(false)}
-        style={{ justifyContent: 'flex-end', margin: 0 }}
-      >
-        <View
-          style={{
-            backgroundColor: AppColors.card,
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            padding: scale(16),
-            minHeight: verticalScale(250),
-          }}
-        >
-          {/* Drag Handle */}
-          <View
-            style={{
-              width: 40,
-              height: 4,
-              backgroundColor: AppColors.divider,
-              borderRadius: 2,
-              alignSelf: 'center',
-              marginBottom: 12,
-            }}
-          />
-
-          <CustomText
-            weight="extraBold"
-            style={{
-              fontSize: 18,
-              marginBottom: 10,
-            }}
-          >
-            {details?.title}
-          </CustomText>
-
-          <CustomText
-            style={{ color: AppColors.textSecondary, lineHeight: 22 }}
-          >
-            {details?.description}
-          </CustomText>
-
-          <TouchableOpacity
-            onPress={() => {
-              if (isActivePackageLocked) {
-                // 👉 Navigate to subscription or show alert
-                // navigation.navigate('Subscription');
-
-                alert('Please upgrade your plan to access this package');
-              } else {
-                setSelectedPackageId(activePackage?.id || null);
-                setIsPackageInfoVisible(false);
-              }
-            }}
-            style={{
-              marginTop: 'auto',
-              backgroundColor: isActivePackageLocked
-                ? AppColors.error
-                : AppColors.primary,
-              paddingVertical: 14,
-              borderRadius: 12,
-              alignItems: 'center',
-            }}
-          >
-            <CustomText
-              weight="bold"
-              style={{ color: AppColors.textInverse }}
-            >
-              {isActivePackageLocked ? 'Subscribe' : 'Select'}
-            </CustomText>
-          </TouchableOpacity>
-        </View>
-      </Modal>
     </BaseContainer>
+  );
+}
+
+function SuccessCheckmark() {
+  const scale = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.spring(scale, {
+      toValue: 1,
+      friction: 4,
+      tension: 60,
+      useNativeDriver: true,
+    }).start();
+  }, [scale]);
+
+  return (
+    <Animated.View
+      style={[
+        styles.checkCircle,
+        { borderColor: AppColors.primary, transform: [{ scale }] },
+      ]}
+    >
+      <Ionicons
+        name="checkmark"
+        size={26}
+        color={AppColors.primary}
+      />
+    </Animated.View>
+  );
+}
+
+function CustomUniformNotice() {
+  const opacity = useRef(new Animated.Value(0.4)).current;
+
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 900,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 0.4,
+          duration: 900,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [opacity]);
+
+  return (
+    <View
+      style={{
+        paddingVertical: verticalScale(28),
+        alignItems: 'center',
+      }}
+    >
+      <Animated.Text
+        style={{
+          opacity,
+          color: AppColors.primary,
+          fontFamily: Fonts.bold,
+          fontSize: moderateScale(15),
+          textAlign: 'center',
+        }}
+      >
+        Our team will contact you soon.
+      </Animated.Text>
+    </View>
+  );
+}
+
+function UniformGrid({
+  data,
+  selectedId,
+  onSelect,
+  onViewPress,
+}: {
+  data: any[];
+  selectedId: number | string | null;
+  onSelect: (id: any) => void;
+  onViewPress: (item: any) => void;
+}) {
+  return (
+    <FlatList
+      data={data}
+      keyExtractor={(i) => i.id}
+      numColumns={2}
+      scrollEnabled={false}
+      columnWrapperStyle={{ gap: scale(12) }}
+      contentContainerStyle={{
+        gap: scale(12),
+        paddingTop: verticalScale(6),
+      }}
+      renderItem={({ item }) => {
+        const selected = item.id === selectedId;
+
+        return (
+          <SelectableCard
+            image={{ uri: item.images?.[0] }}
+            title={item.category_name}
+            price={item.price}
+            selected={selected}
+            onPress={() => onSelect(item.id)}
+            onViewPress={() => onViewPress(item)}
+            primaryColor={AppColors.primary}
+            borderColor={AppColors.border}
+            backgroundColor={AppColors.card}
+          />
+        );
+      }}
+    />
   );
 }
 

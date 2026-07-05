@@ -1,6 +1,6 @@
 # Project Overview
 
-**Nuvo Hosting Agency** — a React Native mobile application for a premium event hosting agency. The app allows clients to discover event themes, curate crews and uniforms, and book events through a multi-step booking flow. Staff and makeup artists have a separate portal to view their upcoming assignments.
+**Nuvo Hosting Agency** — a React Native mobile application for a premium event hosting agency. The app allows clients to select a Luxury/Premium/Both crew package, curate crews and uniforms, and book events through a multi-step booking flow. Staff and makeup artists have a separate portal to view their upcoming assignments. (Theme browsing/"discovery" was previously a dedicated Explore tab — removed app-wide 2026-07-03; see Change Log.)
 
 The brand identity is "Nuvo Hosting" (previously named "Novo Hosting" — the `novohosting` npm package name reflects the old name). The app serves two distinct user personas with separate tab navigators behind a single login.
 
@@ -10,8 +10,8 @@ The brand identity is "Nuvo Hosting" (previously named "Novo Hosting" — the `n
 
 **Active development. Not production-ready.**
 
-- Core booking flow is implemented but the Order Summary screen (step 6) contains hardcoded placeholder data.
-- Payment integration is UI-only — selecting a payment method does not trigger any real payment gateway. The event is created after "payment" selection without actual payment processing.
+- Core booking flow was reworked 2026-07-03 per a client requirement doc: new Luxury/Premium/Both crew-package model, package-scoped uniform selection (with a Custom Uniform toggle for Luxury), real-data Invoice Summary (no longer hardcoded), and days-until-event-based payment timing. See Known Issues and Change Log for details and open questions.
+- Payment integration is still UI-only — selecting Cash or Online Payment does not trigger any real payment gateway. The event is created after "payment" selection without actual payment processing.
 - Employee/Staff portal is partially implemented (home screen exists but is likely thin).
 - No CI/CD, no automated tests, no linting configuration.
 - Two API base URLs exist in `src/app/config/api.ts` — one is commented out (old), one is active (new AWS API Gateway endpoint).
@@ -73,7 +73,7 @@ Role-based routing: after login, `HomeWrapper` reads `user.role` from Redux and 
     ├── screens/
     │   ├── Auth/                # Splash, Onboarding, Login, Register, OtpVerification
     │   ├── EmployeeScreen/      # EhomeScreen, UpcomingEventsScreen, EventHistoryScreen
-    │   ├── Home/                # HomeScreen, ExploreScreen, EventsScreen, ProfileScreen, ThemeDetailsScreen
+    │   ├── Home/                # HomeScreen, EventsScreen, ProfileScreen, ThemeDetailsScreen (ExploreScreen removed 2026-07-03)
     │   │   └── BookEventFlow/   # BookEventFlowScreen, StepOneForm, SelectableCard
     │   └── HomeWrapper.tsx      # Role router
     ├── services/
@@ -170,14 +170,13 @@ RootNavigator (NativeStack)
 ├── Home → HomeWrapper (role-based)
 │   ├── HomeTabsNavigator (role: CLIENT)
 │   │   ├── HomeScreen
-│   │   ├── ExploreScreen
 │   │   ├── EventsScreen
 │   │   └── ProfileScreen
 │   └── EmployeeTabsNavigator (role: STAFF | MAKEUP_ARTIST)
 │       ├── EhomeScreen
 │       ├── UpcomingEventsScreen
 │       └── ProfileScreen (shared)
-├── ThemeDetails         (from ExploreScreen or BookEventFlow)
+├── ThemeDetails         (from BookEventFlow's uniform "View" button only — was also reachable from ExploreScreen before it was removed 2026-07-03)
 ├── BookEventFlow        (multi-step event booking)
 └── EventHistory         (employee view)
 ```
@@ -299,25 +298,31 @@ No test files or testing libraries found. No Jest, no Detox, no Testing Library 
 
 # Known Issues
 
-1. **Order Summary (step 6) has hardcoded data** — event name "South Indian Style Wedding", date "24 April, 2023", venue "Lock Stock & Barrel, Dubai", billing rows with static prices. These do not reflect the actual booking being created.
-2. **Payment is UI-only** — no payment gateway integration. Selecting a payment method and tapping the footer CTA calls `createEvent` directly without any payment transaction.
-3. **Billing amounts are static** — `baseAmount` is hardcoded as `75000`. No API call to `master/payment/config/` to fetch real pricing.
+1. ~~Order Summary (step 6) has hardcoded data~~ — **Fixed 2026-07-03.** The renamed "Invoice Summary" step (index 4 in the new 7-step flow) now renders real event name, date, venue, and a computed crew-package billing breakdown instead of the old "South Indian Style Wedding" placeholder.
+2. **Payment is still UI-only** — no payment gateway integration. Payment methods are now just Cash/Online (down from 5 options); selecting either and tapping the footer CTA calls `createEvent` directly without any real transaction. This is a deliberate, documented simplification (see Change Log 2026-07-03), not an oversight.
+3. ~~Billing amounts are static~~ — **Fixed 2026-07-03.** Pricing is now computed from the new Luxury (₹20,000/person)/Premium (₹10,000/person) crew-package model plus extra-hour surcharges, instead of a hardcoded `baseAmount = 75000`. `master/payment/config/` is still not called — the new rates are hardcoded per the client's requirement doc, not fetched dynamically.
 4. **After refresh token failure**, the app clears storage but does not redirect to Login.
 5. **`storage.ts` `userData` key** is separate from the auth `user` key — potential confusion and data duplication.
 6. **`HomeTabParamList` defines `MyEvents`** tab that is never registered in the navigator.
 7. **Google Maps API key is committed** to source code — security risk.
-8. **`DEFAULT_DURATION_HOURS` is declared twice** in `BookEventFlowScreen.tsx` (lines 127 and 320) — the file-scoped constant is shadowed by the one inside the component.
+8. **`DEFAULT_DURATION_HOURS` is declared twice** in `BookEventFlowScreen.tsx` (lines 59 and 257 as of 2026-07-03 — line numbers shift as the file changes) — the file-scoped constant is shadowed by the one inside the component. Still present, not addressed by the 2026-07-03 booking-flow rework.
+9. **GST rate is unspecified** — the Invoice Summary step shows a GST line (when GST details are filled in) as informational text only ("TBD"), excluded from the Grand Total, pending a rate from the client. See `BookEventFlowScreen.tsx` Invoice Summary block.
+10. **Payment timing for 8–12 days before an event is unspecified** — the client's requirement doc only defines rules for ≤7 days (full payment only) and >12 days (50% advance or full allowed). The code defaults 8–12 days to the more permissive ">12 days" behavior (`paymentTiming` memo in `BookEventFlowScreen.tsx`) as an assumption pending client confirmation.
+11. **New `handleCreateEvent` payload fields are unconfirmed against the backend** — `crew_package`, `luxury_crew_count`, `premium_crew_count`, `total_crew_count`, `pricing`, `payment_method`, `payment_plan`, `message` were added 2026-07-03 based on naming convention guesses; no backend API spec was available to confirm exact expected keys.
 
 ---
 
 # Technical Debt
 
-- `BookEventFlowScreen.tsx` is a 1600-line monolith. Steps 0–8 are all rendered inside a single component with all state co-located. Should be split into individual step components.
-- Commented-out `handleConfirm` implementation still in source (lines 374–419 of BookEventFlowScreen).
+- `BookEventFlowScreen.tsx` is still a ~1500-line monolith (7 steps as of 2026-07-03, down from 9). All steps are still rendered inline inside a single component with all state co-located — the 2026-07-03 rework deliberately kept this pattern (see Change Log) rather than partially extracting just the new step, to avoid inconsistency. Should still be split into individual step components eventually.
+- Commented-out `handleConfirm` implementation still in source (around lines 311–356 of `BookEventFlowScreen.tsx` as of 2026-07-03 — shifted after the booking-flow rework, not itself touched).
 - Old API base URL commented out in `api.ts` — should be removed once confirmed stable.
-- `modalsService.ts` changed endpoint from `USERS.GET_MODALS_LIST` to `MASTER.CREW` — the old endpoint is still defined in `url.ts` and may be removed.
+- `modalsService.ts` changed endpoint from `USERS.GET_MODALS_LIST` to `MASTER.CREW` — the old endpoint is still defined in `url.ts` and may be removed. **As of 2026-07-03, `modalsService.ts`/`getModalsList()` has zero remaining consumers anywhere in the app** — `BookEventFlowScreen.tsx` stopped using it earlier the same day, and `ExploreScreen.tsx` (its last consumer) was deleted in a follow-up request. `HomeScreen.tsx`'s `fetchData()` no longer calls it either. The file was left in place (not deleted) since deleting service-layer files wasn't explicitly requested — candidate for removal in a follow-up cleanup pass, along with `themeService.ts` (also now unused for the same reason: `getThemes()`/`setThemes` were only ever consumed by the removed theme-selection booking step and `ExploreScreen`).
 - No TypeScript strict mode; many `any` types throughout slices and service files.
 - `HomeWrapper.tsx` uses `useSelector` with `(state: any)` cast instead of typed `useAppSelector`.
+- **`src/components/ModelCard.tsx` is still dead code** (2026-07-03) — its only consumer (the booking flow's individual crew-member picker step) was removed earlier the same day. Remains undeleted after the Explore-screen removal too (its other candidate consumer, `ExploreScreen.tsx`'s `TinderModalViewer`, actually never imported `ModelCard` — it had its own inline rendering, per the original investigation). Candidate for a follow-up cleanup pass.
+- **`state.explore.themes` and `state.explore.modals` are now unused Redux state** (2026-07-03) — the `exploreSlice.ts` shape (themes/modals/loading) was left untouched to minimize blast radius, but nothing populates or reads `themes`/`modals` anymore now that `ExploreScreen.tsx` is deleted and `HomeScreen.tsx` no longer fetches them. `state.explore.loading` is still live — it's read by `BookEventFlowScreen.tsx`'s footer button label (`loading ? 'Creating Event...' : footerLabel`), which is itself a pre-existing naming mismatch (that flag reflects the Home screen's initial data fetch, not event-creation submission) — not fixed here, flagged for a future look.
+- **"Custom Uniform" is a UI toggle, not a catalog item** (2026-07-03, revised twice same day) — the requirement doc's table lists Custom Uniform as "shown as first option" inside the uniform grid, but per product direction this was implemented instead as a single "Custom Uniform" toggle button (`isLuxuryCustomUniform` in `BookEventFlowScreen.tsx`, tap to switch on/off — there's no separate "Standard Uniforms" button), shown only in the Luxury-crew uniform section (never Premium, per the doc). Toggling to Custom hides the predefined uniform grid and shows an animated "Our team will contact you soon." notice (`CustomUniformNotice`); no predefined uniform needs to be picked in that state, and `luxury_uniform_id` is omitted from the payload in favor of `luxury_uniform_type: 'custom'`. `predefinedUniforms` in `BookEventFlowScreen.tsx` still excludes any uniform whose `category_name` contains "custom" (case-insensitive) from the normal grid, since no backend field distinguishes custom vs. predefined uniforms — a real (non-custom) uniform named with "custom" in it would be mis-filtered out of the grid entirely (with no toggle-based way to select it, since the toggle doesn't reference actual catalog data). The uniform step (index 2) shows two independently-scoped sections per the requirement doc's table when package is "Both": "Uniform for Luxury Crew" (predefined grid + Custom toggle, bound to `selectedLuxuryUniformId`) and "Uniform for Premium Crew" (predefined grid only, bound to `selectedPremiumUniformId`).
 
 ---
 
@@ -329,23 +334,23 @@ No test files or testing libraries found. No Jest, no Detox, no Testing Library 
 
 **Purpose:** Collect payment from client before event confirmation.
 
-**Current Implementation:** Payment method is selected via radio buttons (Paytm, PhonePe, GPay, Cards, Cash). Tapping the footer CTA on step 7 calls `createEvent` directly. No gateway SDK integrated.
+**Current Implementation (updated 2026-07-03):** Payment method is now just Cash Payment or Online Payment (radio buttons, down from 5 options — Paytm/PhonePe/GPay/Cards were removed per client requirement doc). A new payment-timing rule is enforced: events within 7 days require full payment; events more than 12 days out let the user choose 50% Advance or Full Amount (8–12 days defaults to the more permissive >12-day behavior — undocumented gap, see Known Issues #10). Tapping the footer CTA on the Payment step (index 5) still calls `createEvent` directly for both Cash and Online — no gateway SDK integrated, "Online Payment" is intentionally still UI-only.
 
-**Missing Pieces:** Actual payment gateway SDK (Razorpay is common for India), order creation API call, payment success/failure handling, `master/payment/config/` endpoint consumption for dynamic pricing.
+**Missing Pieces:** Actual payment gateway SDK (Razorpay is common for India) for the "Online Payment" path, order creation API call, payment success/failure handling, `master/payment/config/` endpoint consumption for dynamic pricing (rates are now hardcoded per the requirement doc: Luxury ₹20,000/person, Premium ₹10,000/person), backend support for the new `payment_plan` (50% advance vs full) concept and its "remaining balance due 7 days before event" reminder (no reminder infra exists client-side).
 
-**Files Involved:** `BookEventFlowScreen.tsx` (step 7 and `handleCreateEvent`)
+**Files Involved:** `BookEventFlowScreen.tsx` (Payment step, index 5, and `handleCreateEvent`)
 
-## Order Summary with Real Data
+## Invoice Generation
 
-**Status:** Partially Implemented
+**Status:** UI Shell Only (added 2026-07-03)
 
-**Purpose:** Show a summary of the event being booked with real details.
+**Purpose:** Per client requirement doc — after successful payment, generate an invoice, email it to the customer, and let them view/download it as a PDF in-app.
 
-**Current Implementation:** Step 6 renders hardcoded event name, date, venue, and pricing rows.
+**Current Implementation:** Success step (index 6) shows "Invoice will be sent to your email" messaging and a "View / Download Invoice" button. The button is an explicit no-op (`alert('Invoice download coming soon')`) since no invoice endpoint exists in `src/constants/url.ts`.
 
-**Missing Pieces:** Bind `eventAbout`, `startDate`, `venueDetails`, `selectedThemeId`, dynamic pricing from API.
+**Missing Pieces:** Backend invoice generation, an invoice-fetch/download endpoint, email delivery, wiring the button to that endpoint once it exists.
 
-**Files Involved:** `BookEventFlowScreen.tsx` step 6 block
+**Files Involved:** `BookEventFlowScreen.tsx` Success step block
 
 ## Employee Home Screen
 
@@ -357,28 +362,30 @@ No test files or testing libraries found. No Jest, no Detox, no Testing Library 
 
 ## Subscription / Upgrade Plan
 
-**Status:** Placeholder
+**Status:** Removed from booking flow (2026-07-03), unresolved elsewhere
 
-**Purpose:** Locked packages prompt "Subscribe" — the navigation to a subscription screen is commented out with `// navigation.navigate('Subscription')`.
+**Purpose:** Previously, locked packages in the booking flow's "Curate Your Crew" step prompted "Subscribe" — the navigation to a subscription screen was commented out with `// navigation.navigate('Subscription');`.
 
-**Missing Pieces:** Subscription screen, plan upgrade API, payment flow for subscriptions.
+**Current Implementation:** The entire old 5-tier (Diamond/Platinum/Gold/Silver/Bronze) subscription-locked package step, `PLAN_HIERARCHY`/`PACKAGE_PLAN_MAP` logic, and the "Subscribe" upsell modal were deleted from `BookEventFlowScreen.tsx` as part of the 2026-07-03 booking-flow rework (replaced by the new Luxury/Premium/Both crew-package model, which has no subscription gating). This was scoped as "remove the old package step being replaced," not a full app-wide removal of the subscription concept per the client's broader (out-of-scope for that pass) request to "remove all subscription-related flows."
 
-**Files Involved:** `BookEventFlowScreen.tsx` package info modal
+**Missing Pieces:** The client's requirement doc also asks to remove the Subscription feature app-wide — this was explicitly deferred (see Change Log 2026-07-03) since no Subscription screen is actually registered in `RootNavigator.tsx` today (the navigate call was already commented out) and any remaining subscription-plan references (e.g. `user?.subscription_plan` elsewhere in the app, `ProfileScreen`, etc.) were not audited in this pass.
+
+**Files Involved:** Previously `BookEventFlowScreen.tsx` package info modal (now deleted); any remaining app-wide subscription references are un-audited.
 
 ---
 
 # Current Sprint / Active Work
 
-Based on git status (branch: `main`):
+As of 2026-07-03, working locally (uncommitted) on a client requirement-change document ("Requirement & Change Document for Nuvo Hosting", v1.0, June 2026) implementing a booking-flow overhaul:
 
-- `app.json` — modified (likely name/logo update per recent commit "updated the name and logo")
-- `src/app/config/api.ts` — modified (API base URL switch)
-- `src/constants/url.ts` — modified (endpoint changes)
-- `src/screens/Home/BookEventFlow/BookEventFlowScreen.tsx` — modified (active development)
-- `src/screens/Home/ExploreScreen.tsx` — modified
-- `src/screens/Home/HomeScreen.tsx` — modified
-- `src/services/api/modalsService.ts` — modified (endpoint switch from user modals to master crew)
-- `src/services/api/validateCoupon.ts` — **new untracked file** (coupon validation service just added)
+- `src/screens/Home/BookEventFlow/BookEventFlowScreen.tsx` — reworked: new Luxury/Premium/Both crew-package step replaces the old 5-tier subscription-locked package step and the individual crew-member picker; theme ("Select Your Mood") in-flow selection step removed; uniform selection now filtered by chosen crew package; Invoice Summary (renamed from Order Summary) now shows real computed data instead of hardcoded placeholders; Payment step reduced to Cash/Online with days-until-event-based advance/full payment timing; Success step shows real values plus an invoice UI shell. See Known Issues, Technical Debt, and Unfinished Features for the details and open questions this introduced.
+- `src/screens/Home/BookEventFlow/StepOneForm.tsx` — reworked: removed the "Crew Count" field per the requirement doc.
+- **The Explore tab was later removed app-wide** (2026-07-03, follow-up request) — see its own Change Log entry below. Remaining explicitly out of scope: removing the Subscription feature app-wide, removing the STAFF role/`EmployeeTabsNavigator`.
+- Not yet committed — verify further in a running simulator before merging (this pass was verified via a clean TypeScript check and a successful Metro bundle build only; no simulator/device walkthrough was performed).
+
+Previously landed and merged (background, unrelated to the above): PR #38 "location_implementation" (`da5b9c4`) — background location tracking for staff; `d93d3b2` "updated the name and logo" branding update.
+
+`src/services/api/validateCoupon.ts` is now a tracked file (added 2026-06-13), no longer untracked. No open local changes as of this writing — next work should start from a fresh branch off `nuvo-01`/`main`.
 
 ---
 
@@ -452,3 +459,11 @@ Based on git status (branch: `main`):
 |---|---|
 | 2026-06-13 | Initial CLAUDE.md created from codebase audit. Identified hardcoded payment, Order Summary placeholder data, missing auth redirect, API endpoint migration in modalsService, and new validateCoupon service file. |
 | 2026-06-13 | Implemented background location tracking for staff. Added expo-location + expo-task-manager. Task fires every 5 min, POSTs to nuvo-c-backend.onrender.com. Starts/stops with online toggle. Android: foreground service (survives app kill). iOS: best-effort background. |
+| 2026-07-03 | Doc sync: confirmed location-tracking work (PR #38) and branding update merged into `nuvo-01`/`main`; working tree clean, no pending local changes. `validateCoupon.ts` confirmed tracked (no longer a new/untracked file). No code changes this session — audit only. |
+| 2026-07-03 | Implemented booking-flow changes from client requirement doc ("Requirement & Change Document for Nuvo Hosting" v1.0). Scoped to `BookEventFlowScreen.tsx`/`StepOneForm.tsx` only (app-wide Explore/Subscription/STAFF removal explicitly deferred). Removed: theme selection step, old 5-tier subscription-locked package step, individual crew-member picker step, "Crew Count" field. Added: Luxury/Premium/Both crew-package step with live pricing (₹20,000/₹10,000 per person, extra-hour surcharge at rate÷8), package-filtered uniform list (custom uniform detected via `category_name` string match — no backend flag exists), optional Message field, real-data Invoice Summary (was hardcoded Order Summary), Cash/Online-only payment with days-until-event-based advance/full payment timing, invoice UI shell on Success step (no-op "coming soon" download button, no backend endpoint exists). `handleCreateEvent` payload gained new fields (`crew_package`, `luxury_crew_count`, `premium_crew_count`, `total_crew_count`, `pricing`, `payment_method`, `payment_plan`, `message`) whose backend-expected names are unconfirmed. Open questions: GST rate unspecified (shown as "TBD", excluded from total), 8–12 day payment-timing gap defaults to permissive behavior. Verified via clean `tsc --noEmit` (2 pre-existing, unrelated errors only) and a successful Metro bundle build containing the new step labels — not yet verified in a running simulator. |
+| 2026-07-03 | Follow-up fixes to the booking-flow rework, same session: (1) Added temporary hardcoded "quick pick" venue chips to `StepOneForm.tsx` (`DUMMY_VENUES`) to unblock testing while the Google Places API key's GCP project has billing disabled — clearly marked for removal once billing is enabled. (2) Moved "Working Hours" from the Basic Details step to the Select Crew Package step (now shown alongside the live extra-hour pricing preview it feeds); default changed from 6 to 8 hours to match `STANDARD_SHIFT_HOURS`. (3) Corrected the uniform step: the initial implementation used one merged, package-filtered uniform list for all package types, but the requirement doc's table actually calls for two *independently scoped* selections when "Both" is chosen — a Luxury-crew uniform (custom + all predefined, `selectedLuxuryUniformId`) and a separate Premium-crew uniform (predefined only, `selectedPremiumUniformId`). Renamed the old single `selectedUniformId`/`filteredUniforms` accordingly; payload now sends `luxury_uniform_id`/`premium_uniform_id` instead of a single `uniform_id`. |
+| 2026-07-03 | Reworked "Custom Uniform" per product direction: instead of showing it as a selectable grid item (as the requirement doc's table literally depicts), it's now a "Standard Uniforms"/"Custom Uniform" toggle (`isLuxuryCustomUniform`) in the Luxury-crew uniform section only. Toggling to Custom hides the predefined uniform grid and shows an animated (looping opacity) "Our team will contact you soon." notice (`CustomUniformNotice`), and the user can proceed to the next step without picking a predefined uniform. Payload gained `luxury_uniform_type: 'custom' \| 'predefined'`; `luxury_uniform_id` is omitted when custom is chosen. Premium-crew section is unaffected (still predefined-only, no toggle, per the doc). Package-switch handler now also resets uniform selections/toggle state when switching away from Luxury or Premium. Verified via clean `tsc --noEmit` and a forced Metro bundle rebuild confirming the new strings compiled. |
+| 2026-07-03 | Simplified the Custom Uniform control to a single toggle button (removed the separate "Standard Uniforms" button per user feedback) — tapping "Custom Uniform" now flips `isLuxuryCustomUniform` on/off directly instead of choosing between two `RadioRow`s. Also fixed a pre-existing bug surfaced while testing this screen: `SelectableCard.tsx` used `{price && (...)}` to conditionally render the price label — when `price` is the number `0` (not `undefined`), `0 && (...)` evaluates to `0`, and React Native tried to render that bare number as a text node outside a `<Text>`, throwing "Text strings must be rendered within a `<Text>` component." Changed to `{!!price && (...)}` so falsy numeric prices render nothing instead of a stray `0`. This bug was pre-existing (not introduced by the booking-flow rework) but only surfaced now because the uniform step is being exercised more thoroughly with real/test catalog data that includes zero-priced items. |
+| 2026-07-03 | Added an informational note under the Working Hours field on the Select Crew Package step, shown only when `pricingBreakdown.extraHours > 0` (i.e. working hours entered above the standard 8-hour shift). It states the extra-hour count and the applicable per-person hourly rate(s) — ₹2,500/hr for Luxury, ₹1,250/hr for Premium, or both when package is "Both" — so the price jump visible in the Price Preview below has an explanation right where the user causes it. |
+| 2026-07-03 | Two follow-up changes, same session: (1) The Working Hours field (and its extra-hour note) on the Select Crew Package step now only renders after a package is selected (`{selectedCrewPackage && (...)}`), instead of showing unconditionally on step load — matches the Luxury/Premium Crew Count inputs' existing conditional pattern. (2) Removed the Explore tab/screen from the app entirely per user request: deleted `src/screens/Home/ExploreScreen.tsx`, removed its registration from `HomeTabsNavigator.tsx` (import, `Tab.Screen`, tab icon branch, `Explore` entry in `HomeTabParamList`). `HomeScreen.tsx`'s `fetchData()` no longer calls `getThemes()`/`getModalsList()` or dispatches `setThemes`/`setModals`, since that data had no remaining consumer after the screen removal — `setLoading` calls were kept since `BookEventFlowScreen.tsx` still reads `state.explore.loading` for its footer button label. `themeService.ts`, `modalsService.ts`, `exploreSlice.ts`'s `themes`/`modals` fields, and `src/components/ModelCard.tsx` are now fully unused but were left in place (not deleted) — flagged as cleanup candidates, not removed, since deleting service/slice files wasn't explicitly requested. Verified via clean `tsc --noEmit` (same 2 pre-existing, unrelated errors) and a forced Metro bundle rebuild confirming `"ExploreScreen"` no longer appears anywhere in the compiled bundle. |
+| 2026-07-03 | Added animation to the booking flow (`BookEventFlowScreen.tsx`), using React Native's `Animated` API (no new dependency): (1) **Progress bar** — the header progress fill (`styles.progressFill`) is now an `Animated.View` driven by a `progressAnim` value, smoothly tweening width (`useNativeDriver: false`, required since width isn't supported by the native driver) instead of snapping instantly on every step change. (2) **Step transitions** — the entire step-content area (all `{step === N && (...)}` blocks) is wrapped in one `Animated.View` bound to `contentOpacity`/`contentTranslateX`; a `useEffect` keyed on `step` resets and re-animates opacity 0→1 and translateX from ±24px→0 on every step change, sliding in from the right when moving forward (Next) and from the left when moving back (Back), determined via a `prevStepRef` comparison. (3) **Success checkmark** — extracted the static checkmark circle on the Success step into a new `SuccessCheckmark` component that spring-animates its scale from 0→1 on mount (`Animated.spring`), giving the final confirmation a "pop in" moment; since it's only rendered inside `{step === 6 && (...)}`, it naturally re-mounts (and re-triggers the animation) each time the user reaches Success. Verified via clean `tsc --noEmit` and a forced Metro bundle rebuild confirming the new animation code compiled (`SuccessCheckmark`/`contentOpacity`/`progressAnim` all present in the bundle) — not yet visually verified in a running simulator. |
