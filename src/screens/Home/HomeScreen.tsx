@@ -16,13 +16,7 @@ import { AppColors } from '../../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { getThemes } from '../../services/api/themeService';
-import { getModalsList } from '../../services/api/modalsService';
-import {
-  setLoading,
-  setModals,
-  setThemes,
-} from '../../features/explore/exploreSlice';
+import { setLoading } from '../../features/explore/exploreSlice';
 import { fetchUniforms } from '../../features/uniform/uniformSlice';
 import { getMyEvents } from '../../features/events/eventSlice';
 import { getCurrentUser } from '../../services/api/userService';
@@ -45,28 +39,13 @@ const HomeScreen: React.FC<Props> = ({}) => {
     try {
       dispatch(setLoading(true));
 
-      const [userRes, themesRes, modalsRes] = await Promise.all([
-        getCurrentUser(),
-        getThemes(),
-        getModalsList(),
-      ]);
+      const userRes = await getCurrentUser();
 
       console.log('USER API RESPONSE:', userRes);
 
       // 🔥 FIXED HERE
       if (userRes?.data?.data) {
         dispatch(setUser(userRes.data.data));
-      }
-
-      if (themesRes.success) {
-        dispatch(setThemes(themesRes.data));
-      }
-
-      // if (modalsRes.success) {
-      //   dispatch(setModals(modalsRes.data.results));
-      // }
-      if (modalsRes.success) {
-        dispatch(setModals(modalsRes.data));
       }
 
       dispatch(fetchUniforms());
