@@ -36,5 +36,7 @@ export const ENDPOINTS = {
   EVENTS: {
     CREATE: 'events/create/',
     GET_MY_EVENTS: 'events/get-my-events/',
+    PAYMENT_INITIATE: (eventId: string) => `events/${eventId}/payment/initiate/`,
+    PAYMENT_STATUS: 'events/payment/callback/',
   },
 };
