@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "expo-ios",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["expo", "start", "--ios", "--no-dev", "--minify"],
+      "port": 8081
+    }
+  ]
+}

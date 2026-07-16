@@ -10,3 +10,22 @@ export const getMyEventsAPI = async () => {
   const response = await apiClient.get(ENDPOINTS.EVENTS.GET_MY_EVENTS);
   return response.data;
 };
+
+export const initiatePaymentAPI = async (
+  eventId: string,
+  amount: number,
+  redirectUrl: string,
+) => {
+  const response = await apiClient.post(ENDPOINTS.EVENTS.PAYMENT_INITIATE(eventId), {
+    amount,
+    redirect_url: redirectUrl,
+  });
+  return response.data;
+};
+
+export const checkPaymentStatusAPI = async (merchantOrderId: string) => {
+  const response = await apiClient.get(ENDPOINTS.EVENTS.PAYMENT_STATUS, {
+    params: { merchantOrderId },
+  });
+  return response.data;
+};
