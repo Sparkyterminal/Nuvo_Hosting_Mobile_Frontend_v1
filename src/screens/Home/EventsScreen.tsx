@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
   Image,
-  Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BaseContainer } from '../../components/BaseContainer';
@@ -19,65 +18,43 @@ import { getMyEvents } from '../../features/events/eventSlice';
 
 type Props = NativeStackScreenProps<HomeTabParamList, 'Events'>;
 
-type EventItem = {
-  id: string;
-  titleLine1: string;
-  titleLine2?: string;
-  priceText: string;
-  orderId: string;
-  status: 'Booked' | 'Pending' | 'Completed';
-  imageUrl: string;
-  steps: number;
-  completedSteps: number; // 0..steps
-};
+type TabKey = 'booked' | 'pending';
 
-const mapStatus = (status: string): EventItem['status'] => {
-  switch (status) {
-    case 'created':
-      return 'Booked';
-    case 'completed':
-      return 'Completed';
-    default:
-      return 'Pending';
-  }
+// A payment is considered "booked" once any confirmed payment exists
+// (a paid advance or a full payment). Anything else (unpaid / missing) is pending.
+const isBookedEvent = (event: any): boolean => {
+  const s = event?.payment_details?.payment_status;
+  return s === 'advance' || s === 'paid_fully';
 };
 
 const EventsScreen: React.FC<Props> = ({ navigation }) => {
-  const demoEvent: EventItem = {
-    id: '265894',
-    titleLine1: 'South Indian',
-    titleLine2: 'Style Wedding',
-    priceText: '₹ 75,000,00.00',
-    orderId: '#265894',
-    status: 'Booked',
-    imageUrl:
-      'https://images.unsplash.com/photo-1523438097201-512ae7d59c10?auto=format&fit=crop&w=400&q=80',
-    steps: 4,
-    completedSteps: 3, // first 3 filled, last grey like screenshot
-  };
-
   const dispatch = useAppDispatch();
   const { events, loading } = useAppSelector((state) => state.event);
 
+  const [activeTab, setActiveTab] = useState<TabKey>('booked');
+
+  // Refresh the list on mount and every time the screen regains focus.
+  useEffect(() => {
+    dispatch(getMyEvents());
+    const unsub = navigation.addListener('focus', () => {
+      dispatch(getMyEvents());
+    });
+    return unsub;
+  }, [navigation, dispatch]);
+
+  const bookedEvents = useMemo(
+    () => (events || []).filter(isBookedEvent),
+    [events],
+  );
+  const pendingEvents = useMemo(
+    () => (events || []).filter((e: any) => !isBookedEvent(e)),
+    [events],
+  );
+
+  const visibleEvents = activeTab === 'booked' ? bookedEvents : pendingEvents;
+
   const onPressBookEvents = () => {
     navigation.navigate('BookEventFlow');
-  };
-
-  const onPressTrackStatus = () => {
-    // navigation.navigate("EventStatus" as never, { orderId: demoEvent.orderId } as never);
-  };
-
-  const getProgress = (status: string) => {
-    switch (status) {
-      case 'created':
-        return 1;
-      case 'staff_allocated':
-        return 2;
-      case 'completed':
-        return 4;
-      default:
-        return 1;
-    }
   };
 
   return (
@@ -111,6 +88,22 @@ const EventsScreen: React.FC<Props> = ({ navigation }) => {
             onPress={onPressBookEvents}
             background={AppColors.primary}
           />
+
+          {/* Booked / Pending tabs */}
+          <View style={styles.tabRow}>
+            <TabButton
+              label="Booked Events"
+              count={bookedEvents.length}
+              active={activeTab === 'booked'}
+              onPress={() => setActiveTab('booked')}
+            />
+            <TabButton
+              label="Pending Events"
+              count={pendingEvents.length}
+              active={activeTab === 'pending'}
+              onPress={() => setActiveTab('pending')}
+            />
+          </View>
         </View>
 
         {/* Section 2 */}
@@ -119,32 +112,38 @@ const EventsScreen: React.FC<Props> = ({ navigation }) => {
             Your Events, the Nuvo Way
           </CustomText>
           <CustomText style={[styles.sub, { color: AppColors.textGrey }]}>
-            Track what’s booked — effortlessly.
+            {activeTab === 'booked'
+              ? 'Track what’s booked — effortlessly.'
+              : 'Payments awaiting completion.'}
           </CustomText>
 
-          {events.length === 0 ? (
+          {loading && (events || []).length === 0 ? (
             <CustomText style={{ textAlign: 'center', marginTop: 20 }}>
-              No events found
+              Loading…
+            </CustomText>
+          ) : visibleEvents.length === 0 ? (
+            <CustomText
+              style={{
+                textAlign: 'center',
+                marginTop: 20,
+                color: AppColors.textGrey,
+              }}
+            >
+              {activeTab === 'booked'
+                ? 'No booked events yet.'
+                : 'No pending events.'}
             </CustomText>
           ) : (
-            events.map((item) => (
+            visibleEvents.map((item: any) => (
               <EventCard
                 key={item.event_id}
-                item={{
-                  id: item.event_id,
-                  titleLine1: item.event_name,
-                  titleLine2: item.event_theme_name,
-                  priceText: `₹ ${item.payment_details?.total_amount || 0}`,
-                  orderId: item.event_id,
-                  status: mapStatus(item.status),
-                  imageUrl:
-                    'https://images.unsplash.com/photo-1523438097201-512ae7d59c10',
-                  steps: 4,
-                  completedSteps: getProgress(item.status),
-                }}
-                onPressTrack={() => {
-                  console.log('Track:', item.event_id);
-                }}
+                event={item}
+                badgeLabel={activeTab === 'booked' ? 'Booked' : 'Pending'}
+                onPress={() =>
+                  (navigation as any).navigate('EventDetails', {
+                    eventId: item.event_id,
+                  })
+                }
               />
             ))
           )}
@@ -155,6 +154,36 @@ const EventsScreen: React.FC<Props> = ({ navigation }) => {
     </BaseContainer>
   );
 };
+
+function TabButton({
+  label,
+  count,
+  active,
+  onPress,
+}: {
+  label: string;
+  count: number;
+  active: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <TouchableOpacity
+      activeOpacity={0.85}
+      onPress={onPress}
+      style={[styles.tab, active && styles.tabActive]}
+    >
+      <CustomText
+        weight={active ? 'bold' : 'medium'}
+        style={[
+          styles.tabText,
+          { color: active ? AppColors.textInverse : AppColors.textGrey },
+        ]}
+      >
+        {label} ({count})
+      </CustomText>
+    </TouchableOpacity>
+  );
+}
 
 function PrimaryButton({
   label,
@@ -181,17 +210,39 @@ function PrimaryButton({
   );
 }
 
+const fmtCardDate = (iso?: string | null) => {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return null;
+  return d.toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+};
+
 function EventCard({
-  item,
-  onPressTrack,
-  // colors,
+  event,
+  badgeLabel,
+  onPress,
 }: {
-  item: EventItem;
-  onPressTrack: () => void;
-  // colors: any;
+  event: any;
+  badgeLabel: 'Booked' | 'Pending';
+  onPress: () => void;
 }) {
+  const priceText = `₹ ${Number(
+    event?.payment_details?.total_amount || 0,
+  ).toLocaleString('en-IN')}`;
+
+  const dateText = fmtCardDate(event?.event_start_datetime);
+  const venueText = event?.venue_name || event?.city || null;
+  const typeText =
+    [event?.event_type, event?.city].filter(Boolean).join(' • ') || null;
+
   return (
-    <View
+    <TouchableOpacity
+      activeOpacity={0.9}
+      onPress={onPress}
       style={[
         styles.card,
         { borderColor: AppColors.border, backgroundColor: AppColors.card },
@@ -210,24 +261,26 @@ function EventCard({
                 weight="bold"
                 style={[styles.cardTitle, { color: AppColors.textPrimary }]}
               >
-                {item.titleLine1}
+                {event?.event_name}
               </CustomText>
-              {!!item.titleLine2 && (
-                <CustomText
-                  weight="bold"
-                  style={[styles.cardTitle, { color: AppColors.textPrimary }]}
-                >
-                  {item.titleLine2}
-                </CustomText>
-              )}
             </View>
 
-            <View style={[styles.chip, { backgroundColor: AppColors.surface }]}>
+            <View
+              style={[
+                styles.chip,
+                {
+                  backgroundColor:
+                    badgeLabel === 'Booked'
+                      ? AppColors.surface
+                      : AppColors.divider,
+                },
+              ]}
+            >
               <CustomText
                 weight="medium"
                 style={[styles.chipText, { color: AppColors.textPrimary }]}
               >
-                {item.status}
+                {badgeLabel}
               </CustomText>
             </View>
           </View>
@@ -236,42 +289,38 @@ function EventCard({
             weight="extraBold"
             style={[styles.price, { color: AppColors.textPrimary }]}
           >
-            {item.priceText}
+            {priceText}
           </CustomText>
 
-          <CustomText
-            weight="medium"
-            style={[styles.orderId, { color: AppColors.textGrey }]}
-          >
-            Order id:{item.orderId}
-          </CustomText>
+          {/* Basic event details */}
+          {!!typeText && (
+            <CustomText
+              weight="medium"
+              style={[styles.detailLine, { color: AppColors.textGrey }]}
+            >
+              {typeText}
+            </CustomText>
+          )}
+          {!!dateText && (
+            <CustomText
+              weight="medium"
+              style={[styles.detailLine, { color: AppColors.textGrey }]}
+            >
+              {dateText}
+            </CustomText>
+          )}
+          {!!venueText && (
+            <CustomText
+              weight="medium"
+              numberOfLines={1}
+              style={[styles.detailLine, { color: AppColors.textGrey }]}
+            >
+              {venueText}
+            </CustomText>
+          )}
         </View>
       </View>
-
-      {/* Progress */}
-      {/* <ProgressTracker
-        steps={item.steps}
-        completedSteps={item.completedSteps}
-        primary={AppColors.primary}
-        ring={AppColors.surface}
-        line={AppColors.border}
-      /> */}
-      <StatusTracker status={item.status} />
-
-      {/* Track status button */}
-      {/* <TouchableOpacity
-        activeOpacity={0.9}
-        onPress={onPressTrack}
-        style={[styles.trackBtn, { backgroundColor: AppColors.primary }]}
-      >
-        <CustomText
-          weight="extraBold"
-          style={styles.trackBtnText}
-        >
-          Track Status
-        </CustomText>
-      </TouchableOpacity> */}
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -328,62 +377,6 @@ function EventCard({
 //   );
 // }
 
-function StatusTracker({ status }: { status: string }) {
-  const steps = ['Pending', 'In Progress', 'Completed'];
-
-  const getActiveIndex = () => {
-    switch (status) {
-      case 'created':
-        return 0;
-      case 'staff_allocated':
-        return 1;
-      case 'completed':
-        return 2;
-      default:
-        return 0;
-    }
-  };
-
-  const activeIndex = getActiveIndex();
-
-  return (
-    <View style={{ marginTop: 12 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        {steps.map((step, index) => {
-          const isActive = index <= activeIndex;
-
-          return (
-            <View
-              key={index}
-              style={{ alignItems: 'center', flex: 1 }}
-            >
-              <View
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: 6,
-                  backgroundColor: isActive
-                    ? AppColors.primary
-                    : AppColors.divider,
-                  marginBottom: 6,
-                }}
-              />
-              <CustomText
-                style={{
-                  fontSize: 12,
-                  color: isActive ? AppColors.primary : AppColors.textGrey,
-                }}
-              >
-                {step}
-              </CustomText>
-            </View>
-          );
-        })}
-      </View>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   content: {
     paddingHorizontal: scale(18),
@@ -420,6 +413,34 @@ const styles = StyleSheet.create({
   primaryBtnText: {
     color: AppColors.textInverse,
     fontSize: moderateScale(18),
+  },
+
+  tabRow: {
+    flexDirection: 'row',
+    marginTop: verticalScale(16),
+    backgroundColor: AppColors.surface,
+    borderRadius: moderateScale(12),
+    borderWidth: moderateScale(1),
+    borderColor: AppColors.border,
+    padding: scale(4),
+  },
+  tab: {
+    flex: 1,
+    height: verticalScale(42),
+    borderRadius: moderateScale(9),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabActive: {
+    backgroundColor: AppColors.primary,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  tabText: {
+    fontSize: moderateScale(14),
   },
 
   card: {
@@ -473,6 +494,10 @@ const styles = StyleSheet.create({
   orderId: {
     marginTop: verticalScale(6),
     fontSize: moderateScale(14),
+  },
+  detailLine: {
+    marginTop: verticalScale(4),
+    fontSize: moderateScale(13),
   },
 
   progressWrap: {

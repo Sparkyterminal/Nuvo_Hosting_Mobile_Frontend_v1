@@ -8,6 +8,7 @@ import OtpVerificationScreen from '../screens/Auth/OtpVerificationScreen';
 import ThemeDetailsScreen from '../screens/Home/ThemeDetailsScreen';
 import BookEventFlowScreen from '../screens/Home/BookEventFlow/BookEventFlowScreen';
 import EventHistoryScreen from '../screens/EmployeeScreen/EventHistoryScreen';
+import EventDetailsScreen from '../screens/Home/EventDetailsScreen';
 
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -27,6 +28,9 @@ export type RootStackParamList = {
   Home: undefined;
   Themes: undefined;
   EventHistory: undefined;
+  EventDetails: {
+    eventId: string;
+  };
 
   ThemeDetails: {
     data: {
@@ -152,6 +156,10 @@ const RootNavigator = () => {
         <Stack.Screen
           name="EventHistory"
           component={EventHistoryScreen}
+        />
+        <Stack.Screen
+          name="EventDetails"
+          component={EventDetailsScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>
