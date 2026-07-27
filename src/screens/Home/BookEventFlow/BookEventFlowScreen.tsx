@@ -8,10 +8,6 @@ import {
   Image,
   FlatList,
   Animated,
-  AppState,
-  AppStateStatus,
-  Linking,
-  ActivityIndicator,
   BackHandler,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -32,10 +28,8 @@ import FooterButton from '../../../components/FooterButton';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { createEvent, getMyEvents } from '../../../features/events/eventSlice';
 import { validateCoupon } from '../../../services/api/validateCoupon';
-import {
-  initiatePaymentAPI,
-  checkPaymentStatusAPI,
-} from '../../../services/api/eventService';
+import { checkPaymentStatusAPI } from '../../../services/api/eventService';
+import { payWithPhonePe } from '../../../services/phonePeSdk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BookEventFlow'>;
 
@@ -175,11 +169,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
   };
 
   const [createdEventId, setCreatedEventId] = useState<string | null>(null);
-  const [phonePeMerchantOrderId, setPhonePeMerchantOrderId] = useState<string | null>(null);
-  const [phonePeRedirectUrl, setPhonePeRedirectUrl] = useState<string | null>(null);
-  const [paymentPending, setPaymentPending] = useState(false);
-  const [paymentVerifying, setPaymentVerifying] = useState(false);
-  const [paymentFailed, setPaymentFailed] = useState(false);
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
 
   const handleCreateEvent = async () => {
     if (!venueDetails) {
@@ -258,79 +248,46 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
       return;
     }
 
-    // Online payment — create event first (PhonePe requires an event_id),
-    // then initiate PhonePe. Event is in payment_pending state until verified.
+    // Online payment — create the event first (PhonePe needs an event_id),
+    // then run the native PhonePe SDK checkout.
     try {
       const res = await dispatch(createEvent(payload)).unwrap();
-      console.log('✅ EVENT CREATED (online, pending payment):', res);
+      console.log('✅ EVENT CREATED (online, awaiting payment):', res);
 
       const eventId: string = res?.id || res?._id || '';
       if (!eventId) {
         alert('Event created but ID not returned. Please contact support.');
         return;
       }
-
       setCreatedEventId(eventId);
 
-      const redirectUrl = 'com.rudreshac.novohosting://payment/result';
-      const payRes = await initiatePaymentAPI(eventId, payableNowAmount, redirectUrl);
+      setPaymentProcessing(true);
+      const { status, merchantOrderId } = await payWithPhonePe(
+        eventId,
+        payableNowAmount,
+      );
+      setPaymentProcessing(false);
 
-      if (payRes?.data?.redirect_url) {
-        setPhonePeMerchantOrderId(payRes.data.merchant_order_id ?? null);
-        setPhonePeRedirectUrl(payRes.data.redirect_url);
-        setPaymentPending(true);
-        setPaymentFailed(false);
-        Linking.openURL(payRes.data.redirect_url);
-      } else {
-        alert(payRes?.message || 'Could not get PhonePe payment link. Please retry.');
-      }
-    } catch (err: any) {
-      console.log('❌ ERROR:', err);
-      alert(err?.message || 'Failed to initiate payment. Please retry.');
-    }
-  };
-
-  const verifyPhonePePayment = async () => {
-    if (!phonePeMerchantOrderId || paymentVerifying) return;
-    setPaymentVerifying(true);
-    setPaymentFailed(false);
-    try {
-      const res = await checkPaymentStatusAPI(phonePeMerchantOrderId);
-      const status: string = res?.data?.payment_status ?? '';
-      if (status === 'paid_fully' || status === 'advance') {
-        setPaymentPending(false);
-        setPaymentVerifying(false);
+      if (status === 'SUCCESS') {
+        // Best-effort server-side confirmation before showing success.
+        if (merchantOrderId) {
+          try {
+            await checkPaymentStatusAPI(merchantOrderId);
+          } catch {}
+        }
         dispatch(getMyEvents());
         setStep(STEPS.length - 1);
+      } else if (status === 'INTERRUPTED') {
+        alert('Payment was cancelled. You can try again.');
       } else {
-        setPaymentFailed(true);
-        setPaymentVerifying(false);
+        alert('Payment failed. Please try again.');
       }
-    } catch {
-      setPaymentFailed(true);
-      setPaymentVerifying(false);
+    } catch (err: any) {
+      setPaymentProcessing(false);
+      console.log('❌ ERROR:', err);
+      alert(err?.message || 'Failed to process payment. Please retry.');
     }
   };
-
-  // Auto-verify when PhonePe redirects back via deep link
-  useEffect(() => {
-    if (!paymentPending) return;
-    const sub = Linking.addEventListener('url', ({ url }) => {
-      if (url?.startsWith('com.rudreshac.novohosting://payment/result')) {
-        verifyPhonePePayment();
-      }
-    });
-    return () => sub.remove();
-  }, [paymentPending, phonePeMerchantOrderId]);
-
-  // Fallback: auto-verify when user returns to app from PhonePe browser
-  useEffect(() => {
-    if (!paymentPending) return;
-    const sub = AppState.addEventListener('change', (next: AppStateStatus) => {
-      if (next === 'active') verifyPhonePePayment();
-    });
-    return () => sub.remove();
-  }, [paymentPending, phonePeMerchantOrderId]);
 
   // Step 1 form state
   const [eventAbout, setEventAbout] = useState('');
@@ -611,27 +568,22 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
           pricingBreakdown.premiumQty <= 0))) ||
     (step === 2 && !isUniformStepValid) ||
     (step === 5 &&
-      (!paymentPending &&
-        (!paymentMethod || (paymentTiming === 'flexible' && !paymentPlan)))) ||
-    (step === 5 && paymentVerifying);
+      (!paymentMethod || (paymentTiming === 'flexible' && !paymentPlan))) ||
+    (step === 5 && paymentProcessing);
 
   const isLastStep = step === STEPS.length - 1;
 
   const footerLabel = isLastStep
     ? 'Go to Home'
     : step === 5
-      ? paymentVerifying
-        ? 'Verifying...'
-        : paymentPending
-          ? 'I Paid — Verify Payment'
-          : totalAmount
+      ? paymentProcessing
+        ? 'Processing…'
+        : totalAmount
       : 'Proceed to Next Step';
 
   const footerAction =
     step === 5
-      ? paymentPending
-        ? verifyPhonePePayment
-        : handleCreateEvent
+      ? handleCreateEvent
       : isLastStep
         ? onGoHome
         : onNext;
@@ -1322,12 +1274,12 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
                   }}
                 >
                   <RadioRow
-                    label="50% Advance"
+                    label="Pay 50% Amount"
                     selected={paymentPlan === 'advance'}
                     onPress={() => setPaymentPlan('advance')}
                   />
                   <RadioRow
-                    label="Full Amount"
+                    label="Pay Full Amount"
                     selected={paymentPlan === 'full'}
                     onPress={() => setPaymentPlan('full')}
                   />
@@ -1352,73 +1304,6 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
               >
                 Full payment required — event is within 7 days.
               </CustomText>
-            )}
-
-            {paymentPending && (
-              <View
-                style={{
-                  marginTop: verticalScale(20),
-                  padding: scale(16),
-                  borderRadius: moderateScale(12),
-                  backgroundColor: AppColors.card,
-                  borderWidth: 1,
-                  borderColor: AppColors.border,
-                  alignItems: 'center',
-                  gap: verticalScale(10),
-                }}
-              >
-                {paymentVerifying ? (
-                  <>
-                    <ActivityIndicator color={AppColors.primary} />
-                    <CustomText style={{ color: AppColors.textSecondary }}>
-                      Verifying your payment...
-                    </CustomText>
-                  </>
-                ) : paymentFailed ? (
-                  <>
-                    <CustomText
-                      weight="bold"
-                      style={{ color: AppColors.textPrimary, textAlign: 'center' }}
-                    >
-                      Payment not confirmed yet
-                    </CustomText>
-                    <CustomText
-                      style={{ color: AppColors.textSecondary, textAlign: 'center' }}
-                    >
-                      Complete the payment in your browser, then tap the button below.
-                    </CustomText>
-                    <TouchableOpacity
-                      onPress={() => phonePeRedirectUrl && Linking.openURL(phonePeRedirectUrl)}
-                      style={{ marginTop: verticalScale(4) }}
-                    >
-                      <CustomText
-                        weight="bold"
-                        style={{ color: AppColors.primary }}
-                      >
-                        Reopen PhonePe
-                      </CustomText>
-                    </TouchableOpacity>
-                  </>
-                ) : (
-                  <>
-                    <CustomText
-                      weight="bold"
-                      style={{ color: AppColors.textPrimary, textAlign: 'center' }}
-                    >
-                      PhonePe opened in your browser
-                    </CustomText>
-                    <CustomText
-                      style={{ color: AppColors.textSecondary, textAlign: 'center' }}
-                    >
-                      Complete the payment there, then come back and tap{' '}
-                      <CustomText weight="bold" style={{ color: AppColors.primary }}>
-                        "I Paid — Verify Payment"
-                      </CustomText>
-                      .
-                    </CustomText>
-                  </>
-                )}
-              </View>
             )}
           </View>
         )}

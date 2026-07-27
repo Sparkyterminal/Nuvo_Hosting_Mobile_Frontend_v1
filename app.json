@@ -2,6 +2,7 @@
   "expo": {
     "name": "NuvoHostingAgency",
     "slug": "novohosting",
+    "scheme": "com.rudreshac.novohosting",
     "version": "1.1.1",
     "splash": {
       "backgroundColor": "#5B4C3A"
