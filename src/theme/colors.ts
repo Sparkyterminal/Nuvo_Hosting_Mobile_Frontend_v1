@@ -35,3 +35,5 @@ export const AppColors = {
 
   overlayLight: 'rgba(255,255,255,0.18)',
 };
+
+export type ThemeColors = typeof AppColors;

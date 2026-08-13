@@ -61,33 +61,6 @@ const HomeScreen: React.FC<Props> = ({}) => {
     ? user.full_name.charAt(0).toUpperCase()
     : '?';
 
-  // const fetchData = async () => {
-  //   try {
-  //     dispatch(setLoading(true));
-
-  //     const [themesRes, modalsRes] = await Promise.all([
-  //       getThemes(),
-  //       getModalsList(),
-  //     ]);
-
-  //     if (themesRes.success) {
-  //       dispatch(setThemes(themesRes.data));
-  //     }
-
-  //     if (modalsRes.success) {
-  //       dispatch(setModals(modalsRes.data.results));
-  //     }
-
-  //     dispatch(fetchUniforms());
-
-  //     dispatch(getMyEvents());
-  //   } catch (error) {
-  //     console.log('Home API Error:', error);
-  //   } finally {
-  //     dispatch(setLoading(false));
-  //   }
-  // };
-
   return (
     <BaseContainer>
       <ScrollView

@@ -20,11 +20,10 @@ import {
   checkPaymentStatusAPI,
 } from '../../services/api/eventService';
 import { payWithPhonePe } from '../../services/phonePeSdk';
+import { isPaidStatus } from '../../utils/payment';
+import { EventDetail, PaymentInfo } from '../../types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EventDetails'>;
-
-const isPaid = (status?: string) =>
-  status === 'advance' || status === 'paid_fully';
 
 const fmtDate = (iso?: string | null) => {
   if (!iso) return '—';
@@ -45,7 +44,7 @@ const money = (n?: number) =>
 const EventDetailsScreen: React.FC<Props> = ({ route, navigation }) => {
   const { eventId } = route.params;
 
-  const [event, setEvent] = useState<any>(null);
+  const [event, setEvent] = useState<EventDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -68,8 +67,8 @@ const EventDetailsScreen: React.FC<Props> = ({ route, navigation }) => {
     fetchDetail();
   }, [fetchDetail]);
 
-  const payment = event?.payment || {};
-  const pending = !isPaid(payment.payment_status);
+  const payment: Partial<PaymentInfo> = event?.payment ?? {};
+  const pending = !isPaidStatus(payment.payment_status);
 
   // How much to collect now: half for a not-yet-started HALF-advance plan,
   // otherwise the outstanding balance.
@@ -98,7 +97,7 @@ const EventDetailsScreen: React.FC<Props> = ({ route, navigation }) => {
         // Never trust the SDK result alone — confirm server-side.
         if (merchantOrderId) {
           const res = await checkPaymentStatusAPI(merchantOrderId);
-          if (isPaid(res?.data?.payment_status)) {
+          if (isPaidStatus(res?.data?.payment_status)) {
             await fetchDetail();
             Alert.alert('Payment successful', 'Your payment has been confirmed.');
             return;
@@ -219,7 +218,7 @@ const EventDetailsScreen: React.FC<Props> = ({ route, navigation }) => {
             />
             <DetailRow
               label="Status"
-              value={pending ? 'Pending' : payment.payment_status}
+              value={pending ? 'Pending' : payment.payment_status ?? '—'}
               last
             />
           </View>
