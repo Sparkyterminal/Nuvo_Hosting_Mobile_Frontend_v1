@@ -26,6 +26,7 @@ const HomeTabsNavigator = () => {
         tabBarInactiveTintColor: AppColors.textGrey,
         tabBarLabelStyle: {
           fontSize: moderateScale(12),
+          textTransform: 'uppercase',
         },
         tabBarStyle: {
           backgroundColor: AppColors.card,

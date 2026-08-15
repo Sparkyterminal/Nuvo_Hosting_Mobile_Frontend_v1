@@ -28,6 +28,11 @@ export default function App() {
     HelveticaNowMedium: require('./src/assets/fonts/HelveticaNowDisplay-Medium.ttf'),
     HelveticaNowBold: require('./src/assets/fonts/HelveticaNowDisplay-Bold.ttf'),
     HelveticaNowExtraBold: require('./src/assets/fonts/HelveticaNowDisplay-ExtraBold.ttf'),
+    // Didot — used for headings
+    Didot: require('./src/assets/fonts/Didot.otf'),
+    DidotBold: require('./src/assets/fonts/Didot-Bold.otf'),
+    DidotItalic: require('./src/assets/fonts/Didot-Italic.otf'),
+    DidotTitle: require('./src/assets/fonts/Didot-Title.otf'),
   });
 
   if (!loaded) return null;

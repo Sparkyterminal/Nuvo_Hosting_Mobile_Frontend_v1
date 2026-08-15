@@ -129,7 +129,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.fieldsWrapper}>
           <TextInput
             style={styles.input}
-            placeholder="Name"
+            placeholder="NAME"
             placeholderTextColor={AppColors.textGrey}
             value={name}
             onChangeText={setName}
@@ -137,7 +137,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
           <TextInput
             style={styles.input}
-            placeholder="Mobile number"
+            placeholder="MOBILE NUMBER"
             placeholderTextColor={AppColors.textGrey}
             keyboardType="phone-pad"
             value={phnNumber}

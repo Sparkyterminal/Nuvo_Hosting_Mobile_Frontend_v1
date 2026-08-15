@@ -104,6 +104,7 @@ export default function StepOneForm({
         labelField="label"
         valueField="value"
         value={selectedState}
+        placeholder="SELECT ITEM"
         onChange={(item) => {
           setSelectedState(item.value);
           setSelectedCity(null);
@@ -124,6 +125,7 @@ export default function StepOneForm({
         valueField="value"
         value={selectedCity}
         disable={!selectedState}
+        placeholder="SELECT ITEM"
         onChange={(item) => setSelectedCity(item.value)}
       />
 
@@ -136,7 +138,7 @@ export default function StepOneForm({
       </CustomText>
       <View style={{ zIndex: 10 }}>
         <GooglePlacesAutocomplete
-          placeholder="Search venue"
+          placeholder="SEARCH VENUE"
           textInputProps={{
             returnKeyType: 'search',
             placeholderTextColor: '#6B5E4A',
@@ -278,7 +280,7 @@ export default function StepOneForm({
         labelField="label"
         valueField="value"
         value={eventType}
-        placeholder="Select Event Type"
+        placeholder="SELECT EVENT TYPE"
         onChange={(item) => setEventType(item.value)}
       />
 
@@ -293,7 +295,7 @@ export default function StepOneForm({
         value={eventAbout}
         onChangeText={setEventAbout}
         style={styles.input}
-        placeholder="Enter your event "
+        placeholder="ENTER YOUR EVENT "
         placeholderTextColor={AppColors.textGrey}
       />
 

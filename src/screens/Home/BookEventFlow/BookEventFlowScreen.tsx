@@ -832,7 +832,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
                     value={luxuryCount}
                     onChangeText={setLuxuryCount}
                     keyboardType="number-pad"
-                    placeholder="e.g. 5"
+                    placeholder="E.G. 5"
                     placeholderTextColor={AppColors.textGrey}
                     style={styles.input}
                   />
@@ -852,7 +852,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
                     value={premiumCount}
                     onChangeText={setPremiumCount}
                     keyboardType="number-pad"
-                    placeholder="e.g. 5"
+                    placeholder="E.G. 5"
                     placeholderTextColor={AppColors.textGrey}
                     style={styles.input}
                   />
@@ -871,7 +871,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
                     value={workingHours}
                     onChangeText={setWorkingHours}
                     keyboardType="number-pad"
-                    placeholder="Standard shift is 8 hours"
+                    placeholder="STANDARD SHIFT IS 8 HOURS"
                     placeholderTextColor={AppColors.textGrey}
                     style={styles.input}
                   />
@@ -985,14 +985,14 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
               <TextInput
                 value={companyName}
                 onChangeText={setCompanyName}
-                placeholder="Name of the company"
+                placeholder="NAME OF THE COMPANY"
                 placeholderTextColor={AppColors.textGrey}
                 style={styles.input}
               />
               <TextInput
                 value={companyAddress}
                 onChangeText={setCompanyAddress}
-                placeholder="Address"
+                placeholder="ADDRESS"
                 placeholderTextColor={AppColors.textGrey}
                 style={[
                   styles.input,
@@ -1003,14 +1003,14 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
               <TextInput
                 value={gstNumber}
                 onChangeText={setGstNumber}
-                placeholder="GST Number"
+                placeholder="GST NUMBER"
                 placeholderTextColor={AppColors.textGrey}
                 style={styles.input}
               />
               <TextInput
                 value={message}
                 onChangeText={setMessage}
-                placeholder="Message (optional)"
+                placeholder="MESSAGE (OPTIONAL)"
                 placeholderTextColor={AppColors.textGrey}
                 style={[
                   styles.input,
@@ -1162,7 +1162,7 @@ export default function BookEventFlowScreen({ navigation, route }: Props) {
                   <TextInput
                     value={couponCode}
                     onChangeText={setCouponCode}
-                    placeholder="Enter Coupon Code"
+                    placeholder="ENTER COUPON CODE"
                     placeholderTextColor={AppColors.textGrey}
                     style={{
                       flex: 1,

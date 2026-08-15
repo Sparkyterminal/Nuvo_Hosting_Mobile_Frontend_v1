@@ -136,19 +136,22 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                 color={privacyChecked ? AppColors.primary : AppColors.border}
               />
 
-              <CustomText
-                variant="caption"
-                style={styles.checkboxText}
-              >
-                I have read and accept the{' '}
+              <View style={styles.checkboxTextWrap}>
                 <CustomText
-                  style={styles.linkText}
-                  onPress={handlePrivacyPolicy}
+                  variant="caption"
+                  style={styles.checkboxText}
                 >
-                  Privacy Policy
-                </CustomText>{' '}
-                and agree that my personal data will be processed by you
-              </CustomText>
+                  I have read and accept the{' '}
+                  <CustomText
+                    variant="caption"
+                    style={styles.linkText}
+                    onPress={handlePrivacyPolicy}
+                  >
+                    Privacy Policy
+                  </CustomText>{' '}
+                  and agree that my personal data will be processed by you
+                </CustomText>
+              </View>
             </View>
 
             <View style={styles.checkboxWrapper}>
@@ -158,18 +161,21 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                 color={termsChecked ? AppColors.primary : AppColors.border}
               />
 
-              <CustomText
-                variant="caption"
-                style={styles.checkboxText}
-              >
-                I have read and accept the{' '}
+              <View style={styles.checkboxTextWrap}>
                 <CustomText
-                  style={styles.linkText}
-                  onPress={handleTerms}
+                  variant="caption"
+                  style={styles.checkboxText}
                 >
-                  Terms of Use
+                  I have read and accept the{' '}
+                  <CustomText
+                    variant="caption"
+                    style={styles.linkText}
+                    onPress={handleTerms}
+                  >
+                    Terms of Use
+                  </CustomText>
                 </CustomText>
-              </CustomText>
+              </View>
             </View>
 
             <FooterButton
@@ -212,12 +218,19 @@ const styles = StyleSheet.create({
   checkboxWrapper: {
     gap: scale(8),
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   checkboxContainer: {
     flex: 1,
+    justifyContent: 'flex-end',
     paddingHorizontal: scale(10),
-    gap: scale(10),
+    gap: verticalScale(12),
+    // Clearance for the absolutely-positioned FooterButton so the rows aren't
+    // hidden behind it.
+    paddingBottom: verticalScale(96),
+  },
+  checkboxTextWrap: {
+    flex: 1,
   },
   checkboxText: {
     color: AppColors.textPrimary,
