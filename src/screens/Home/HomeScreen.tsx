@@ -61,33 +61,6 @@ const HomeScreen: React.FC<Props> = ({}) => {
     ? user.full_name.charAt(0).toUpperCase()
     : '?';
 
-  // const fetchData = async () => {
-  //   try {
-  //     dispatch(setLoading(true));
-
-  //     const [themesRes, modalsRes] = await Promise.all([
-  //       getThemes(),
-  //       getModalsList(),
-  //     ]);
-
-  //     if (themesRes.success) {
-  //       dispatch(setThemes(themesRes.data));
-  //     }
-
-  //     if (modalsRes.success) {
-  //       dispatch(setModals(modalsRes.data.results));
-  //     }
-
-  //     dispatch(fetchUniforms());
-
-  //     dispatch(getMyEvents());
-  //   } catch (error) {
-  //     console.log('Home API Error:', error);
-  //   } finally {
-  //     dispatch(setLoading(false));
-  //   }
-  // };
-
   return (
     <BaseContainer>
       <ScrollView
@@ -256,10 +229,12 @@ const styles = StyleSheet.create({
   },
 
   heroOverlay: {
-    flex: 1,
-    backgroundColor: AppColors.overlay,
+    // Sizes to its content (no flex:1) so the ImageBackground wraps the text
+    // instead of clipping/overflowing a fixed-height box.
+    // Darker scrim so the white text stays readable over the bright image.
+    backgroundColor: AppColors.overlayDark,
     paddingHorizontal: scale(20),
-    paddingTop: verticalScale(18),
+    paddingTop: verticalScale(60),
     paddingBottom: verticalScale(30),
     gap: verticalScale(20),
   },
@@ -392,9 +367,10 @@ const styles = StyleSheet.create({
   cofounderDescription: {
     color: AppColors.textPrimary,
     textAlign: 'left',
-    opacity: 0.85,
-    marginBottom: verticalScale(14),
-    lineHeight: verticalScale(22),
+    opacity: 0.95,
+    marginBottom: verticalScale(16),
+    lineHeight: verticalScale(26),
+    letterSpacing: 0.3,
   },
 
   cofounderButton: {
@@ -405,8 +381,8 @@ const styles = StyleSheet.create({
   },
   fullImage: {
     width: '100%',
-    height: SCREEN_HEIGHT,
-    justifyContent: 'center',
+    // No fixed height: the banner grows to fit its text so the image always
+    // covers the content and text never overflows below it.
   },
 
   heroContainer: {
@@ -441,12 +417,17 @@ const styles = StyleSheet.create({
   heroTitle: {
     lineHeight: verticalScale(32),
     marginBottom: verticalScale(14),
+    textShadowColor: 'rgba(0,0,0,0.6)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 6,
   },
 
   heroParagraph: {
     lineHeight: verticalScale(22),
-    opacity: 0.92,
     marginBottom: verticalScale(14),
+    textShadowColor: 'rgba(0,0,0,0.75)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
 
   founderRow: {

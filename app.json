@@ -33,10 +33,20 @@
         }
       ],
       "@react-native-community/datetimepicker",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": [
+              "https://phonepe.mycloudrepo.io/public/repositories/phonepe-intentsdk-android"
+            ]
+          }
+        }
+      ]
     ],
     "android": {
-      "versionCode": 2,
+      "versionCode": 3,
       "package": "com.rudreshac.novohosting",
       "adaptiveIcon": {
         "foregroundImage": "./assets/newLogo.png",
@@ -46,7 +56,10 @@
     "ios": {
       "bundleIdentifier": "com.rudreshac.novohosting",
       "infoPlist": {
-        "UIBackgroundModes": ["location", "fetch"],
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ],
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Nuvo Hosting needs your location to track your attendance for assigned events.",
         "NSLocationAlwaysUsageDescription": "Nuvo Hosting needs your location in the background to track your attendance for assigned events.",
         "NSLocationWhenInUseUsageDescription": "Nuvo Hosting needs your location to track your attendance for assigned events."

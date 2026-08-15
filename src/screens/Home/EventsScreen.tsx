@@ -18,14 +18,14 @@ import { getMyEvents } from '../../features/events/eventSlice';
 
 type Props = NativeStackScreenProps<HomeTabParamList, 'Events'>;
 
+import { isPaidStatus } from '../../utils/payment';
+import { MyEventListItem } from '../../types';
+
 type TabKey = 'booked' | 'pending';
 
-// A payment is considered "booked" once any confirmed payment exists
-// (a paid advance or a full payment). Anything else (unpaid / missing) is pending.
-const isBookedEvent = (event: any): boolean => {
-  const s = event?.payment_details?.payment_status;
-  return s === 'advance' || s === 'paid_fully';
-};
+// A list event is "booked" once its payment is settled (advance or full).
+const isBookedEvent = (event: MyEventListItem): boolean =>
+  isPaidStatus(event?.payment_details?.payment_status);
 
 const EventsScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useAppDispatch();
@@ -47,14 +47,15 @@ const EventsScreen: React.FC<Props> = ({ navigation }) => {
     [events],
   );
   const pendingEvents = useMemo(
-    () => (events || []).filter((e: any) => !isBookedEvent(e)),
+    () => (events || []).filter((e: MyEventListItem) => !isBookedEvent(e)),
     [events],
   );
 
   const visibleEvents = activeTab === 'booked' ? bookedEvents : pendingEvents;
 
   const onPressBookEvents = () => {
-    navigation.navigate('BookEventFlow');
+    // BookEventFlow lives on the root stack, not this tab navigator's param list.
+    (navigation as any).navigate('BookEventFlow');
   };
 
   return (
@@ -134,7 +135,7 @@ const EventsScreen: React.FC<Props> = ({ navigation }) => {
                 : 'No pending events.'}
             </CustomText>
           ) : (
-            visibleEvents.map((item: any) => (
+            visibleEvents.map((item: MyEventListItem) => (
               <EventCard
                 key={item.event_id}
                 event={item}
@@ -226,7 +227,7 @@ function EventCard({
   badgeLabel,
   onPress,
 }: {
-  event: any;
+  event: MyEventListItem;
   badgeLabel: 'Booked' | 'Pending';
   onPress: () => void;
 }) {

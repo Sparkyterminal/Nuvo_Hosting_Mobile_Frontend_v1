@@ -1,14 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+// Only `loading` remains in use (read by BookEventFlowScreen's footer). The old
+// `themes`/`modals` state and their actions were dead after the Explore screen
+// was removed, so they've been dropped.
 interface ExploreState {
-  themes: any[];
-  modals: any[];
   loading: boolean;
 }
 
 const initialState: ExploreState = {
-  themes: [],
-  modals: [],
   loading: false,
 };
 
@@ -16,17 +15,11 @@ const exploreSlice = createSlice({
   name: 'explore',
   initialState,
   reducers: {
-    setThemes: (state, action: PayloadAction<any[]>) => {
-      state.themes = action.payload;
-    },
-    setModals: (state, action: PayloadAction<any[]>) => {
-      state.modals = action.payload;
-    },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
   },
 });
 
-export const { setThemes, setModals, setLoading } = exploreSlice.actions;
+export const { setLoading } = exploreSlice.actions;
 export default exploreSlice.reducer;

@@ -25,6 +25,7 @@ const AppInput: React.FC<AppInputProps> = ({
   style,
   onFocus,
   onBlur,
+  placeholder,
   ...rest
 }) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -60,6 +61,7 @@ const AppInput: React.FC<AppInputProps> = ({
           !!error && styles.inputError,
           style,
         ]}
+        placeholder={placeholder?.toUpperCase()}
         placeholderTextColor={AppColors.textGrey}
         onFocus={handleFocus}
         onBlur={handleBlur}

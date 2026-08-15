@@ -27,6 +27,7 @@ import {
   stopLocationTracking,
   isLocationTracking,
 } from '../../services/locationService';
+import LocationDisclosureModal from '../../components/LocationDisclosureModal';
 
 const EmployeeHomeScreen = ({ navigation }: any) => {
   const users = useAppSelector((state) => state.auth.user);
@@ -34,6 +35,7 @@ const EmployeeHomeScreen = ({ navigation }: any) => {
 
   const [loadingStatus, setLoadingStatus] = useState(false);
   const [localStatus, setLocalStatus] = useState(isOnline);
+  const [showLocationDisclosure, setShowLocationDisclosure] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -119,23 +121,43 @@ const EmployeeHomeScreen = ({ navigation }: any) => {
   const handleToggle = (value: boolean) => {
     if (loadingStatus) return;
 
+    // Going online requires background location — show the prominent
+    // in-app disclosure first (Play Store policy requirement), then
+    // proceed only once the staff member explicitly allows it.
+    if (value) {
+      setShowLocationDisclosure(true);
+      return;
+    }
+
     setLocalStatus(value);
     setLoadingStatus(true);
 
     dispatch(setOnlineStatus(value))
       .unwrap()
-      .then(() => {
-        if (value) {
-          startLocationTracking();
-        } else {
-          stopLocationTracking();
-        }
-      })
+      .then(() => stopLocationTracking())
       .catch(() => {
-        // API rejected — revert local status, don't change tracking
         setLocalStatus(!value);
       })
       .finally(() => setLoadingStatus(false));
+  };
+
+  const handleAllowLocation = () => {
+    setShowLocationDisclosure(false);
+    setLocalStatus(true);
+    setLoadingStatus(true);
+
+    dispatch(setOnlineStatus(true))
+      .unwrap()
+      .then(() => startLocationTracking())
+      .catch(() => {
+        setLocalStatus(false);
+      })
+      .finally(() => setLoadingStatus(false));
+  };
+
+  const handleDenyLocation = () => {
+    setShowLocationDisclosure(false);
+    // Stay offline — nothing to revert since localStatus was never flipped.
   };
 
   useEffect(() => {
@@ -226,6 +248,12 @@ const EmployeeHomeScreen = ({ navigation }: any) => {
 
         <View style={{ height: verticalScale(80) }} />
       </ScrollView>
+
+      <LocationDisclosureModal
+        visible={showLocationDisclosure}
+        onAllow={handleAllowLocation}
+        onDeny={handleDenyLocation}
+      />
     </BaseContainer>
   );
 };

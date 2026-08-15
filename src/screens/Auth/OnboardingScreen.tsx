@@ -18,7 +18,7 @@ import AppButton from '../../components/AppButton';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 type OnboardingSlide = {
   id: string;
@@ -32,9 +32,9 @@ const LOGO = require('../../assets/images/logo.png');
 const SLIDES: OnboardingSlide[] = [
   {
     id: '1',
-    title: 'Celebrate Your Way',
-    subtitle: 'Themes for every celebration, your way.',
-    image: require('../../assets/images/onboarding1.jpg'),
+    title: 'First Impressions, Beautifully Delivered',
+    subtitle: 'Premium ushering and guest management Book Your Experience (instead of let’s go)',
+    image: require('../../assets/images/img-3.jpeg'),
   },
   {
     id: '2',
@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
   },
   imageBackground: {
     width,
+    height,
     justifyContent: 'flex-end',
   },
   cardWrapper: {

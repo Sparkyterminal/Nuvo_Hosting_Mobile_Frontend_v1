@@ -31,7 +31,12 @@ export const AppColors = {
 
   overlay: 'rgba(0,0,0,0.45)',
 
+  // Stronger scrim for text sitting directly over a busy/bright image.
+  overlayDark: 'rgba(0,0,0,0.62)',
+
   overlayPrimary: 'rgba(23, 88, 119, 0.55)',
 
   overlayLight: 'rgba(255,255,255,0.18)',
 };
+
+export type ThemeColors = typeof AppColors;
