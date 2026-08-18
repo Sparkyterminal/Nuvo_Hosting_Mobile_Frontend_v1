@@ -59,6 +59,9 @@ const AppButton: React.FC<AppButtonProps> = ({
           weight="medium"
           color={textColor}
           style={styles.label}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.75}
         >
           {label}
         </CustomText>

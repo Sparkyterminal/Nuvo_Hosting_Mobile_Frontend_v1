@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -8,17 +8,17 @@ import {
   Dimensions,
   TouchableOpacity,
   ListRenderItem,
-} from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../navigation/RootNavigator';
-import CustomText from '../../components/CustomText';
-import { AppColors } from '../../theme/colors';
-import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
-import AppButton from '../../components/AppButton';
+} from "react-native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../navigation/RootNavigator";
+import CustomText from "../../components/CustomText";
+import { AppColors } from "../../theme/colors";
+import { moderateScale, scale, verticalScale } from "react-native-size-matters";
+import AppButton from "../../components/AppButton";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
+type Props = NativeStackScreenProps<RootStackParamList, "Onboarding">;
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 type OnboardingSlide = {
   id: string;
@@ -27,26 +27,26 @@ type OnboardingSlide = {
   image: any;
 };
 
-const LOGO = require('../../assets/images/logo.png');
+const LOGO = require("../../assets/images/nuvologo.png");
 
 const SLIDES: OnboardingSlide[] = [
   {
-    id: '1',
-    title: 'First Impressions, Beautifully Delivered',
-    subtitle: 'Premium ushering and guest management Book Your Experience (instead of let’s go)',
-    image: require('../../assets/images/img-3.jpeg'),
+    id: "1",
+    title: "First Impressions, Beautifully Delivered",
+    subtitle: "Premium ushering and guest management Book Your Experience ",
+    image: require("../../assets/images/img.jpeg"),
   },
   {
-    id: '2',
-    title: 'Make every event yours',
-    subtitle: 'Tailored to your taste, from decor to style.',
-    image: require('../../assets/images/onboarding2.jpg'),
+    id: "2",
+    title: "Make every event yours",
+    subtitle: "Tailored to your taste, from decor to style.",
+    image: require("../../assets/images/onboarding2.jpg"),
   },
   {
-    id: '3',
-    title: 'Relax, We’ll Handle the Rest',
-    subtitle: 'Celebrate freely — we’ll do the rest.',
-    image: require('../../assets/images/onboarding3.jpg'),
+    id: "3",
+    title: "Relax, We’ll Handle the Rest",
+    subtitle: "Celebrate freely — we’ll do the rest.",
+    image: require("../../assets/images/onboarding3.jpg"),
   },
 ];
 
@@ -55,24 +55,19 @@ const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
 
   const renderItem: ListRenderItem<OnboardingSlide> = ({ item }) => {
     return (
-      <ImageBackground
-        source={item.image}
-        style={styles.imageBackground}
-      >
+      <ImageBackground source={item.image} style={styles.imageBackground}>
         <View style={styles.cardWrapper}>
           <View style={styles.card}>
             <View style={styles.logoContainer}>
-              <Image
-                source={LOGO}
-                style={styles.logo}
-                resizeMode="contain"
-              />
+              <Image source={LOGO} style={styles.logo} resizeMode="contain" />
             </View>
 
             <CustomText
               variant="title"
               weight="bold"
               style={styles.title}
+              numberOfLines={2}
+              adjustsFontSizeToFit
             >
               {item.title}
             </CustomText>
@@ -98,9 +93,9 @@ const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
             </View>
 
             <AppButton
-              label="Let's go"
+              label="Book your experience"
               // onPress={() => navigation.navigate('Register')}
-              onPress={() => navigation.navigate('Login')}
+              onPress={() => navigation.navigate("Login")}
               containerStyle={styles.primaryButton}
             />
 
@@ -153,7 +148,7 @@ const styles = StyleSheet.create({
   imageBackground: {
     width,
     height,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   cardWrapper: {
     paddingHorizontal: scale(16),
@@ -172,31 +167,33 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   logoContainer: {
-    position: 'absolute',
-    top: -verticalScale(32),
-    alignSelf: 'center',
-    width: scale(64),
-    height: scale(64),
-    borderRadius: scale(32),
-    backgroundColor: AppColors.surface,
-    justifyContent: 'center',
-    alignItems: 'center',
+    position: "absolute",
+    top: -verticalScale(36),
+    alignSelf: "center",
+    width: scale(72),
+    height: scale(72),
+    justifyContent: "center",
+    alignItems: "center",
   },
   logo: {
     width: scale(72),
-    height: scale(52),
+    height: scale(72),
   },
   title: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: verticalScale(8),
+    // Smaller than the default `title` size (24) so "BEAUTIFULLY DELIVERED"
+    // fits on one line and the heading wraps to 2 lines instead of 3.
+    fontSize: moderateScale(20),
+    lineHeight: moderateScale(28),
   },
   subtitle: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: verticalScale(16),
   },
   dotsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginBottom: verticalScale(16),
   },
   dot: {
@@ -214,8 +211,8 @@ const styles = StyleSheet.create({
     marginBottom: verticalScale(12),
   },
   footerRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
   },
 });
 

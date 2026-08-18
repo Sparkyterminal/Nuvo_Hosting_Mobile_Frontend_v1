@@ -26,13 +26,6 @@ export const ENDPOINTS = {
     VALIDATE_COUPON: 'master/coupons/validate/',
   },
 
-  STAFF: {
-    UPCOMING: 'events/staff/upcoming-all/',
-    ASSIGNED: 'events/staff/assigned/',
-    COMPLETED: 'events/staff/completed/',
-    ONLINE_STATUS: 'events/staff/online-status/',
-  },
-
   EVENTS: {
     CREATE: 'events/create/',
     GET_MY_EVENTS: 'events/get-my-events/',

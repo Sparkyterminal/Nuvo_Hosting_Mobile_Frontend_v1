@@ -2,7 +2,6 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
 import exploreReducer from '../features/explore/exploreSlice';
 import uniformReducer from '../features/uniform/uniformSlice';
-import staffReducer from '../features/staff/staffSlice';
 import eventReducer from '../features/events/eventSlice';
 
 export const store = configureStore({
@@ -10,7 +9,6 @@ export const store = configureStore({
     auth: authReducer,
     explore: exploreReducer,
     uniform: uniformReducer,
-    staff: staffReducer,
     event: eventReducer,
   },
 });

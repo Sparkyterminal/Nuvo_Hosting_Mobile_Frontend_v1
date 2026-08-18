@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,7 +6,11 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CommonActions } from '@react-navigation/native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { BaseContainer } from '../../components/BaseContainer';
 import CustomText from '../../components/CustomText';
@@ -15,16 +19,50 @@ import { AppColors } from '../../theme/colors';
 import { Feather } from '@expo/vector-icons';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
-import { useAppSelector } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { clearUser } from '../../features/auth/authSlice';
+import { logout as logoutRequest } from '../../services/api/authService';
 import ScreenHeader from '../../components/ScreenHeader';
 
 type Props = BottomTabScreenProps<HomeTabParamList, 'Profile'>;
 
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const users = useAppSelector((state) => state.auth.user);
+  const dispatch = useAppDispatch();
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const handleEditField = (field: string) => {
     console.log('Edit field:', field);
+  };
+
+  const performLogout = async () => {
+    setLoggingOut(true);
+    try {
+      // Blacklists the refresh token on the backend and clears AsyncStorage.
+      await logoutRequest();
+    } catch (error) {
+      // Even if the backend call fails (e.g. no network), force a local logout
+      // so the user is never stuck in a half-authenticated state.
+      console.log('Logout error:', error);
+      await AsyncStorage.clear();
+    } finally {
+      dispatch(clearUser());
+      setLoggingOut(false);
+      // Reset the root stack so the user can't navigate back into the app.
+      navigation.getParent()?.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        }),
+      );
+    }
+  };
+
+  const handleLogout = () => {
+    Alert.alert('Log out', 'Are you sure you want to log out?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Log out', style: 'destructive', onPress: performLogout },
+    ]);
   };
 
   const firstLetter = users?.full_name
@@ -94,6 +132,34 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             onEdit={() => handleEditField('email')}
           />
         </View>
+
+        {/* Logout */}
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={handleLogout}
+          disabled={loggingOut}
+          activeOpacity={0.8}
+        >
+          {loggingOut ? (
+            <ActivityIndicator color={AppColors.textInverse} />
+          ) : (
+            <>
+              <Feather
+                name="log-out"
+                size={moderateScale(18)}
+                color={AppColors.textInverse}
+                style={{ marginRight: scale(8) }}
+              />
+              <CustomText
+                variant="body"
+                weight="bold"
+                color={AppColors.textInverse}
+              >
+                Log Out
+              </CustomText>
+            </>
+          )}
+        </TouchableOpacity>
       </ScrollView>
     </BaseContainer>
   );
@@ -216,6 +282,17 @@ const styles = StyleSheet.create({
 
   avatarText: {
     fontSize: moderateScale(28),
+  },
+
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: scale(16),
+    marginTop: verticalScale(24),
+    paddingVertical: verticalScale(14),
+    borderRadius: moderateScale(12),
+    backgroundColor: AppColors.primary,
   },
 });
 

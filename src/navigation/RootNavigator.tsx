@@ -7,7 +7,6 @@ import RegisterScreen from '../screens/Auth/RegisterScreen';
 import OtpVerificationScreen from '../screens/Auth/OtpVerificationScreen';
 import ThemeDetailsScreen from '../screens/Home/ThemeDetailsScreen';
 import BookEventFlowScreen from '../screens/Home/BookEventFlow/BookEventFlowScreen';
-import EventHistoryScreen from '../screens/EmployeeScreen/EventHistoryScreen';
 import EventDetailsScreen from '../screens/Home/EventDetailsScreen';
 
 import { useEffect, useState } from 'react';
@@ -15,7 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppDispatch } from '../store/hooks';
 import { getCurrentUser } from '../services/api/userService';
 import { setUser } from '../features/auth/authSlice';
-import HomeWrapper from '../screens/HomeWrapper';
+import HomeTabsNavigator from './HomeTabsNavigator';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -27,7 +26,6 @@ export type RootStackParamList = {
   };
   Home: undefined;
   Themes: undefined;
-  EventHistory: undefined;
   EventDetails: {
     eventId: string;
   };
@@ -142,7 +140,7 @@ const RootNavigator = () => {
 
         <Stack.Screen
           name="Home"
-          component={HomeWrapper}
+          component={HomeTabsNavigator}
         />
 
         <Stack.Screen
@@ -152,10 +150,6 @@ const RootNavigator = () => {
         <Stack.Screen
           name="BookEventFlow"
           component={BookEventFlowScreen}
-        />
-        <Stack.Screen
-          name="EventHistory"
-          component={EventHistoryScreen}
         />
         <Stack.Screen
           name="EventDetails"

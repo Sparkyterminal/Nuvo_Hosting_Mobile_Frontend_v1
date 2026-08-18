@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -7,24 +7,24 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
-} from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../navigation/RootNavigator';
-import { BaseContainer } from '../../components/BaseContainer';
-import CustomText from '../../components/CustomText';
-import { AppColors } from '../../theme/colors';
-import { Ionicons } from '@expo/vector-icons';
-import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { setLoading } from '../../features/explore/exploreSlice';
-import { fetchUniforms } from '../../features/uniform/uniformSlice';
-import { getMyEvents } from '../../features/events/eventSlice';
-import { getCurrentUser } from '../../services/api/userService';
-import { setUser } from '../../features/auth/authSlice';
+} from "react-native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../navigation/RootNavigator";
+import { BaseContainer } from "../../components/BaseContainer";
+import CustomText from "../../components/CustomText";
+import { AppColors } from "../../theme/colors";
+import { Ionicons } from "@expo/vector-icons";
+import { moderateScale, scale, verticalScale } from "react-native-size-matters";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { setLoading } from "../../features/explore/exploreSlice";
+import { fetchUniforms } from "../../features/uniform/uniformSlice";
+import { getMyEvents } from "../../features/events/eventSlice";
+import { getCurrentUser } from "../../services/api/userService";
+import { setUser } from "../../features/auth/authSlice";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 const HomeScreen: React.FC<Props> = ({}) => {
   const user = useAppSelector((state) => state.auth.user);
@@ -41,7 +41,7 @@ const HomeScreen: React.FC<Props> = ({}) => {
 
       const userRes = await getCurrentUser();
 
-      console.log('USER API RESPONSE:', userRes);
+      console.log("USER API RESPONSE:", userRes);
 
       // 🔥 FIXED HERE
       if (userRes?.data?.data) {
@@ -51,7 +51,7 @@ const HomeScreen: React.FC<Props> = ({}) => {
       dispatch(fetchUniforms());
       dispatch(getMyEvents());
     } catch (error) {
-      console.log('Home API Error:', error);
+      console.log("Home API Error:", error);
     } finally {
       dispatch(setLoading(false));
     }
@@ -59,7 +59,7 @@ const HomeScreen: React.FC<Props> = ({}) => {
 
   const firstLetter = user?.full_name
     ? user.full_name.charAt(0).toUpperCase()
-    : '?';
+    : "?";
 
   return (
     <BaseContainer>
@@ -70,7 +70,7 @@ const HomeScreen: React.FC<Props> = ({}) => {
         {/* HERO SECTION 1 */}
         <View style={styles.heroContainer}>
           <ImageBackground
-            source={require('../../assets/images/home.jpg')}
+            source={require("../../assets/images/home.jpg")}
             style={styles.fullImage}
           >
             <View style={styles.heroOverlay}>
@@ -91,11 +91,8 @@ const HomeScreen: React.FC<Props> = ({}) => {
                     <CustomText color={AppColors.textInverse}>
                       Welcome,
                     </CustomText>
-                    <CustomText
-                      weight="bold"
-                      color={AppColors.textInverse}
-                    >
-                      {user?.full_name || 'User'}
+                    <CustomText weight="bold" color={AppColors.textInverse}>
+                      {user?.full_name || "User"}
                     </CustomText>
                   </View>
                 </View>
@@ -167,13 +164,13 @@ const HomeScreen: React.FC<Props> = ({}) => {
 
           <View style={styles.founderRow}>
             <Image
-              source={require('../../assets/images/founder_2.jpg')}
+              source={require("../../assets/images/founder_2.jpg")}
               style={styles.founderImage}
               resizeMode="cover"
             />
 
             <Image
-              source={require('../../assets/images/founder_1.jpg')}
+              source={require("../../assets/images/founder_1.jpg")}
               style={styles.founderImage}
               resizeMode="cover"
             />
@@ -181,17 +178,16 @@ const HomeScreen: React.FC<Props> = ({}) => {
 
           <View style={styles.cofounderContent}>
             <CustomText style={styles.cofounderDescription}>
-              Meet Anika (25) and Rini (29), the dedicated sisters who
-              established NUVÓ, Bengaluru’s premier hosting agency specializing
-              in elite manpower for luxury events. Anika, with her background in
-              content creation during her student years, developed a keen sense
-              for curating captivating experiences that resonate deeply. Her
-              expertise in visual storytelling now guides our hostesses in
-              delivering polished, memorable interactions that elevate every
-              occasion.
+              Meet Anika and Rini ,the dedicated sisters who established NUVÓ,
+              Bengaluru’s premier hosting agency specializing in elite manpower
+              for luxury events. Anika, with her background in content creation
+              during her student years, developed a keen sense for curating
+              captivating experiences that resonate deeply. Her expertise in
+              visual storytelling now guides our hostesses in delivering
+              polished, memorable interactions that elevate every occasion.
             </CustomText>
             <CustomText style={styles.cofounderDescription}>
-              Rini, at 29, refined her precision and composure in a demanding
+              Rini, refined her precision and composure in a demanding
               corporate fraud analyst role, excelling in high-stakes
               environments where attention to detail was paramount. This
               foundation ensures our hosts execute with impeccable timing and
@@ -223,9 +219,9 @@ const styles = StyleSheet.create({
   /* ---------------- HERO SECTION ---------------- */
 
   heroImage: {
-    width: '100%',
+    width: "100%",
     height: SCREEN_HEIGHT * 0.8,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
 
   heroOverlay: {
@@ -240,14 +236,14 @@ const styles = StyleSheet.create({
   },
 
   heroTopRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 
   heroUserRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
 
   heroUserText: {
@@ -260,13 +256,13 @@ const styles = StyleSheet.create({
 
   heroTextBlock: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: scale(12),
   },
 
   heroDescription: {
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 20,
     opacity: 0.95,
   },
@@ -279,19 +275,19 @@ const styles = StyleSheet.create({
   /* ---------------- THEMES SECTION ---------------- */
 
   sectionHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: scale(18),
     marginBottom: verticalScale(10),
   },
 
   themeCard: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginHorizontal: scale(18),
     marginBottom: verticalScale(14),
     borderRadius: moderateScale(18),
-    overflow: 'hidden',
+    overflow: "hidden",
     backgroundColor: AppColors.card,
 
     shadowColor: AppColors.textDark,
@@ -303,7 +299,7 @@ const styles = StyleSheet.create({
   },
 
   themeImage: {
-    width: '40%',
+    width: "40%",
     height: verticalScale(110),
   },
 
@@ -311,7 +307,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: scale(14),
     paddingVertical: verticalScale(12),
-    justifyContent: 'center',
+    justifyContent: "center",
   },
 
   themeTitle: {
@@ -336,7 +332,7 @@ const styles = StyleSheet.create({
   cofounderCard: {
     backgroundColor: AppColors.card,
     borderRadius: moderateScale(22),
-    alignItems: 'center',
+    alignItems: "center",
 
     shadowColor: AppColors.textDark,
     shadowOpacity: 0.08,
@@ -351,7 +347,7 @@ const styles = StyleSheet.create({
   },
 
   cofounderContent: {
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
     gap: verticalScale(14),
   },
 
@@ -366,7 +362,7 @@ const styles = StyleSheet.create({
 
   cofounderDescription: {
     color: AppColors.textPrimary,
-    textAlign: 'left',
+    textAlign: "left",
     opacity: 0.95,
     marginBottom: verticalScale(16),
     lineHeight: verticalScale(26),
@@ -380,29 +376,29 @@ const styles = StyleSheet.create({
     borderRadius: scale(20),
   },
   fullImage: {
-    width: '100%',
+    width: "100%",
     // No fixed height: the banner grows to fit its text so the image always
     // covers the content and text never overflows below it.
   },
 
   heroContainer: {
-    width: '100%',
+    width: "100%",
     margin: 0,
     padding: 0,
   },
 
   cofounderBanner: {
-    width: '100%',
+    width: "100%",
     aspectRatio: 1.8,
     borderRadius: moderateScale(20),
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: verticalScale(18),
   },
 
   cofounderBannerImage: {},
 
   bannerOverlay: {
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
 
   heroTextScroll: {
@@ -411,13 +407,13 @@ const styles = StyleSheet.create({
   },
 
   heroTextContainer: {
-    maxWidth: '92%',
+    maxWidth: "92%",
   },
 
   heroTitle: {
     lineHeight: verticalScale(32),
     marginBottom: verticalScale(14),
-    textShadowColor: 'rgba(0,0,0,0.6)',
+    textShadowColor: "rgba(0,0,0,0.6)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 6,
   },
@@ -425,20 +421,20 @@ const styles = StyleSheet.create({
   heroParagraph: {
     lineHeight: verticalScale(22),
     marginBottom: verticalScale(14),
-    textShadowColor: 'rgba(0,0,0,0.75)',
+    textShadowColor: "rgba(0,0,0,0.75)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 4,
   },
 
   founderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     gap: scale(10),
     marginBottom: verticalScale(18),
   },
 
   founderImage: {
-    width: '48%',
+    width: "48%",
     aspectRatio: 0.75, // adjust based on your image
     borderRadius: moderateScale(16),
   },
@@ -450,8 +446,8 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: AppColors.textInverse,
 
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: AppColors.primary, // looks good on hero
   },
 
