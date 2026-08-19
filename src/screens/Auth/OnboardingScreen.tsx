@@ -33,20 +33,8 @@ const SLIDES: OnboardingSlide[] = [
   {
     id: "1",
     title: "First Impressions, Beautifully Delivered",
-    subtitle: "Premium ushering and guest management Book Your Experience ",
+    subtitle: "Premium ushering and guest management",
     image: require("../../assets/images/img.jpeg"),
-  },
-  {
-    id: "2",
-    title: "Make every event yours",
-    subtitle: "Tailored to your taste, from decor to style.",
-    image: require("../../assets/images/onboarding2.jpg"),
-  },
-  {
-    id: "3",
-    title: "Relax, We’ll Handle the Rest",
-    subtitle: "Celebrate freely — we’ll do the rest.",
-    image: require("../../assets/images/onboarding3.jpg"),
   },
 ];
 
@@ -80,17 +68,19 @@ const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
               {item.subtitle}
             </CustomText>
 
-            <View style={styles.dotsRow}>
-              {SLIDES.map((slide, index) => {
-                const isActive = index === currentIndex;
-                return (
-                  <View
-                    key={slide.id}
-                    style={[styles.dot, isActive && styles.dotActive]}
-                  />
-                );
-              })}
-            </View>
+            {SLIDES.length > 1 && (
+              <View style={styles.dotsRow}>
+                {SLIDES.map((slide, index) => {
+                  const isActive = index === currentIndex;
+                  return (
+                    <View
+                      key={slide.id}
+                      style={[styles.dot, isActive && styles.dotActive]}
+                    />
+                  );
+                })}
+              </View>
+            )}
 
             <AppButton
               label="Book your experience"
