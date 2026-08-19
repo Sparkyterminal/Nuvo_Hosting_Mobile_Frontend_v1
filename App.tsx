@@ -3,6 +3,7 @@ import * as ExpoSplashScreen from 'expo-splash-screen';
 import RootNavigator from './src/navigation/RootNavigator';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
+import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 import { Provider } from 'react-redux';
 import { store } from './src/store/store';
 
@@ -22,6 +23,12 @@ export default function App() {
   }, []);
 
   const [loaded] = useFonts({
+    // Preload the vector-icon fonts so tab-bar and inline icons render.
+    // On the New Architecture these are not auto-registered, which leaves
+    // icons blank while text (custom fonts) still shows.
+    ...Ionicons.font,
+    ...MaterialCommunityIcons.font,
+    ...Feather.font,
     HelveticaNowThin: require('./src/assets/fonts/HelveticaNowDisplay-Thin.ttf'),
     HelveticaNowLight: require('./src/assets/fonts/HelveticaNowDisplay-Light.ttf'),
     HelveticaNowRegular: require('./src/assets/fonts/HelveticaNowDisplay-Regular.ttf'),

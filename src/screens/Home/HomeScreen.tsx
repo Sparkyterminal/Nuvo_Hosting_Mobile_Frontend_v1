@@ -434,8 +434,10 @@ const styles = StyleSheet.create({
   },
 
   founderImage: {
-    width: "48%",
-    aspectRatio: 0.75, // adjust based on your image
+    // flex + explicit height renders reliably on the New Architecture;
+    // a percentage width with only aspectRatio (no height) lays out blank.
+    flex: 1,
+    height: verticalScale(220),
     borderRadius: moderateScale(16),
   },
 
